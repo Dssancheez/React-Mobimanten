@@ -4,7 +4,7 @@ import { Text, TextInput, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/client/react';
 import { REGISTRO, LOGIN } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nombre, setNombre] = useState('');
@@ -12,8 +12,54 @@ const RegisterScreen = ({ navigation }: any) => {
   const [password, setPassword] = useState('');
   
   const { login } = useContext(AuthContext);
+  const globalStyles = useGlobalStyles();
+  const theme = useAppTheme();
+  const Colors = theme.customColors;
+
+  const styles = StyleSheet.create({
+    scroll: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: 20,
+    },
+    header: {
+      marginBottom: 40,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: 10,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: Colors.textoGris,
+    },
+    form: {
+      width: '100%',
+    },
+    input: {
+      marginBottom: 15,
+      backgroundColor: Colors.tarjeta,
+    },
+    button: {
+      marginTop: 15,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    buttonLabel: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    errorText: {
+      color: Colors.error,
+      textAlign: 'center',
+      marginBottom: 10,
+    }
+  });
 
   const [registroMutation, { loading: loadingRegistro, error: errorRegistro }] = useMutation(REGISTRO);
+
   const [loginMutation, { loading: loadingLogin }] = useMutation(LOGIN);
 
   const handleRegister = async () => {
@@ -58,7 +104,7 @@ const RegisterScreen = ({ navigation }: any) => {
             mode="outlined"
             outlineColor={Colors.textoGris}
             activeOutlineColor={Colors.primario}
-            textColor="white"
+            textColor={theme.colors.text}
             />
             <TextInput
             label="Email"
@@ -70,7 +116,7 @@ const RegisterScreen = ({ navigation }: any) => {
             mode="outlined"
             outlineColor={Colors.textoGris}
             activeOutlineColor={Colors.primario}
-            textColor="white"
+            textColor={theme.colors.text}
             />
             <TextInput
             label="Contraseña"
@@ -81,7 +127,7 @@ const RegisterScreen = ({ navigation }: any) => {
             mode="outlined"
             outlineColor={Colors.textoGris}
             activeOutlineColor={Colors.primario}
-            textColor="white"
+            textColor={theme.colors.text}
             />
 
             {errorRegistro && <Text style={styles.errorText}>Error: {errorRegistro.message}</Text>}
@@ -111,47 +157,5 @@ const RegisterScreen = ({ navigation }: any) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  header: {
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.textoGris,
-  },
-  form: {
-    width: '100%',
-  },
-  input: {
-    marginBottom: 15,
-    backgroundColor: '#1E1E50',
-  },
-  button: {
-    marginTop: 15,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorText: {
-    color: Colors.error,
-    textAlign: 'center',
-    marginBottom: 10,
-  }
-});
 
 export default RegisterScreen;

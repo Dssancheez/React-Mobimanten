@@ -1,11 +1,50 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
     const { cocheId, tarea } = route.params;
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+
+    const styles = StyleSheet.create({
+        content: {
+            flex: 1,
+            padding: 20,
+            justifyContent: 'center',
+        },
+        title: {
+            fontSize: 26,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 5,
+        },
+        subtitle: {
+            fontSize: 18,
+            color: Colors.textoPrincipal,
+            marginBottom: 30,
+            fontWeight: 'bold',
+        },
+        form: {
+            width: '100%',
+        },
+        input: {
+            marginBottom: 15,
+            backgroundColor: Colors.tarjeta,
+        },
+        button: {
+            marginTop: 20,
+            paddingVertical: 8,
+            borderRadius: 8,
+        },
+        buttonLabel: {
+            fontSize: 16,
+            fontWeight: 'bold',
+        }
+    });
     
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
     const [kmActuales, setKmActuales] = useState('');
@@ -65,7 +104,7 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                         mode="outlined"
                         outlineColor={Colors.textoGris}
                         activeOutlineColor={Colors.primario}
-                        textColor="white"
+                        textColor={theme.colors.text}
                     />
                     
                     <TextInput
@@ -77,7 +116,7 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                         mode="outlined"
                         outlineColor={Colors.textoGris}
                         activeOutlineColor={Colors.primario}
-                        textColor="white"
+                        textColor={theme.colors.text}
                     />
 
                     <TextInput
@@ -90,7 +129,7 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                         mode="outlined"
                         outlineColor={Colors.textoGris}
                         activeOutlineColor={Colors.primario}
-                        textColor="white"
+                        textColor={theme.colors.text}
                     />
 
                     <Button 
@@ -107,41 +146,5 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
         </KeyboardAvoidingView>
     );
 };
-
-const styles = StyleSheet.create({
-    content: {
-        flex: 1,
-        padding: 20,
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 5,
-    },
-    subtitle: {
-        fontSize: 18,
-        color: Colors.primario,
-        marginBottom: 30,
-        fontWeight: 'bold',
-    },
-    form: {
-        width: '100%',
-    },
-    input: {
-        marginBottom: 15,
-        backgroundColor: '#1E1E50',
-    },
-    button: {
-        marginTop: 20,
-        paddingVertical: 8,
-        borderRadius: 8,
-    },
-    buttonLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    }
-});
 
 export default RegisterMaintenanceScreen;

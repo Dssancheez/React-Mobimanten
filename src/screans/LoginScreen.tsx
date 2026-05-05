@@ -4,12 +4,65 @@ import { Text, TextInput, Button, ActivityIndicator } from 'react-native-paper';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useContext(AuthContext);
+  const globalStyles = useGlobalStyles();
+  const theme = useAppTheme();
+  const Colors = theme.customColors;
+
+  const styles = StyleSheet.create({
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: 20,
+    },
+    header: {
+      alignItems: 'center',
+      marginBottom: 40,
+    },
+    logo: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      marginBottom: 20,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: Colors.textoGris,
+      marginTop: 5,
+    },
+    form: {
+      width: '100%',
+    },
+    input: {
+      marginBottom: 15,
+      backgroundColor: Colors.tarjeta,
+    },
+    button: {
+      marginTop: 10,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    buttonLabel: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    errorText: {
+      color: Colors.error,
+      textAlign: 'center',
+      marginBottom: 10,
+    }
+  });
 
   const [loginMutation, { loading, error }] = useMutation(LOGIN);
 
@@ -53,7 +106,7 @@ const LoginScreen = ({ navigation }: any) => {
             mode="outlined"
             outlineColor={Colors.textoGris}
             activeOutlineColor={Colors.primario}
-            textColor="white"
+            textColor={theme.colors.text}
           />
           <TextInput
             label="Contraseña"
@@ -64,7 +117,7 @@ const LoginScreen = ({ navigation }: any) => {
             mode="outlined"
             outlineColor={Colors.textoGris}
             activeOutlineColor={Colors.primario}
-            textColor="white"
+            textColor={theme.colors.text}
           />
 
           {error && <Text style={styles.errorText}>Credenciales incorrectas o error de conexión</Text>}
@@ -94,56 +147,6 @@ const LoginScreen = ({ navigation }: any) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.textoGris,
-    marginTop: 5,
-  },
-  form: {
-    width: '100%',
-  },
-  input: {
-    marginBottom: 15,
-    backgroundColor: '#1E1E50',
-  },
-  button: {
-    marginTop: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  buttonLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  errorText: {
-    color: Colors.error,
-    textAlign: 'center',
-    marginBottom: 10,
-  }
-});
 
 export default LoginScreen;
 

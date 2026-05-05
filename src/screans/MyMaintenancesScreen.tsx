@@ -4,7 +4,7 @@ import { Text, Card, SegmentedButtons } from 'react-native-paper';
 import { useQuery, useApolloClient } from '@apollo/client/react';
 import { GET_MI_GARAJE, GET_MANTENIMIENTOS, Garaje, Mantenimiento } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,7 +31,72 @@ interface AlertaRecord {
 const MyMaintenancesScreen = ({ navigation }: any) => {
     const { usuario } = useContext(AuthContext);
     const client = useApolloClient();
-    const isFocused = useIsFocused(); // To reload data when returning to this tab
+    const isFocused = useIsFocused();
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+
+    const styles = StyleSheet.create({
+        noData: {
+            color: Colors.textoGris,
+            textAlign: 'center',
+            marginTop: 40,
+            fontSize: 16,
+        },
+        card: {
+            backgroundColor: Colors.tarjeta,
+            marginBottom: 15,
+        },
+        cardUrgente: {
+            backgroundColor: '#D32F2F', // Rojo oscuro para alerta
+            borderColor: '#FF5252',
+            borderWidth: 1,
+        },
+        headerRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 5,
+        },
+        cardTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            flex: 1,
+        },
+        cardSubtitle: {
+            fontSize: 14,
+            color: Colors.textoGris,
+            marginBottom: 10,
+        },
+        fecha: {
+            color: Colors.primario,
+            fontWeight: 'bold',
+        },
+        diasContainer: {
+            marginTop: 5,
+            padding: 10,
+            backgroundColor: 'rgba(0,0,0,0.2)',
+            borderRadius: 8,
+        },
+        diasTexto: {
+            color: Colors.textoPrincipal,
+            fontSize: 16,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        kmTexto: {
+            color: theme.colors.text,
+            fontSize: 14,
+            marginBottom: 5,
+        },
+        observaciones: {
+            color: Colors.textoGris,
+            fontSize: 13,
+            fontStyle: 'italic',
+            marginTop: 5,
+        }
+    });
 
     const [viewMode, setViewMode] = useState('proximos'); // 'proximos' | 'historial'
     
@@ -165,7 +230,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                             >
                                 <Card.Content>
                                     <View style={styles.headerRow}>
-                                        <Text style={[styles.cardTitle, alerta.urgente && {color: 'white'}]}>
+                                        <Text style={[styles.cardTitle, alerta.urgente ? {color: 'white'} : {color: theme.colors.text}]}>
                                             {alerta.tarea}
                                         </Text>
                                         {alerta.urgente && (
@@ -213,67 +278,5 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    noData: {
-        color: Colors.textoGris,
-        textAlign: 'center',
-        marginTop: 40,
-        fontSize: 16,
-    },
-    card: {
-        backgroundColor: '#1E1E50',
-        marginBottom: 15,
-    },
-    cardUrgente: {
-        backgroundColor: '#D32F2F', // Rojo oscuro para alerta
-        borderColor: '#FF5252',
-        borderWidth: 1,
-    },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 5,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-        flex: 1,
-    },
-    cardSubtitle: {
-        fontSize: 14,
-        color: '#B0C4DE',
-        marginBottom: 10,
-    },
-    fecha: {
-        color: Colors.primario,
-        fontWeight: 'bold',
-    },
-    diasContainer: {
-        marginTop: 5,
-        padding: 10,
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        borderRadius: 8,
-    },
-    diasTexto: {
-        color: '#FF8C00',
-        fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    kmTexto: {
-        color: 'white',
-        fontSize: 14,
-        marginBottom: 5,
-    },
-    observaciones: {
-        color: '#B0C4DE',
-        fontSize: 13,
-        fontStyle: 'italic',
-        marginTop: 5,
-    }
-});
 
 export default MyMaintenancesScreen;

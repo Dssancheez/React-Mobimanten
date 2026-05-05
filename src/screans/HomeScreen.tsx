@@ -3,14 +3,16 @@ import {ActivityIndicator, View} from 'react-native';
 import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
-import {Colors, globalStyles} from "@/src/styles/theme";
+import {useGlobalStyles, useAppTheme} from "@/src/styles/theme";
 import {Searchbar, Text} from "react-native-paper";
 
 const HomeScreen = ({navigation}: any) => {
 
     const [searchQuery, setSearchQuery] = useState('');
     const {data, loading, error, refetch} = useQuery<{ getCoches: Coche[] }>(GET_COCHES);
-
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
 
 
 
@@ -48,11 +50,11 @@ const HomeScreen = ({navigation}: any) => {
                 value={searchQuery}
                 style={{
                     margin: 16,
-                    backgroundColor: '#1E1E50',
+                    backgroundColor: Colors.tarjeta,
                     borderRadius: 12
                 }}
                 iconColor={Colors.primario}
-                inputStyle={{color: 'white'}}
+                inputStyle={{color: theme.colors.text}}
                 placeholderTextColor={Colors.textoGris}
             />
 

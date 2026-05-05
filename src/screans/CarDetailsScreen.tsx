@@ -5,11 +5,95 @@ import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_COCHES, GET_MANTENIMIENTOS, GET_MI_GARAJE, Coche, Mantenimiento } from '../graphql/queries';
 import { ANADIR_COCHE_GARAJE, ELIMINAR_COCHE_GARAJE } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 
 const CarDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId } = route.params;
     const { usuario } = useContext(AuthContext);
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+
+    const styles = StyleSheet.create({
+        image: {
+            width: '100%',
+            height: 250,
+        },
+        headerInfo: {
+            flexDirection: 'row',
+            padding: 20,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: Colors.fondo,
+            borderBottomLeftRadius: 20,
+            borderBottomRightRadius: 20,
+            marginBottom: 10,
+        },
+        title: {
+            fontSize: 26,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+        },
+        subtitle: {
+            fontSize: 16,
+            color: Colors.textoGris,
+            marginTop: 5,
+        },
+        divider: {
+            backgroundColor: Colors.tarjeta,
+            height: 2,
+            marginHorizontal: 20,
+        },
+        section: {
+            padding: 20,
+        },
+        sectionTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 15,
+        },
+        noData: {
+            color: Colors.textoGris,
+            fontStyle: 'italic',
+        },
+        card: {
+            backgroundColor: Colors.tarjeta,
+            marginBottom: 15,
+        },
+        cardTitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 4,
+        },
+        cardSubtitle: {
+            fontSize: 14,
+            color: Colors.textoGris,
+        },
+        modalContent: {
+            backgroundColor: Colors.tarjeta,
+            padding: 20,
+            margin: 20,
+            borderRadius: 12,
+        },
+        modalTitle: {
+            fontSize: 22,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 10,
+        },
+        modalSubtitle: {
+            fontSize: 14,
+            color: Colors.textoGris,
+            marginBottom: 20,
+        },
+        modalButtons: {
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            gap: 10
+        }
+    });
 
     const [modalVisible, setModalVisible] = useState(false);
     const [apodo, setApodo] = useState('');
@@ -85,7 +169,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     };
 
     if (!coche) return (
-        <View style={globalStyles.center}><Text style={{color:'white'}}>Coche no encontrado.</Text></View>
+        <View style={globalStyles.center}><Text style={{color: theme.colors.text}}>Coche no encontrado.</Text></View>
     );
 
     const mantenimientos = mantData?.obtenerMantenimientosPorCoche || [];
@@ -154,8 +238,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                         value={apodo}
                         onChangeText={setApodo}
                         mode="outlined"
-                        style={{backgroundColor: '#191970', marginBottom: 20}}
-                        textColor="white"
+                        style={{backgroundColor: Colors.fondo, marginBottom: 20}}
+                        textColor={theme.colors.text}
                         outlineColor={Colors.textoGris}
                         activeOutlineColor={Colors.primario}
                     />
@@ -170,86 +254,5 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    image: {
-        width: '100%',
-        height: 250,
-    },
-    headerInfo: {
-        flexDirection: 'row',
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: '#191970',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        marginBottom: 10,
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#B0C4DE',
-        marginTop: 5,
-    },
-    divider: {
-        backgroundColor: '#1E1E50',
-        height: 2,
-        marginHorizontal: 20,
-    },
-    section: {
-        padding: 20,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 15,
-    },
-    noData: {
-        color: Colors.textoGris,
-        fontStyle: 'italic',
-    },
-    card: {
-        backgroundColor: '#1E1E50',
-        marginBottom: 15,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 4,
-    },
-    cardSubtitle: {
-        fontSize: 14,
-        color: Colors.textoGris,
-    },
-    modalContent: {
-        backgroundColor: '#1E1E50',
-        padding: 20,
-        margin: 20,
-        borderRadius: 12,
-    },
-    modalTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 10,
-    },
-    modalSubtitle: {
-        fontSize: 14,
-        color: '#B0C4DE',
-        marginBottom: 20,
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 10
-    }
-});
 
 export default CarDetailsScreen;

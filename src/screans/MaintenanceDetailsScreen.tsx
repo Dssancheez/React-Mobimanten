@@ -1,10 +1,60 @@
 import React from 'react';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { Text, Card, Button, Divider, List } from 'react-native-paper';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 
 const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId, mant } = route.params;
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+
+    const styles = StyleSheet.create({
+        title: {
+            fontSize: 26,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 20,
+        },
+        infoRow: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 10,
+        },
+        infoLabel: {
+            color: Colors.textoGris,
+            fontSize: 16,
+        },
+        infoValue: {
+            color: theme.colors.text,
+            fontSize: 16,
+            fontWeight: 'bold',
+        },
+        divider: {
+            backgroundColor: Colors.tarjeta,
+            height: 1,
+            marginVertical: 20,
+        },
+        sectionTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 10,
+        },
+        noData: {
+            color: Colors.textoGris,
+            fontStyle: 'italic',
+        },
+        buyButton: {
+            marginBottom: 15,
+            paddingVertical: 8,
+        },
+        registerButton: {
+            borderColor: Colors.primario,
+            paddingVertical: 8,
+            marginTop: 10,
+        }
+    });
 
     const handleOpenLink = async (url: string) => {
         const supported = await Linking.canOpenURL(url);
@@ -35,7 +85,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
                     <List.Item
                         key={idx}
                         title={rep}
-                        titleStyle={{ color: 'white' }}
+                        titleStyle={{ color: theme.colors.text }}
                         left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
                     />
                 ))
@@ -49,7 +99,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
                 <Button 
                     mode="contained" 
                     icon="cart"
-                    buttonColor="#FF8C00"
+                    buttonColor={Colors.primario}
                     onPress={() => handleOpenLink(mant.enlaceCompra)}
                     style={styles.buyButton}
                 >
@@ -69,52 +119,5 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
         </ScrollView>
     );
 };
-
-const styles = StyleSheet.create({
-    title: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 20,
-    },
-    infoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-    infoLabel: {
-        color: '#B0C4DE',
-        fontSize: 16,
-    },
-    infoValue: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    divider: {
-        backgroundColor: '#1E1E50',
-        height: 1,
-        marginVertical: 20,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 10,
-    },
-    noData: {
-        color: Colors.textoGris,
-        fontStyle: 'italic',
-    },
-    buyButton: {
-        marginBottom: 15,
-        paddingVertical: 8,
-    },
-    registerButton: {
-        borderColor: Colors.primario,
-        paddingVertical: 8,
-        marginTop: 10,
-    }
-});
 
 export default MaintenanceDetailsScreen;

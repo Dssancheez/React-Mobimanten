@@ -2,6 +2,7 @@ import React from 'react';
 import {FlatList, RefreshControl} from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { Coche } from '../graphql/queries';
+import { useAppTheme } from '../styles/theme';
 
 interface ListaProps {
     navigation: any;
@@ -11,6 +12,8 @@ interface ListaProps {
 
 export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
     const [refreshing, setRefreshing] = React.useState(false);
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -31,8 +34,8 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    tintColor="white"
-                    colors={['#1E1E50']}
+                    tintColor={theme.colors.text}
+                    colors={[Colors.primario]}
                 />
             }
             renderItem={({ item }) => {
@@ -42,7 +45,7 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
 
                 return (
                     <Card
-                        style={{ marginHorizontal: 16, marginVertical: 8, backgroundColor: '#1E1E50' }}
+                        style={{ marginHorizontal: 16, marginVertical: 8, backgroundColor: Colors.tarjeta }}
                         onPress={() => navigation.navigate('Details', { cocheId: item.id })}
                     >
                         <Card.Cover
@@ -52,14 +55,14 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                         <Card.Title
                             title={`${item.marca} ${item.modelo}`}
                             subtitle={`${item.motor} • Año ${item.anio}`}
-                            titleStyle={{ color: 'white', fontWeight: 'bold' }}
-                            subtitleStyle={{ color: '#B0C4DE' }}
+                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                            subtitleStyle={{ color: Colors.textoGris }}
                         />
                     </Card>
                 );
             }}
             ListEmptyComponent={
-                <Text style={{ textAlign: 'center', marginTop: 20, color: '#B0C4DE' }}>
+                <Text style={{ textAlign: 'center', marginTop: 20, color: Colors.textoGris }}>
                     No se han encontrado vehículos.
                 </Text>
             }

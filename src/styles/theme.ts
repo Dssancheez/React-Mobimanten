@@ -1,45 +1,77 @@
 import { StyleSheet } from 'react-native';
-import { MD3DarkTheme } from 'react-native-paper';
+import { MD3DarkTheme, MD3LightTheme, useTheme } from 'react-native-paper';
 
-// 1. Definimos los colores base
-export const Colors = {
-    primario: '#FF8C00',
-    fondo: '#191970',
-    tarjeta: '#1E1E50',
-    textoBlanco: '#F0F8FF',
-    textoGris: '#B0C4DE',
+export const lightColors = {
+    primario: '#FF8C00', // Naranja
+    fondo: '#FFFFFF', // Blanco
+    tarjeta: '#F0F0F0', // Gris muy claro
+    textoPrincipal: '#FF8C00', // Naranja para textos principales según petición
+    textoSecundario: '#333333', // Texto normal oscuro para legibilidad
+    textoGris: '#666666',
     error: '#FF4444'
 };
 
-// 2. Este es el objeto que espera <PaperProvider theme={theme}>
-// ¡IMPORTANTE!: No uses StyleSheet.create aquí
-export const theme = {
+export const darkColors = {
+    primario: '#2196F3', // Azul brillante para el modo oscuro
+    fondo: '#000000', // Negro puro para el fondo
+    tarjeta: '#1A1A1A', // Gris muy oscuro para las tarjetas
+    textoPrincipal: '#2196F3', // Azul para títulos y detalles
+    textoSecundario: '#FFFFFF', // Blanco puro para texto normal
+    textoGris: '#9E9E9E', // Gris medio para subtítulos
+    error: '#FF5252'
+};
+
+export const lightTheme = {
+    ...MD3LightTheme,
+    colors: {
+        ...MD3LightTheme.colors,
+        primary: lightColors.primario,
+        background: lightColors.fondo,
+        surface: lightColors.tarjeta,
+        text: lightColors.textoSecundario,
+        onSurface: lightColors.textoSecundario,
+    },
+    customColors: lightColors,
+};
+
+export const darkTheme = {
     ...MD3DarkTheme,
     colors: {
         ...MD3DarkTheme.colors,
-        primary: Colors.primario,
-        background: Colors.fondo,
-        surface: Colors.tarjeta,
-        text: Colors.textoBlanco,
-        onSurface: Colors.textoBlanco,
+        primary: darkColors.primario,
+        background: darkColors.fondo,
+        surface: darkColors.tarjeta,
+        text: darkColors.textoSecundario,
+        onSurface: darkColors.textoSecundario,
     },
+    customColors: darkColors,
 };
 
-export const globalStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.fondo,
-    },
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    tituloPrincipal: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: Colors.textoBlanco,
-        textAlign: 'center',
-        marginVertical: 10
-    }
-});
+export type AppTheme = typeof lightTheme;
+
+export const useAppTheme = () => useTheme<AppTheme>();
+
+export const useGlobalStyles = () => {
+    const theme = useAppTheme();
+    const colors = theme.customColors;
+
+    return StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: colors.fondo,
+        },
+        center: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: colors.fondo,
+        },
+        tituloPrincipal: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: colors.textoPrincipal,
+            textAlign: 'center',
+            marginVertical: 10
+        }
+    });
+};

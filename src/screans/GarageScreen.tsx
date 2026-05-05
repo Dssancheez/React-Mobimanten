@@ -4,11 +4,41 @@ import { Text, Card } from 'react-native-paper';
 import { useQuery } from '@apollo/client/react';
 import { GET_MI_GARAJE, Garaje } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
-import { Colors, globalStyles } from '../styles/theme';
+import { useGlobalStyles, useAppTheme } from '../styles/theme';
 
 const GarageScreen = ({ navigation }: any) => {
     const { usuario } = useContext(AuthContext);
     const [refreshing, setRefreshing] = useState(false);
+    const globalStyles = useGlobalStyles();
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+
+    const styles = StyleSheet.create({
+        card: {
+            marginHorizontal: 16, 
+            marginVertical: 8, 
+            backgroundColor: Colors.tarjeta,
+        },
+        cardImage: {
+            height: 200, 
+            borderBottomLeftRadius: 0, 
+            borderBottomRightRadius: 0 
+        },
+        cardContent: {
+            paddingTop: 15,
+            paddingBottom: 15,
+        },
+        apodo: {
+            color: Colors.textoPrincipal, 
+            fontWeight: 'bold', 
+            fontSize: 26,
+            marginBottom: 5,
+        },
+        cocheDetails: {
+            color: Colors.textoGris,
+            fontSize: 16,
+        }
+    });
 
     const { data, loading, error, refetch } = useQuery<{ obtenerMiGaraje: Garaje[] }>(
         GET_MI_GARAJE,
@@ -44,7 +74,7 @@ const GarageScreen = ({ navigation }: any) => {
     return (
         <View style={globalStyles.container}>
             <View style={{ padding: 16 }}>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>
+                <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: 'bold' }}>
                     Tus vehículos guardados
                 </Text>
             </View>
@@ -56,7 +86,7 @@ const GarageScreen = ({ navigation }: any) => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor="white"
+                        tintColor={theme.colors.text}
                         colors={[Colors.primario]}
                     />
                 }
@@ -92,32 +122,5 @@ const GarageScreen = ({ navigation }: any) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    card: {
-        marginHorizontal: 16, 
-        marginVertical: 8, 
-        backgroundColor: '#1E1E50',
-    },
-    cardImage: {
-        height: 200, 
-        borderBottomLeftRadius: 0, 
-        borderBottomRightRadius: 0 
-    },
-    cardContent: {
-        paddingTop: 15,
-        paddingBottom: 15,
-    },
-    apodo: {
-        color: '#FF8C00', 
-        fontWeight: 'bold', 
-        fontSize: 26,
-        marginBottom: 5,
-    },
-    cocheDetails: {
-        color: '#B0C4DE',
-        fontSize: 16,
-    }
-});
 
 export default GarageScreen;
