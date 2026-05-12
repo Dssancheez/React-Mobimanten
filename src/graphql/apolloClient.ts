@@ -6,8 +6,12 @@ import Constants from 'expo-constants';
 const debuggerHost = Constants.expoConfig?.hostUri;
 const localhost = debuggerHost?.split(':').shift() || 'localhost';
 
+const uri = __DEV__ 
+  ? `http://${localhost}:8080/graphql` 
+  : 'https://backend-mobimanten-production.up.railway.app/graphql';
+
 const httpLink = createHttpLink({
-  uri: `http://${localhost}:8080/graphql`,
+  uri: uri,
 });
 
 const authLink = setContext(async (_, { headers }) => {
