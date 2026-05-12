@@ -8,6 +8,8 @@ import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
+import { Platform, useWindowDimensions } from 'react-native';
 
 interface HistorialRecord {
     id: string;
@@ -35,6 +37,8 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const { width } = useWindowDimensions();
+    const isWeb = Platform.OS === 'web';
 
     const styles = StyleSheet.create({
         noData: {
@@ -46,6 +50,10 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
+            width: isWeb && width > 1200 ? '23%' : isWeb && width > 800 ? '48%' : '100%',
+            marginHorizontal: isWeb && width > 800 ? '1%' : 0,
+            elevation: 4,
+            borderRadius: 12,
         },
         cardUrgente: {
             backgroundColor: '#D32F2F',
@@ -202,77 +210,83 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                 />
             </View>
 
-            <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
-                {viewMode === 'proximos' ? (
-                    alertas.length === 0 ? (
-                        <Text style={styles.noData}>No tienes ningún mantenimiento próximo en los próximos 30 días.</Text>
-                    ) : (
-                        alertas.map((alerta, index) => (
-                            <Card
-                                key={index}
-                                style={[styles.card, alerta.urgente && styles.cardUrgente]}
-                            >
-                                <Card.Content>
-                                    <View style={styles.headerRow}>
-                                        <Text style={[styles.cardTitle, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
-                                            {alerta.tarea}
+            <ResponsiveContainer>
+                <View style={{ 
+                    flexDirection: isWeb && width > 600 ? 'row' : 'column', 
+                    flexWrap: 'wrap',
+                    padding: 16
+                }}>
+                    {viewMode === 'proximos' ? (
+                        alertas.length === 0 ? (
+                            <Text style={[styles.noData, { width: '100%' }]}>No tienes ningún mantenimiento próximo en los próximos 30 días.</Text>
+                        ) : (
+                            alertas.map((alerta, index) => (
+                                <Card
+                                    key={index}
+                                    style={[styles.card, alerta.urgente && styles.cardUrgente]}
+                                >
+                                    <Card.Content>
+                                        <View style={styles.headerRow}>
+                                            <Text style={[styles.cardTitle, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
+                                                {alerta.tarea}
+                                            </Text>
+                                            {alerta.urgente && (
+                                                <MaterialCommunityIcons name="alert" size={24} color="white" />
+                                            )}
+                                        </View>
+                                        <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
+                                            Vehículo: {alerta.apodo}
                                         </Text>
-                                        {alerta.urgente && (
-                                            <MaterialCommunityIcons name="alert" size={24} color="white" />
-                                        )}
-                                    </View>
-                                    <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
-                                        Vehículo: {alerta.apodo}
-                                    </Text>
 
-                                    <View style={styles.diasContainer}>
-                                        <Text style={[styles.diasTexto, alerta.urgente && { color: 'white' }]}>
-                                            {alerta.diasRestantes < 0
-                                                ? `¡Vencido por tiempo! (${Math.abs(alerta.diasRestantes)} días)`
-                                                : alerta.kmRestantes < 0
-                                                ? `¡Vencido por uso! (${Math.abs(alerta.kmRestantes)} km extra)`
-                                                : alerta.diasRestantes <= 30
-                                                ? `Próximo mantenimiento en ${alerta.diasRestantes} días`
-                                                : `Próximo mantenimiento en ${alerta.kmRestantes} km`
-                                            }
-                                        </Text>
-                                        {(alerta.diasRestantes >= 0 && alerta.kmRestantes >= 0) && (
-                                            <Text style={{color: 'white', fontSize: 12, textAlign: 'center', marginTop: 4, opacity: 0.8}}>
-                                                Límite: {alerta.kmVencimiento} km o {alerta.fechaVencimiento}
+                                        <View style={styles.diasContainer}>
+                                            <Text style={[styles.diasTexto, alerta.urgente && { color: 'white' }]}>
+                                                {alerta.diasRestantes < 0
+                                                    ? `¡Vencido por tiempo! (${Math.abs(alerta.diasRestantes)} días)`
+                                                    : alerta.kmRestantes < 0
+                                                    ? `¡Vencido por uso! (${Math.abs(alerta.kmRestantes)} km extra)`
+                                                    : alerta.diasRestantes <= 30
+                                                    ? `Próximo mantenimiento en ${alerta.diasRestantes} días`
+                                                    : `Próximo mantenimiento en ${alerta.kmRestantes} km`
+                                                }
+                                            </Text>
+                                            {(alerta.diasRestantes >= 0 && alerta.kmRestantes >= 0) && (
+                                                <Text style={{color: 'white', fontSize: 12, textAlign: 'center', marginTop: 4, opacity: 0.8}}>
+                                                    Límite: {alerta.kmVencimiento} km o {alerta.fechaVencimiento}
+                                                </Text>
+                                            )}
+                                        </View>
+                                    </Card.Content>
+                                </Card>
+                            ))
+                        )
+                    ) : (
+                        historialSorted.length === 0 ? (
+                            <Text style={[styles.noData, { width: '100%' }]}>Aún no has registrado ningún mantenimiento.</Text>
+                        ) : (
+                            historialSorted.map((reg) => (
+                                <Card key={reg.id} style={styles.card}>
+                                    <Card.Content>
+                                        <View style={styles.headerRow}>
+                                            <Text style={styles.cardTitle}>{reg.tarea}</Text>
+                                            <Text style={styles.fecha}>{reg.fechaRealizado}</Text>
+                                        </View>
+                                        <Text style={styles.cardSubtitle}>Vehículo: {reg.cocheApodo}</Text>
+                                        <Text style={styles.kmTexto}>{reg.kilometrosRealizado} km</Text>
+                                        {reg.observaciones ? (
+                                            <Text style={styles.observaciones}>Nota: {reg.observaciones}</Text>
+                                        ) : null}
+                                        {reg.proximoCambioKm && (
+                                            <Text style={{color: Colors.primario, marginTop: 5}}>
+                                                Próximo cambio: {reg.proximoCambioKm} km
                                             </Text>
                                         )}
-                                    </View>
-                                </Card.Content>
-                            </Card>
-                        ))
-                    )
-                ) : (
-                    historialSorted.length === 0 ? (
-                        <Text style={styles.noData}>Aún no has registrado ningún mantenimiento.</Text>
-                    ) : (
-                        historialSorted.map((reg) => (
-                            <Card key={reg.id} style={styles.card}>
-                                <Card.Content>
-                                    <View style={styles.headerRow}>
-                                        <Text style={styles.cardTitle}>{reg.tarea}</Text>
-                                        <Text style={styles.fecha}>{reg.fechaRealizado}</Text>
-                                    </View>
-                                    <Text style={styles.cardSubtitle}>Vehículo: {reg.cocheApodo}</Text>
-                                    <Text style={styles.kmTexto}>{reg.kilometrosRealizado} km</Text>
-                                    {reg.observaciones ? (
-                                        <Text style={styles.observaciones}>Nota: {reg.observaciones}</Text>
-                                    ) : null}
-                                    {reg.proximoCambioKm && (
-                                        <Text style={{color: Colors.primario, marginTop: 5}}>
-                                            Próximo cambio: {reg.proximoCambioKm} km
-                                        </Text>
-                                    )}
-                                </Card.Content>
-                            </Card>
-                        ))
-                    )
-                )}
-            </ScrollView>
+                                    </Card.Content>
+                                </Card>
+                            ))
+                        )
+                    )}
+                </View>
+            </ResponsiveContainer>
         </View>
     );
 };

@@ -9,6 +9,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -193,9 +194,10 @@ const LoginScreen = ({ navigation }: any) => {
   });
 
   return (
-    <KeyboardAvoidingView
+    <ResponsiveContainer
       style={globalStyles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      maxWidth={500}
+      scrollable={true}
     >
       <View style={styles.content}>
         <View style={styles.header}>
@@ -278,7 +280,7 @@ const LoginScreen = ({ navigation }: any) => {
           </Button>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </ResponsiveContainer>
   );
 };
 

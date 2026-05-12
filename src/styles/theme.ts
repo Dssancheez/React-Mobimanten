@@ -72,6 +72,13 @@ export const useGlobalStyles = () => {
             color: colors.textoPrincipal,
             textAlign: 'center',
             marginVertical: 10
+        },
+        webContainer: {
+            flex: 1,
+            width: '100%',
+            maxWidth: 1000,
+            alignSelf: 'center',
+            backgroundColor: colors.fondo,
         }
     });
 };

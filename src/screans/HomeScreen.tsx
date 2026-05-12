@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, View, Platform} from 'react-native';
 import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";

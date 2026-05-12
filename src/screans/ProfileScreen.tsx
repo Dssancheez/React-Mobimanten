@@ -6,6 +6,7 @@ import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import { ThemeContext } from '../context/ThemeContext';
 import { useMutation } from '@apollo/client/react';
 import { ACTUALIZAR_USUARIO } from '../graphql/mutations';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
 
 // Mapeo de imágenes locales para que funcionen con require
 const AVATARES_LOCALES: { [key: string]: any } = {
@@ -158,7 +159,7 @@ const ProfileScreen = () => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ResponsiveContainer>
             <Card style={styles.headerCard}>
                 <View style={{ alignItems: 'center', width: '100%' }}>
                     {renderProfileAvatar()}
@@ -273,7 +274,7 @@ const ProfileScreen = () => {
                     </Button>
                 </Modal>
             </Portal>
-        </ScrollView>
+        </ResponsiveContainer>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, ActivityIndicator, FlatList, RefreshControl, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, FlatList, RefreshControl, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { Text, Card } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQuery } from '@apollo/client/react';
@@ -13,15 +13,27 @@ const GarageScreen = ({ navigation }: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const { width } = useWindowDimensions();
+
+    const getNumColumns = () => {
+        if (Platform.OS !== 'web') return 1;
+        if (width > 900) return 3;
+        if (width > 600) return 2;
+        return 1;
+    };
+
+    const numColumns = getNumColumns();
 
     const styles = StyleSheet.create({
         card: {
-            marginHorizontal: 16, 
-            marginVertical: 8, 
+            marginHorizontal: Platform.OS === 'web' ? 15 : 8, 
+            marginVertical: Platform.OS === 'web' ? 15 : 8, 
             backgroundColor: Colors.tarjeta,
+            flex: 1,
         },
         cardImage: {
-            height: 200, 
+            height: Platform.OS === 'web' ? 320 : 200, 
+            backgroundColor: Colors.fondo,
             borderBottomLeftRadius: 0, 
             borderBottomRightRadius: 0 
         },
@@ -82,7 +94,10 @@ const GarageScreen = ({ navigation }: any) => {
             <FlatList
                 data={garajeItems}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={{ paddingBottom: 20 }}
+                key={numColumns}
+                numColumns={numColumns}
+                contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: Platform.OS === 'web' ? 8 : 0 }}
+                columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -98,11 +113,15 @@ const GarageScreen = ({ navigation }: any) => {
 
                     return (
                         <Card
-                            style={styles.card}
-                            onPress={() => navigation.navigate('Details', { cocheId: item.coche.id })}
+                            style={[
+                                styles.card,
+                                Platform.OS === 'web' && numColumns === 1 && { maxWidth: 600, alignSelf: 'center', width: '100%' }
+                            ]}
+                            onPress={() => navigation.navigate('CarDetails', { cocheId: item.coche.id })}
                         >
                             <Card.Cover
                                 source={imagenSource}
+                                resizeMode="cover"
                                 style={styles.cardImage}
                             />
                             <Card.Content style={styles.cardContent}>

@@ -10,6 +10,23 @@ import { lightTheme, darkTheme } from './src/styles/theme';
 import { AuthProvider } from './src/context/AuthContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ThemeProvider, ThemeContext } from './src/context/ThemeContext';
+import { Platform } from 'react-native';
+
+if (Platform.OS === 'web') {
+    const style = document.createElement('style');
+    style.textContent = `
+        html, body, #root {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #root {
+            display: flex;
+        }
+    `;
+    document.head.append(style);
+}
 
 const MainApp = () => {
     const { isDarkMode } = useContext(ThemeContext);

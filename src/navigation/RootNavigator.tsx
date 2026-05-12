@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ActivityIndicator, View, Image, Platform } from 'react-native';
+import { ActivityIndicator, View, Image, Platform, useWindowDimensions } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -23,106 +23,173 @@ import MyMaintenancesScreen from '../screans/MyMaintenancesScreen';
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
+const CatalogStack = () => {
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+    const isWeb = Platform.OS === 'web';
+
+    return (
+        <Stack.Navigator screenOptions={{ 
+            headerShown: true,
+            headerStyle: { backgroundColor: Colors.fondo, elevation: 0, shadowOpacity: 0 },
+            headerTintColor: Colors.primario,
+            headerBackTitleVisible: false,
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}>
+            <Stack.Screen name="CatalogoHome" component={HomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CarDetails" component={CarDetailsScreen} options={{ title: 'Detalles del Vehículo' }} />
+            <Stack.Screen name="MaintenanceDetails" component={MaintenanceDetailsScreen} options={{ title: 'Mantenimiento' }} />
+            <Stack.Screen name="RegisterMaintenance" component={RegisterMaintenanceScreen} options={{ title: 'Registrar' }} />
+        </Stack.Navigator>
+    );
+};
+
+const GarageStack = () => {
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
+    const isWeb = Platform.OS === 'web';
+
+    return (
+        <Stack.Navigator screenOptions={{ 
+            headerShown: true,
+            headerStyle: { backgroundColor: Colors.fondo, elevation: 0, shadowOpacity: 0 },
+            headerTintColor: Colors.primario,
+            headerBackTitleVisible: false,
+        }}>
+            <Stack.Screen name="GarageHome" component={GarageScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="CarDetails" component={CarDetailsScreen} options={{ title: 'Detalles' }} />
+            <Stack.Screen name="MaintenanceDetails" component={MaintenanceDetailsScreen} options={{ title: 'Mantenimiento' }} />
+            <Stack.Screen name="RegisterMaintenance" component={RegisterMaintenanceScreen} options={{ title: 'Registrar' }} />
+        </Stack.Navigator>
+    );
+};
+
 const MainTabs = () => {
   const theme = useAppTheme();
   const Colors = theme.customColors;
   const insets = useSafeAreaInsets();
 
+  const isWeb = Platform.OS === 'web';
+  const { width } = useWindowDimensions();
+
   return (
-    <View style={{ flex: 1, paddingTop: insets.top, backgroundColor: Colors.fondo }}>
-      <View style={{ 
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        paddingVertical: 12,
-        backgroundColor: Colors.fondo,
-        borderBottomWidth: 0.5,
-        borderBottomColor: Colors.tarjeta
-      }}>
-        <Text style={{ 
-          fontSize: 26, 
-          color: Colors.primario,
-          fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
-          fontStyle: 'italic',
-          letterSpacing: 0.5
+    <View style={{ 
+        flex: 1, 
+        backgroundColor: Colors.fondo 
+    }}>
+      {isWeb && (
+        <View style={{ 
+          height: 80, 
+          backgroundColor: Colors.fondo, 
+          flexDirection: 'row', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          paddingHorizontal: 30,
+          borderBottomWidth: 0.5,
+          borderBottomColor: Colors.tarjeta,
+          zIndex: 1000
         }}>
-          MobiManten
-        </Text>
+          <Text style={{ 
+            fontSize: 32, 
+            color: Colors.primario,
+            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
+            fontStyle: 'italic',
+            letterSpacing: 0.5
+          }}>
+            MobiManten
+          </Text>
+        </View>
+      )}
+
+      {!isWeb && (
+        <View style={{ 
+          flexDirection: 'row', 
+          paddingTop: 50, 
+          paddingBottom: 10, 
+          paddingHorizontal: 20, 
+          backgroundColor: Colors.fondo, 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: Colors.primario }}>MobiManten</Text>
+        </View>
+      )}
+      <View style={{ 
+        flex: 1, 
+        width: '100%', 
+        backgroundColor: Colors.fondo
+      }}>
+        <Tab.Navigator
+            tabBarPosition={isWeb ? "top" : "bottom"}
+            swipeEnabled={!isWeb}
+            screenOptions={{
+                tabBarStyle: {
+                    backgroundColor: Colors.tarjeta,
+                    height: isWeb ? 65 : 70,
+                    borderTopWidth: 0,
+                    borderBottomWidth: isWeb ? 1 : 0,
+                    borderBottomColor: Colors.tarjeta,
+                    elevation: 0,
+                    paddingTop: isWeb ? 5 : 0,
+                },
+                tabBarActiveTintColor: Colors.primario,
+                tabBarInactiveTintColor: Colors.textoGris,
+                tabBarIndicatorStyle: { 
+                    backgroundColor: Colors.primario, 
+                    top: isWeb ? undefined : 0,
+                    bottom: isWeb ? 0 : undefined,
+                    height: 3
+                },
+                tabBarShowIcon: true,
+                tabBarLabelStyle: { fontSize: 10, textTransform: 'none' },
+            }}
+        >
+            <Tab.Screen
+                name="Catálogo"
+                component={CatalogStack}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="car-search" color={color} size={24} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Mi Garaje"
+                component={GarageStack}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="garage" color={color} size={24} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Historial"
+                component={MyMaintenancesScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Perfil"
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="account" color={color} size={24} />
+                    ),
+                }}
+            />
+        </Tab.Navigator>
       </View>
-      <Tab.Navigator
-        tabBarPosition="bottom"
-        screenOptions={{
-            tabBarStyle: {
-                backgroundColor: Colors.tarjeta,
-                height: 70,
-                borderTopWidth: 0,
-                elevation: 0,
-            },
-            tabBarActiveTintColor: Colors.primario,
-            tabBarInactiveTintColor: Colors.textoGris,
-            tabBarIndicatorStyle: { backgroundColor: Colors.primario, top: 0 },
-            tabBarShowIcon: true,
-            tabBarLabelStyle: { fontSize: 10, textTransform: 'none' },
-        }}
-      >
-        <Tab.Screen
-            name="Catálogo"
-            component={HomeScreen}
-            options={{
-                tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="car-search" color={color} size={24} />
-                ),
-            }}
-        />
-        <Tab.Screen
-            name="Mi Garaje"
-            component={GarageScreen}
-            options={{
-                tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="garage" color={color} size={24} />
-                ),
-            }}
-        />
-        <Tab.Screen
-            name="Historial"
-            component={MyMaintenancesScreen}
-            options={{
-                tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
-                ),
-            }}
-        />
-        <Tab.Screen
-            name="Perfil"
-            component={ProfileScreen}
-            options={{
-                tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="account" color={color} size={24} />
-                ),
-            }}
-        />
-      </Tab.Navigator>
     </View>
   );
 };
 
 const AppStack = () => {
-    const theme = useAppTheme();
-    const Colors = theme.customColors;
-
     return (
-        <Stack.Navigator screenOptions={{ 
-            headerStyle: { backgroundColor: Colors.fondo },
-            headerTintColor: Colors.primario,
-            headerBackTitleVisible: false,
-            gestureEnabled: true,
-            gestureDirection: 'horizontal',
-            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-        }}>
-            <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="Details" component={CarDetailsScreen} options={{ title: 'Detalles del Vehículo' }} />
-            <Stack.Screen name="MaintenanceDetails" component={MaintenanceDetailsScreen} options={{ title: 'Mantenimiento' }} />
-            <Stack.Screen name="RegisterMaintenance" component={RegisterMaintenanceScreen} options={{ title: 'Registrar' }} />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Main" component={MainTabs} />
         </Stack.Navigator>
     );
 };

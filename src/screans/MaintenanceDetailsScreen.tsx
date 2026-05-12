@@ -3,6 +3,8 @@ import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { Text, Card, Button, Divider, List } from 'react-native-paper';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import { RepuestoOpcion } from '../graphql/queries';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
+import { Platform } from 'react-native';
 
 const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId, cocheGarajeId, mant } = route.params;
@@ -65,8 +67,9 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
         },
         repuestoCard: {
             backgroundColor: Colors.tarjeta,
-            marginBottom: 10,
-            borderRadius: 8,
+            marginBottom: 15,
+            borderRadius: 12,
+            elevation: 4,
         }
     });
 
@@ -81,7 +84,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const repuestos = mant.opcionesRepuestos || [];
 
     return (
-        <ScrollView style={globalStyles.container} contentContainerStyle={{ padding: 20 }}>
+        <ResponsiveContainer contentContainerStyle={{ padding: 20 }}>
             <Text style={styles.title}>{mant.tarea}</Text>
             
             <View style={styles.infoRow}>
@@ -139,7 +142,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
                 {cocheGarajeId ? "Registrar Mantenimiento Realizado" : "Añade el coche a tu garaje para registrar"}
             </Button>
 
-        </ScrollView>
+        </ResponsiveContainer>
     );
 };
 

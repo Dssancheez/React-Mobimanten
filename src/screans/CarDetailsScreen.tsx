@@ -8,6 +8,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
+import { Platform, useWindowDimensions } from 'react-native';
 
 const CarDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId } = route.params;
@@ -15,11 +17,32 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const { width } = useWindowDimensions();
 
     const styles = StyleSheet.create({
         image: {
             width: '100%',
             height: 250,
+            backgroundColor: Colors.fondo,
+        },
+        webHero: {
+            flexDirection: 'row',
+            padding: 30,
+            backgroundColor: Colors.tarjeta,
+            borderRadius: 20,
+            margin: Platform.OS === 'web' ? 30 : 20,
+            elevation: 8,
+            alignItems: 'center',
+            gap: 40,
+        },
+        webImage: {
+            width: 400,
+            height: 250,
+            borderRadius: 15,
+        },
+        webSpecs: {
+            flex: 1,
+            justifyContent: 'center',
         },
         headerInfo: {
             flexDirection: 'row',
@@ -32,44 +55,50 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             marginBottom: 10,
         },
         title: {
-            fontSize: 26,
+            fontSize: 32,
             fontWeight: 'bold',
             color: theme.colors.text,
+            marginBottom: 10,
         },
         detailRow: {
             flexDirection: 'row',
             alignItems: 'center',
             marginTop: 8,
+            gap: 15,
+        },
+        specBadge: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255, 126, 0, 0.1)',
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
         },
         subtitle: {
             fontSize: 16,
             color: Colors.textoGris,
             marginLeft: 5,
-            marginRight: 15,
-        },
-        divider: {
-            backgroundColor: Colors.tarjeta,
-            height: 2,
-            marginHorizontal: 20,
         },
         section: {
             padding: 20,
         },
         sectionTitle: {
-            fontSize: 20,
+            fontSize: 24,
             fontWeight: 'bold',
             color: theme.colors.text,
-            marginBottom: 15,
-        },
-        noData: {
-            color: Colors.textoGris,
-            fontStyle: 'italic',
+            marginBottom: 20,
+            marginTop: 10,
+            borderLeftWidth: 4,
+            borderLeftColor: Colors.primario,
+            paddingLeft: 15,
         },
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
             elevation: 4,
             borderRadius: 12,
+            width: Platform.OS === 'web' ? (width > 1600 ? '23.5%' : width > 1100 ? '31.5%' : '48%') : '100%',
+            marginRight: Platform.OS === 'web' ? '1.5%' : 0,
         },
         cardTitle: {
             fontSize: 18,
@@ -140,6 +169,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         if (coche) setApodo(`${coche.marca} ${coche.modelo}`);
     }, [coche]);
 
+    const [expandedId, setExpandedId] = useState<string | number>('motor');
+
     const handleOpenModal = async () => {
         if (isFavorito) {
             try {
@@ -188,30 +219,68 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={{ flex: 1 }}>
-            <ScrollView style={globalStyles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-                <Image source={imagenSource} style={styles.image} />
-
-                <View style={styles.headerInfo}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
-                        <View style={styles.detailRow}>
-                            <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
-                            <Text style={styles.subtitle}>{coche.motor}</Text>
-
-                            <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
-                            <Text style={styles.subtitle}>{coche.anio}</Text>
+            <ResponsiveContainer contentContainerStyle={{ paddingBottom: 40 }}>
+                {Platform.OS === 'web' ? (
+                    <View style={styles.webHero}>
+                        <Image 
+                            source={imagenSource} 
+                            style={styles.webImage} 
+                            resizeMode="cover" 
+                        />
+                        <View style={styles.webSpecs}>
+                            <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
+                            <View style={styles.detailRow}>
+                                <View style={styles.specBadge}>
+                                    <MaterialCommunityIcons name="engine-outline" size={20} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.motor}</Text>
+                                </View>
+                                <View style={styles.specBadge}>
+                                    <MaterialCommunityIcons name="calendar-range" size={20} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.anio}</Text>
+                                </View>
+                            </View>
+                            <View style={{ marginTop: 25 }}>
+                                <Button
+                                    mode="contained"
+                                    buttonColor={isFavorito ? "#FFD700" : Colors.primario}
+                                    icon={isFavorito ? "star" : "star-plus"}
+                                    onPress={handleOpenModal}
+                                    disabled={adding || removing}
+                                    style={{ width: 250, borderRadius: 10 }}
+                                >
+                                    {isFavorito ? "Eliminar del Garaje" : "Añadir a mi Garaje"}
+                                </Button>
+                            </View>
                         </View>
                     </View>
-                    <IconButton
-                        icon={isFavorito ? "star" : "star-outline"}
-                        iconColor={isFavorito ? "#FFD700" : Colors.primario}
-                        size={35}
-                        onPress={handleOpenModal}
-                        disabled={adding || removing}
-                    />
-                </View>
-
-                <Divider style={styles.divider} />
+                ) : (
+                    <>
+                        <Image 
+                            source={imagenSource} 
+                            style={styles.image} 
+                            resizeMode="cover" 
+                        />
+                        <View style={styles.headerInfo}>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
+                                <View style={styles.detailRow}>
+                                    <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.motor}</Text>
+                                    <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.anio}</Text>
+                                </View>
+                            </View>
+                            <IconButton
+                                icon={isFavorito ? "star" : "star-outline"}
+                                iconColor={isFavorito ? "#FFD700" : Colors.primario}
+                                size={35}
+                                onPress={handleOpenModal}
+                                disabled={adding || removing}
+                            />
+                        </View>
+                        <Divider style={{ backgroundColor: Colors.tarjeta, height: 2, marginHorizontal: 20 }} />
+                    </>
+                )}
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Mantenimientos Recomendados</Text>
@@ -272,6 +341,34 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                 </Card>
                             );
 
+                            const renderSection = (title: string, items: Mantenimiento[], icon: string) => (
+                                items.length > 0 && (
+                                    <View style={{ marginBottom: 30 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+                                            <MaterialCommunityIcons name={icon as any} size={28} color={Colors.primario} />
+                                            <Text style={[styles.sectionTitle, { borderLeftWidth: 0, marginTop: 0 }]}>{title}</Text>
+                                        </View>
+                                        <View style={{ 
+                                            flexDirection: 'row', 
+                                            flexWrap: 'wrap', 
+                                            width: '100%' 
+                                        }}>
+                                            {items.map(renderCard)}
+                                        </View>
+                                    </View>
+                                )
+                            );
+
+                            if (Platform.OS === 'web') {
+                                return (
+                                    <View style={{ paddingHorizontal: 20 }}>
+                                        {renderSection("Mantenimientos de Motor", categorias.Motor, "engine")}
+                                        {renderSection("Neumáticos y Ruedas", categorias.Neumaticos, "tire")}
+                                        {renderSection("Otros Mantenimientos", categorias.Otros, "tools")}
+                                    </View>
+                                );
+                            }
+
                             return (
                                 <List.Section>
                                     {categorias.Motor.length > 0 && (
@@ -309,7 +406,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                         })()
                     )}
                 </View>
-            </ScrollView>
+            </ResponsiveContainer>
 
             <Portal>
                 <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContent}>
