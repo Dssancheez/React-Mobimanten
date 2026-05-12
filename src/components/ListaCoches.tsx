@@ -4,6 +4,9 @@ import { Card, Text } from 'react-native-paper';
 import { Coche } from '../graphql/queries';
 import { useAppTheme } from '../styles/theme';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View } from 'react-native';
+
 interface ListaProps {
     navigation: any;
     coches: Coche[];
@@ -41,11 +44,18 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
             renderItem={({ item }) => {
                 const imagenSource = item.imagen
                     ? { uri: item.imagen }
-                    : require('../../assets/images/logo.jpeg');
+                    : require('../../assets/images/logo.png');
 
                 return (
                     <Card
-                        style={{ marginHorizontal: 16, marginVertical: 8, backgroundColor: Colors.tarjeta }}
+                        style={{ 
+                            marginHorizontal: 16, 
+                            marginVertical: 10, 
+                            backgroundColor: Colors.tarjeta,
+                            elevation: 4,
+                            borderRadius: 12,
+                            overflow: 'hidden'
+                        }}
                         onPress={() => navigation.navigate('Details', { cocheId: item.id })}
                     >
                         <Card.Cover
@@ -55,16 +65,19 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                         <Card.Title
                             title={`${item.marca} ${item.modelo}`}
                             subtitle={`${item.motor} • Año ${item.anio}`}
-                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                            titleStyle={{ color: Colors.primario, fontWeight: 'bold', fontSize: 18 }}
                             subtitleStyle={{ color: Colors.textoGris }}
                         />
                     </Card>
                 );
             }}
             ListEmptyComponent={
-                <Text style={{ textAlign: 'center', marginTop: 20, color: Colors.textoGris }}>
-                    No se han encontrado vehículos.
-                </Text>
+                <View style={{ flex: 1, alignItems: 'center', marginTop: 50 }}>
+                    <MaterialCommunityIcons name="car-off" size={60} color={Colors.textoGris} />
+                    <Text style={{ textAlign: 'center', marginTop: 10, color: Colors.textoGris, fontSize: 16 }}>
+                        No se han encontrado vehículos.
+                    </Text>
+                </View>
             }
         />
     );

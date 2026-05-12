@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Usuario } from '../graphql/queries'; // we'll use a type from there or define inline
 
 interface AuthContextData {
-  usuario: { id: string; nombre: string; email: string } | null;
+  usuario: { id: string; nombre: string; email: string; avatar?: string } | null;
   token: string | null;
   login: (userData: any, token: string) => Promise<void>;
   logout: () => Promise<void>;

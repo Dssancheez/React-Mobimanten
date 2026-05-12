@@ -12,10 +12,10 @@ export const lightColors = {
 };
 
 export const darkColors = {
-    primario: '#2196F3', // Azul brillante para el modo oscuro
+    primario: '#FF8C00', // Naranja brillante para el modo oscuro
     fondo: '#000000', // Negro puro para el fondo
     tarjeta: '#1A1A1A', // Gris muy oscuro para las tarjetas
-    textoPrincipal: '#2196F3', // Azul para títulos y detalles
+    textoPrincipal: '#FF8C00', // Naranja para títulos y detalles
     textoSecundario: '#FFFFFF', // Blanco puro para texto normal
     textoGris: '#9E9E9E', // Gris medio para subtítulos
     error: '#FF5252'

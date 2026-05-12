@@ -1,17 +1,17 @@
-// src/graphql/apolloClient.ts
-import { ApolloClient, InMemoryCache, HttpLink, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+const debuggerHost = Constants.expoConfig?.hostUri;
+const localhost = debuggerHost?.split(':').shift() || 'localhost';
 
 const httpLink = createHttpLink({
-   uri: 'http://10.20.0.99:8080/graphql',
-   // uri: 'http://192.168.1.152:8080/graphql',
+  uri: `http://${localhost}:8080/graphql`,
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  // get the authentication token from local storage if it exists
   const token = await AsyncStorage.getItem('token');
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
@@ -21,8 +21,8 @@ const authLink = setContext(async (_, { headers }) => {
 });
 
 const client = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
 });
 
 export default client;

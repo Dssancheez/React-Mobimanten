@@ -11,7 +11,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  const { login } = useContext(AuthContext);
+  const { login } = useContext<any>(AuthContext);
   const globalStyles = useGlobalStyles();
   const theme = useAppTheme();
   const Colors = theme.customColors;
@@ -58,9 +58,9 @@ const RegisterScreen = ({ navigation }: any) => {
     }
   });
 
-  const [registroMutation, { loading: loadingRegistro, error: errorRegistro }] = useMutation(REGISTRO);
+  const [registroMutation, { loading: loadingRegistro, error: errorRegistro }] = useMutation<any>(REGISTRO);
 
-  const [loginMutation, { loading: loadingLogin }] = useMutation(LOGIN);
+  const [loginMutation, { loading: loadingLogin }] = useMutation<any>(LOGIN);
 
   const handleRegister = async () => {
     try {

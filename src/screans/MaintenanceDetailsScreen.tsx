@@ -2,12 +2,21 @@ import React from 'react';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { Text, Card, Button, Divider, List } from 'react-native-paper';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { RepuestoOpcion } from '../graphql/queries';
 
 const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
-    const { cocheId, mant } = route.params;
+    const { cocheId, cocheGarajeId, mant } = route.params;
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+
+    if (!mant) {
+        return (
+            <View style={globalStyles.center}>
+                <Text style={{ color: theme.colors.text }}>Error: No se pudieron cargar los detalles del mantenimiento.</Text>
+            </View>
+        );
+    }
 
     const styles = StyleSheet.create({
         title: {
@@ -53,15 +62,23 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
             borderColor: Colors.primario,
             paddingVertical: 8,
             marginTop: 10,
+        },
+        repuestoCard: {
+            backgroundColor: Colors.tarjeta,
+            marginBottom: 10,
+            borderRadius: 8,
         }
     });
 
     const handleOpenLink = async (url: string) => {
+        if (!url) return;
         const supported = await Linking.canOpenURL(url);
         if (supported) {
             await Linking.openURL(url);
         }
     };
+
+    const repuestos = mant.opcionesRepuestos || [];
 
     return (
         <ScrollView style={globalStyles.container} contentContainerStyle={{ padding: 20 }}>
@@ -80,40 +97,46 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
             <Divider style={styles.divider} />
 
             <Text style={styles.sectionTitle}>Repuestos Recomendados</Text>
-            {mant.repuestos && mant.repuestos.length > 0 ? (
-                mant.repuestos.map((rep: string, idx: number) => (
-                    <List.Item
-                        key={idx}
-                        title={rep}
-                        titleStyle={{ color: theme.colors.text }}
-                        left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
-                    />
+            {repuestos.length > 0 ? (
+                repuestos.map((rep: RepuestoOpcion, idx: number) => (
+                    <Card key={idx} style={styles.repuestoCard}>
+                        <Card.Title 
+                            title={`${rep.nombre} (${rep.marca})`}
+                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                            subtitle={rep.duracionKm ? `Dura aprox. ${rep.duracionKm} km` : ''}
+                            subtitleStyle={{ color: Colors.textoGris }}
+                            left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
+                        />
+                        {rep.enlaceCompra && (
+                            <Card.Actions>
+                                <Button 
+                                    onPress={() => handleOpenLink(rep.enlaceCompra!)}
+                                    textColor={Colors.primario}
+                                >
+                                    Comprar
+                                </Button>
+                            </Card.Actions>
+                        )}
+                    </Card>
                 ))
             ) : (
-                <Text style={styles.noData}>No hay repuestos especificados para esta tarea.</Text>
+                <Text style={styles.noData}>No hay repuestos específicos para esta tarea en el catálogo.</Text>
             )}
 
             <Divider style={styles.divider} />
 
-            {mant.enlaceCompra && (
-                <Button 
-                    mode="contained" 
-                    icon="cart"
-                    buttonColor={Colors.primario}
-                    onPress={() => handleOpenLink(mant.enlaceCompra)}
-                    style={styles.buyButton}
-                >
-                    Comprar Kit / Repuestos
-                </Button>
-            )}
-
             <Button 
-                mode="outlined" 
-                textColor={Colors.primario}
+                mode="contained" 
+                buttonColor={Colors.primario}
                 style={styles.registerButton}
-                onPress={() => navigation.navigate('RegisterMaintenance', { cocheId, tarea: mant.tarea })}
+                disabled={!cocheGarajeId}
+                onPress={() => navigation.navigate('RegisterMaintenance', { 
+                    cocheGarajeId, 
+                    tarea: mant.tarea,
+                    mantenimientoId: mant.id
+                })}
             >
-                Registrar Mantenimiento Realizado
+                {cocheGarajeId ? "Registrar Mantenimiento Realizado" : "Añade el coche a tu garaje para registrar"}
             </Button>
 
         </ScrollView>

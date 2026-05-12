@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import { Text, Card, SegmentedButtons } from 'react-native-paper';
 import { useQuery, useApolloClient } from '@apollo/client/react';
-import { GET_MI_GARAJE, GET_MANTENIMIENTOS, Garaje, Mantenimiento } from '../graphql/queries';
+import { GET_HISTORIAL_USUARIO, GET_MI_GARAJE, HistorialMantenimiento, Garaje } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -48,7 +48,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
             marginBottom: 15,
         },
         cardUrgente: {
-            backgroundColor: '#D32F2F', // Rojo oscuro para alerta
+            backgroundColor: '#D32F2F',
             borderColor: '#FF5252',
             borderWidth: 1,
         },
@@ -99,110 +99,94 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
     });
 
     const [viewMode, setViewMode] = useState('proximos'); // 'proximos' | 'historial'
-    
-    const [historial, setHistorial] = useState<HistorialRecord[]>([]);
-    const [alertas, setAlertas] = useState<AlertaRecord[]>([]);
-    const [loadingData, setLoadingData] = useState(true);
 
-    const { data: garajeData, loading: garajeLoading } = useQuery<{ obtenerMiGaraje: Garaje[] }>(
+    const { data: garajeData, loading: garajeLoading, refetch: refetchGaraje } = useQuery<{ obtenerMiGaraje: Garaje[] }>(
         GET_MI_GARAJE,
         { variables: { usuarioId: usuario?.id }, skip: !usuario?.id }
     );
 
+    const { data: historialData, loading: historyLoading, refetch: refetchHistorial } = useQuery<{ obtenerHistorialUsuario: HistorialMantenimiento[] }>(
+        GET_HISTORIAL_USUARIO,
+        { variables: { usuarioId: usuario?.id }, skip: !usuario?.id }
+    );
+
     useEffect(() => {
-        if (!isFocused || garajeLoading) return;
+        if (isFocused) {
+            refetchHistorial();
+            refetchGaraje();
+        }
+    }, [isFocused]);
 
-        const cargarMantenimientos = async () => {
-            setLoadingData(true);
-            try {
-                const coches = garajeData?.obtenerMiGaraje || [];
-                
-                let allHistorial: HistorialRecord[] = [];
-                let allAlertas: AlertaRecord[] = [];
-
-                const hoy = new Date();
-
-                for (const g of coches) {
-                    const cocheId = g.coche.id;
-                    const apodo = g.apodo || `${g.coche.marca} ${g.coche.modelo}`;
-
-                    // 1. Cargar historial local
-                    const key = `mantenimientos_realizados_${cocheId}`;
-                    const existingStr = await AsyncStorage.getItem(key);
-                    const records = existingStr ? JSON.parse(existingStr) : [];
-                    
-                    // Mapear añadiendo el apodo
-                    const recordsConInfo = records.map((r: any) => ({ ...r, apodo }));
-                    allHistorial = [...allHistorial, ...recordsConInfo];
-
-                    // 2. Consultar mantenimientos recomendados del servidor
-                    const { data: mantData } = await client.query({
-                        query: GET_MANTENIMIENTOS,
-                        variables: { cocheId },
-                        fetchPolicy: 'cache-first'
-                    });
-
-                    const recomendados = mantData?.obtenerMantenimientosPorCoche || [];
-
-                    // 3. Calcular alertas cruzando recomendados con el último registro de cada tarea
-                    recomendados.forEach((rec: Mantenimiento) => {
-                        if (!rec.intervaloMeses) return; // Si no hay intervalo de tiempo, no podemos calcular días
-
-                        // Buscar el registro más reciente para esta tarea en concreto
-                        const registrosDeTarea = records.filter((r: any) => r.tarea === rec.tarea);
-                        if (registrosDeTarea.length === 0) return; // Si nunca lo ha hecho, no sabemos desde cuándo calcular
-
-                        // Ordenar por fecha descendente
-                        registrosDeTarea.sort((a: any, b: any) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-                        const ultimoRegistro = registrosDeTarea[0];
-
-                        const fechaUltimo = new Date(ultimoRegistro.fecha);
-                        const fechaVencimiento = new Date(fechaUltimo);
-                        fechaVencimiento.setMonth(fechaVencimiento.getMonth() + rec.intervaloMeses);
-
-                        const diferenciaMilisegundos = fechaVencimiento.getTime() - hoy.getTime();
-                        const diasRestantes = Math.ceil(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
-
-                        // Si faltan 30 días o menos (incluso negativos si está caducado)
-                        if (diasRestantes <= 30) {
-                            allAlertas.push({
-                                cocheId,
-                                apodo,
-                                tarea: rec.tarea,
-                                diasRestantes,
-                                urgente: diasRestantes <= 5,
-                                fechaVencimiento: fechaVencimiento.toISOString().split('T')[0]
-                            });
-                        }
-                    });
-                }
-
-                // Ordenar historiales (más recientes primero)
-                allHistorial.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-                // Ordenar alertas (más urgentes primero)
-                allAlertas.sort((a, b) => a.diasRestantes - b.diasRestantes);
-
-                setHistorial(allHistorial);
-                setAlertas(allAlertas);
-
-            } catch (error) {
-                console.error("Error calculando mantenimientos", error);
-            } finally {
-                setLoadingData(false);
-            }
-        };
-
-        cargarMantenimientos();
-
-    }, [garajeData, isFocused, client]);
-
-    if (garajeLoading || loadingData) {
+    if (historyLoading) {
         return (
             <View style={globalStyles.center}>
                 <ActivityIndicator size="large" color={Colors.primario} />
             </View>
         );
     }
+
+    const records = historialData?.obtenerHistorialUsuario || [];
+    const garajes = garajeData?.obtenerMiGaraje || [];
+
+    // Lógica Inteligente de Alertas
+    const hoy = new Date();
+    
+    // 1. Agrupar por coche y tarea para obtener el último registro de cada uno
+    const ultimosRegistros = new Map<string, HistorialMantenimiento>();
+    records.forEach(r => {
+        const key = `${r.cocheGarajeId}-${r.tarea}`;
+        const existing = ultimosRegistros.get(key);
+        if (!existing || new Date(r.fechaRealizado) > new Date(existing.fechaRealizado)) {
+            ultimosRegistros.set(key, r);
+        }
+    });
+
+    // 2. Calcular alertas basadas en los últimos registros
+    const alertas = Array.from(ultimosRegistros.values())
+        .filter(r => r.proximoCambioFecha || r.proximoCambioKm)
+        .map(r => {
+            const cocheGaraje = garajes.find(g => g.id === r.cocheGarajeId);
+            const kmActuales = cocheGaraje?.kilometrajeActual || 0;
+
+            // Alerta por fecha
+            let diasRestantes = 999;
+            if (r.proximoCambioFecha) {
+                const fechaVencimiento = new Date(r.proximoCambioFecha);
+                diasRestantes = Math.ceil((fechaVencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+            }
+
+            // Alerta por kilómetros
+            let kmRestantes = 99999;
+            if (r.proximoCambioKm) {
+                kmRestantes = r.proximoCambioKm - kmActuales;
+            }
+
+            // Es urgente si faltan 5 días o 200 km, o si ya está vencido
+            const esUrgente = diasRestantes <= 5 || kmRestantes <= 200 || diasRestantes < 0 || kmRestantes < 0;
+
+            return {
+                id: r.id,
+                tarea: r.tarea,
+                apodo: r.cocheApodo || 'Mi Coche',
+                diasRestantes,
+                kmRestantes,
+                urgente: esUrgente,
+                fechaVencimiento: r.proximoCambioFecha,
+                kmVencimiento: r.proximoCambioKm
+            };
+        })
+        .filter(a => a.diasRestantes <= 30 || a.kmRestantes <= 1000)
+        .sort((a, b) => {
+            // Priorizar urgencia, luego proximidad (días o km proporcionalmente)
+            if (a.urgente !== b.urgente) return a.urgente ? -1 : 1;
+            return a.diasRestantes - b.diasRestantes;
+        });
+
+    const historialSorted = [...records].sort((a, b) => 
+        new Date(b.fechaRealizado).getTime() - new Date(a.fechaRealizado).getTime()
+    );
+
+    // No more manual loading check here as it's handled above
 
     return (
         <View style={globalStyles.container}>
@@ -224,51 +208,65 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                         <Text style={styles.noData}>No tienes ningún mantenimiento próximo en los próximos 30 días.</Text>
                     ) : (
                         alertas.map((alerta, index) => (
-                            <Card 
-                                key={index} 
+                            <Card
+                                key={index}
                                 style={[styles.card, alerta.urgente && styles.cardUrgente]}
                             >
                                 <Card.Content>
                                     <View style={styles.headerRow}>
-                                        <Text style={[styles.cardTitle, alerta.urgente ? {color: 'white'} : {color: theme.colors.text}]}>
+                                        <Text style={[styles.cardTitle, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
                                             {alerta.tarea}
                                         </Text>
                                         {alerta.urgente && (
                                             <MaterialCommunityIcons name="alert" size={24} color="white" />
                                         )}
                                     </View>
-                                    <Text style={[styles.cardSubtitle, alerta.urgente && {color: '#FFE4E1'}]}>
+                                    <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
                                         Vehículo: {alerta.apodo}
                                     </Text>
-                                    
+
                                     <View style={styles.diasContainer}>
-                                        <Text style={[styles.diasTexto, alerta.urgente && {color: 'white'}]}>
-                                            {alerta.diasRestantes < 0 
-                                                ? `¡Vencido hace ${Math.abs(alerta.diasRestantes)} días!`
-                                                : `Próximo mantenimiento en ${alerta.diasRestantes} días`
+                                        <Text style={[styles.diasTexto, alerta.urgente && { color: 'white' }]}>
+                                            {alerta.diasRestantes < 0
+                                                ? `¡Vencido por tiempo! (${Math.abs(alerta.diasRestantes)} días)`
+                                                : alerta.kmRestantes < 0
+                                                ? `¡Vencido por uso! (${Math.abs(alerta.kmRestantes)} km extra)`
+                                                : alerta.diasRestantes <= 30
+                                                ? `Próximo mantenimiento en ${alerta.diasRestantes} días`
+                                                : `Próximo mantenimiento en ${alerta.kmRestantes} km`
                                             }
                                         </Text>
+                                        {(alerta.diasRestantes >= 0 && alerta.kmRestantes >= 0) && (
+                                            <Text style={{color: 'white', fontSize: 12, textAlign: 'center', marginTop: 4, opacity: 0.8}}>
+                                                Límite: {alerta.kmVencimiento} km o {alerta.fechaVencimiento}
+                                            </Text>
+                                        )}
                                     </View>
                                 </Card.Content>
                             </Card>
                         ))
                     )
                 ) : (
-                    historial.length === 0 ? (
+                    historialSorted.length === 0 ? (
                         <Text style={styles.noData}>Aún no has registrado ningún mantenimiento.</Text>
                     ) : (
-                        historial.map((reg) => (
+                        historialSorted.map((reg) => (
                             <Card key={reg.id} style={styles.card}>
                                 <Card.Content>
                                     <View style={styles.headerRow}>
                                         <Text style={styles.cardTitle}>{reg.tarea}</Text>
-                                        <Text style={styles.fecha}>{reg.fecha}</Text>
+                                        <Text style={styles.fecha}>{reg.fechaRealizado}</Text>
                                     </View>
-                                    <Text style={styles.cardSubtitle}>Vehículo: {reg.apodo}</Text>
-                                    <Text style={styles.kmTexto}>{reg.kmActuales} km</Text>
+                                    <Text style={styles.cardSubtitle}>Vehículo: {reg.cocheApodo}</Text>
+                                    <Text style={styles.kmTexto}>{reg.kilometrosRealizado} km</Text>
                                     {reg.observaciones ? (
                                         <Text style={styles.observaciones}>Nota: {reg.observaciones}</Text>
                                     ) : null}
+                                    {reg.proximoCambioKm && (
+                                        <Text style={{color: Colors.primario, marginTop: 5}}>
+                                            Próximo cambio: {reg.proximoCambioKm} km
+                                        </Text>
+                                    )}
                                 </Card.Content>
                             </Card>
                         ))

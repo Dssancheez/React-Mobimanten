@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
+import { useMutation } from '@apollo/client/react';
+import { REGISTRAR_MANTENIMIENTO } from '../graphql/mutations';
+import { GET_HISTORIAL_USUARIO } from '../graphql/queries';
+import { AuthContext } from '../context/AuthContext';
 
 const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
-    const { cocheId, tarea } = route.params;
+    const { cocheGarajeId, tarea, mantenimientoId } = route.params;
+    const { usuario } = useContext<any>(AuthContext);
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
@@ -45,49 +50,60 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
             fontWeight: 'bold',
         }
     });
-    
+
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
     const [kmActuales, setKmActuales] = useState('');
     const [observaciones, setObservaciones] = useState('');
 
+    const [registrarMantenimiento, { loading }] = useMutation(REGISTRAR_MANTENIMIENTO, {
+        onCompleted: () => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            Alert.alert(
+                "¡Registrado!",
+                "El mantenimiento se ha registrado correctamente en el sistema inteligente.",
+                [{ text: "OK", onPress: () => navigation.goBack() }]
+            );
+        },
+        onError: (err: any) => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            console.error("Error saving maintenance", err);
+            Alert.alert("Error", `Hubo un problema al guardar el registro: ${err.message}`);
+        },
+        refetchQueries: [
+            { query: GET_HISTORIAL_USUARIO, variables: { usuarioId: usuario?.id } }
+        ]
+    });
+
     const handleSave = async () => {
         if (!kmActuales) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
             Alert.alert("Error", "Por favor ingresa los kilómetros actuales.");
             return;
         }
 
-        try {
-            // Simulamos guardarlo en el almacenamiento local ya que no hay endpoint en el backend
-            // para "Mantenimiento Realizado".
-            const key = `mantenimientos_realizados_${cocheId}`;
-            const existingStr = await AsyncStorage.getItem(key);
-            const existing = existingStr ? JSON.parse(existingStr) : [];
-            
-            const newRecord = {
-                id: Date.now().toString(),
-                cocheId,
-                tarea,
-                fecha,
-                kmActuales: parseInt(kmActuales),
-                observaciones
-            };
-
-            await AsyncStorage.setItem(key, JSON.stringify([...existing, newRecord]));
-            
-            Alert.alert(
-                "¡Registrado!", 
-                "El mantenimiento se ha registrado correctamente. Se te notificará cuando se acerque el próximo límite.",
-                [{ text: "OK", onPress: () => navigation.goBack() }]
-            );
-
-        } catch (e) {
-            console.error("Error saving maintenance", e);
-            Alert.alert("Error", "Hubo un problema al guardar el registro.");
+        if (!usuario?.id) {
+            Alert.alert("Error", "Debes estar identificado para registrar mantenimientos.");
+            return;
         }
+
+        registrarMantenimiento({
+            variables: {
+                input: {
+                    usuarioId: usuario.id,
+                    cocheGarajeId: cocheGarajeId,
+                    mantenimientoId: mantenimientoId || "",
+                    tarea: tarea,
+                    fechaRealizado: fecha,
+                    kilometrosRealizado: parseInt(kmActuales),
+                    observaciones: observaciones,
+                    repuestoSeleccionado: null
+                }
+            }
+        });
     };
 
     return (
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
             style={globalStyles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
@@ -106,7 +122,7 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                         activeOutlineColor={Colors.primario}
                         textColor={theme.colors.text}
                     />
-                    
+
                     <TextInput
                         label="Kilómetros actuales del vehículo"
                         value={kmActuales}
@@ -132,12 +148,17 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                         textColor={theme.colors.text}
                     />
 
-                    <Button 
-                        mode="contained" 
-                        onPress={handleSave} 
+                    <Button
+                        mode="contained"
+                        onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            handleSave();
+                        }}
                         style={styles.button}
                         buttonColor={Colors.primario}
                         labelStyle={styles.buttonLabel}
+                        loading={loading}
+                        disabled={loading}
                     >
                         Guardar Registro
                     </Button>

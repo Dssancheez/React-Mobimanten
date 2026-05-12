@@ -58,11 +58,11 @@ const HomeScreen = ({navigation}: any) => {
                 placeholderTextColor={Colors.textoGris}
             />
 
-            <ListaCoches navigation={navigation}
-                         coches={cochesFiltrados || []}
-                         refetch={refetch}
+            <ListaCoches 
+                navigation={navigation}
+                coches={cochesFiltrados || []}
+                refetch={refetch}
             />
-
         </View>
     );
 };

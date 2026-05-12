@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import * as Haptics from 'expo-haptics';
+
 type ThemeContextType = {
     isDarkMode: boolean;
     toggleTheme: () => void;
@@ -32,6 +34,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         try {
             const newTheme = !isDarkMode;
             setIsDarkMode(newTheme);
+            Haptics.selectionAsync(); // Vibración sutil al cambiar de tema
             await AsyncStorage.setItem('@app_theme', newTheme ? 'dark' : 'light');
         } catch (error) {
             console.log('Error saving theme:', error);

@@ -1,31 +1,54 @@
 import { gql } from '@apollo/client';
 
-// 1. Definimos el "molde" de los datos para TypeScript
 export interface Coche {
-    id: string;
-    marca: string;
-    modelo: string;
-    anio: number;
-    motor: string;
-    imagen: string;
-    tipo?: string;
+  id: string;
+  marca: string;
+  modelo: string;
+  anio: number;
+  motor: string;
+  imagen: string;
+  tipo?: string;
 }
 
 export interface Garaje {
-    id: string;
-    usuarioId: string;
-    apodo: string;
-    coche: Coche;
+  id: string;
+  usuarioId: string;
+  apodo: string;
+  kilometrajeActual?: number;
+  coche: Coche;
+}
+
+export interface RepuestoOpcion {
+  nombre: string;
+  marca: string;
+  duracionKm?: number;
+  duracionMeses?: number;
+  enlaceCompra?: string;
 }
 
 export interface Mantenimiento {
-    id: string;
-    cocheId: string;
-    tarea: string;
-    intervaloKm?: number;
-    intervaloMeses?: number;
-    repuestos?: string[];
-    enlaceCompra?: string;
+  id: string;
+  aplicaA?: string[];
+  tarea: string;
+  intervaloKm?: number;
+  intervaloMeses?: number;
+  opcionesRepuestos?: RepuestoOpcion[];
+}
+
+export interface HistorialMantenimiento {
+  id: string;
+  usuarioId: string;
+  cocheGarajeId: string;
+  cocheApodo?: string;
+  tarea: string;
+  fechaRealizado: string;
+  kilometrosRealizado: number;
+  coste?: number;
+  taller?: string;
+  observaciones?: string;
+  proximoCambioKm?: number;
+  proximoCambioFecha?: string;
+  repuestoSeleccionado?: RepuestoOpcion;
 }
 
 export const GET_COCHES = gql`
@@ -47,6 +70,7 @@ export const GET_MI_GARAJE = gql`
     obtenerMiGaraje(usuarioId: $usuarioId) {
       id
       apodo
+      kilometrajeActual
       coche {
         id
         marca
@@ -60,6 +84,46 @@ export const GET_MI_GARAJE = gql`
   }
 `;
 
+export const GET_MANTENIMIENTOS_RECOMENDADOS = gql`
+  query ObtenerMantenimientosRecomendados($cocheGarajeId: String!) {
+    obtenerMantenimientosRecomendados(cocheGarajeId: $cocheGarajeId) {
+      id
+      tarea
+      intervaloKm
+      intervaloMeses
+      opcionesRepuestos {
+        nombre
+        marca
+        duracionKm
+        duracionMeses
+        enlaceCompra
+      }
+    }
+  }
+`;
+
+export const GET_HISTORIAL_USUARIO = gql`
+  query ObtenerHistorialUsuario($usuarioId: String!) {
+    obtenerHistorialUsuario(usuarioId: $usuarioId) {
+      id
+      cocheGarajeId
+      cocheApodo
+      tarea
+      fechaRealizado
+      kilometrosRealizado
+      coste
+      taller
+      observaciones
+      proximoCambioKm
+      proximoCambioFecha
+      repuestoSeleccionado {
+        nombre
+        marca
+      }
+    }
+  }
+`;
+
 export const GET_MANTENIMIENTOS = gql`
   query ObtenerMantenimientosPorCoche($cocheId: String!) {
     obtenerMantenimientosPorCoche(cocheId: $cocheId) {
@@ -67,8 +131,13 @@ export const GET_MANTENIMIENTOS = gql`
       tarea
       intervaloKm
       intervaloMeses
-      repuestos
-      enlaceCompra
+      opcionesRepuestos {
+        nombre
+        marca
+        duracionKm
+        duracionMeses
+        enlaceCompra
+      }
     }
   }
 `;

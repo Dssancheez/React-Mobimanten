@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, ScrollView, StyleSheet, Image, ActivityIndicator, Alert } from 'react-native';
-import { Text, Card, Button, Divider, IconButton, Modal, TextInput as PaperInput, Portal } from 'react-native-paper';
+import { Text, Card, Button, Divider, IconButton, Modal, TextInput as PaperInput, Portal, List } from 'react-native-paper';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_COCHES, GET_MANTENIMIENTOS, GET_MI_GARAJE, Coche, Mantenimiento } from '../graphql/queries';
 import { ANADIR_COCHE_GARAJE, ELIMINAR_COCHE_GARAJE } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 
 const CarDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId } = route.params;
@@ -34,10 +36,16 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             fontWeight: 'bold',
             color: theme.colors.text,
         },
+        detailRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 8,
+        },
         subtitle: {
             fontSize: 16,
             color: Colors.textoGris,
-            marginTop: 5,
+            marginLeft: 5,
+            marginRight: 15,
         },
         divider: {
             backgroundColor: Colors.tarjeta,
@@ -60,6 +68,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
+            elevation: 4,
+            borderRadius: 12,
         },
         cardTitle: {
             fontSize: 18,
@@ -98,7 +108,6 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [apodo, setApodo] = useState('');
 
-    // Fetch lists
     const { data: cochesData } = useQuery<{ getCoches: Coche[] }>(GET_COCHES);
     const coche = cochesData?.getCoches.find(c => c.id === cocheId);
 
@@ -113,7 +122,6 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         fetchPolicy: 'cache-and-network',
     });
 
-    // Check if the car is already in favorites safely
     const isFavorito = garajeData?.obtenerMiGaraje?.some((g: any) => String(g.coche.id) === String(cocheId));
 
     const [anadirGaraje, { loading: adding }] = useMutation(ANADIR_COCHE_GARAJE, {
@@ -135,6 +143,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     const handleOpenModal = async () => {
         if (isFavorito) {
             try {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Medium);
                 await eliminarGaraje({
                     variables: {
                         usuarioId: usuario?.id,
@@ -147,6 +156,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                 Alert.alert("Error", "No se pudo eliminar el vehículo.");
             }
         } else {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setModalVisible(true);
         }
     };
@@ -160,6 +170,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                     apodo: apodo || `${coche?.marca} ${coche?.modelo}`
                 }
             });
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setModalVisible(false);
             Alert.alert("Éxito", "El vehículo se ha añadido a tu garaje.");
         } catch (e) {
@@ -169,21 +180,27 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     };
 
     if (!coche) return (
-        <View style={globalStyles.center}><Text style={{color: theme.colors.text}}>Coche no encontrado.</Text></View>
+        <View style={globalStyles.center}><Text style={{ color: theme.colors.text }}>Coche no encontrado.</Text></View>
     );
 
     const mantenimientos = mantData?.obtenerMantenimientosPorCoche || [];
-    const imagenSource = coche.imagen ? { uri: coche.imagen } : require('../../assets/images/logo.jpeg');
+    const imagenSource = coche.imagen ? { uri: coche.imagen } : require('../../assets/images/logo.png');
 
     return (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
             <ScrollView style={globalStyles.container} contentContainerStyle={{ paddingBottom: 40 }}>
                 <Image source={imagenSource} style={styles.image} />
-                
+
                 <View style={styles.headerInfo}>
                     <View style={{ flex: 1 }}>
                         <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
-                        <Text style={styles.subtitle}>{coche.motor} • Año {coche.anio}</Text>
+                        <View style={styles.detailRow}>
+                            <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
+                            <Text style={styles.subtitle}>{coche.motor}</Text>
+
+                            <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
+                            <Text style={styles.subtitle}>{coche.anio}</Text>
+                        </View>
                     </View>
                     <IconButton
                         icon={isFavorito ? "star" : "star-outline"}
@@ -198,33 +215,98 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Mantenimientos Recomendados</Text>
-                    
+
                     {mantLoading ? (
-                        <ActivityIndicator color={Colors.primario} style={{marginTop: 20}} />
+                        <ActivityIndicator color={Colors.primario} style={{ marginTop: 20 }} />
                     ) : mantenimientos.length === 0 ? (
                         <Text style={styles.noData}>No hay mantenimientos registrados por el fabricante.</Text>
                     ) : (
-                        mantenimientos.map((mant) => (
-                            <Card key={mant.id} style={styles.card}>
-                                <Card.Content>
-                                    <Text style={styles.cardTitle}>{mant.tarea}</Text>
-                                    <Text style={styles.cardSubtitle}>
-                                        {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''} 
-                                        {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''} 
-                                        {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
-                                    </Text>
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button 
-                                        mode="contained" 
-                                        buttonColor={Colors.primario}
-                                        onPress={() => navigation.navigate('MaintenanceDetails', { cocheId, mant })}
-                                    >
-                                        Ver Detalles
-                                    </Button>
-                                </Card.Actions>
-                            </Card>
-                        ))
+                        (() => {
+                            const categorias = {
+                                Motor: [] as Mantenimiento[],
+                                Neumaticos: [] as Mantenimiento[],
+                                Otros: [] as Mantenimiento[],
+                            };
+
+                            mantenimientos.forEach((mant: Mantenimiento) => {
+                                const tareaLower = mant.tarea.toLowerCase();
+                                if (tareaLower.includes('aceite') || tareaLower.includes('correa') || tareaLower.includes('refrigerante') || tareaLower.includes('motor') || tareaLower.includes('bujía') || tareaLower.includes('bujias') || tareaLower.includes('bujia') || tareaLower.includes('filtro')) {
+                                    categorias.Motor.push(mant);
+                                } else if (tareaLower.includes('neumático') || tareaLower.includes('neumatico') || tareaLower.includes('llanta') || tareaLower.includes('rueda')) {
+                                    categorias.Neumaticos.push(mant);
+                                } else {
+                                    categorias.Otros.push(mant);
+                                }
+                            });
+
+                            const renderCard = (mant: Mantenimiento) => (
+                                <Card key={mant.id} style={styles.card}>
+                                    <Card.Content>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                                            <MaterialCommunityIcons name="tools" size={20} color={Colors.primario} style={{ marginRight: 10 }} />
+                                            <Text style={styles.cardTitle}>{mant.tarea}</Text>
+                                        </View>
+                                        <Text style={styles.cardSubtitle}>
+                                            {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
+                                            {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
+                                            {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
+                                        </Text>
+                                    </Card.Content>
+                                    <Card.Actions>
+                                        <Button
+                                            mode="contained"
+                                            buttonColor={Colors.primario}
+                                            onPress={() => {
+                                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                                const garajeItem = garajeData?.obtenerMiGaraje?.find((g: any) => String(g.coche.id) === String(cocheId));
+                                                navigation.navigate('MaintenanceDetails', { 
+                                                    cocheId, 
+                                                    cocheGarajeId: garajeItem?.id,
+                                                    mant 
+                                                });
+                                            }}
+                                        >
+                                            Ver Detalles
+                                        </Button>
+                                    </Card.Actions>
+                                </Card>
+                            );
+
+                            return (
+                                <List.Section>
+                                    {categorias.Motor.length > 0 && (
+                                        <List.Accordion
+                                            title="Mantenimientos de Motor"
+                                            left={props => <List.Icon {...props} icon="engine" color={Colors.primario} />}
+                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                            theme={{ colors: { background: 'transparent' } }}
+                                        >
+                                            {categorias.Motor.map(renderCard)}
+                                        </List.Accordion>
+                                    )}
+                                    {categorias.Neumaticos.length > 0 && (
+                                        <List.Accordion
+                                            title="Neumáticos y Ruedas"
+                                            left={props => <List.Icon {...props} icon="tire" color={Colors.primario} />}
+                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                            theme={{ colors: { background: 'transparent' } }}
+                                        >
+                                            {categorias.Neumaticos.map(renderCard)}
+                                        </List.Accordion>
+                                    )}
+                                    {categorias.Otros.length > 0 && (
+                                        <List.Accordion
+                                            title="Otros Mantenimientos"
+                                            left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
+                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                            theme={{ colors: { background: 'transparent' } }}
+                                        >
+                                            {categorias.Otros.map(renderCard)}
+                                        </List.Accordion>
+                                    )}
+                                </List.Section>
+                            );
+                        })()
                     )}
                 </View>
             </ScrollView>
@@ -238,7 +320,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                         value={apodo}
                         onChangeText={setApodo}
                         mode="outlined"
-                        style={{backgroundColor: Colors.fondo, marginBottom: 20}}
+                        style={{ backgroundColor: Colors.fondo, marginBottom: 20 }}
                         textColor={theme.colors.text}
                         outlineColor={Colors.textoGris}
                         activeOutlineColor={Colors.primario}

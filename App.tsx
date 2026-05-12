@@ -1,6 +1,9 @@
+import 'react-native-gesture-handler';
 import React, { useContext } from 'react';
 import { PaperProvider } from 'react-native-paper';
 import { ApolloProvider } from "@apollo/client/react";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import client from './src/graphql/apolloClient';
 import { lightTheme, darkTheme } from './src/styles/theme';
@@ -21,12 +24,16 @@ const MainApp = () => {
 
 export default function App() {
     return (
-        <ApolloProvider client={client}>
-            <ThemeProvider>
-                <AuthProvider>
-                    <MainApp />
-                </AuthProvider>
-            </ThemeProvider>
-        </ApolloProvider>
+        <SafeAreaProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <ApolloProvider client={client}>
+                    <ThemeProvider>
+                        <AuthProvider>
+                            <MainApp />
+                        </AuthProvider>
+                    </ThemeProvider>
+                </ApolloProvider>
+            </GestureHandlerRootView>
+        </SafeAreaProvider>
     );
 }

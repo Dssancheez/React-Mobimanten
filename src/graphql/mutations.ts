@@ -8,6 +8,21 @@ export const LOGIN = gql`
         id
         nombre
         email
+        avatar
+      }
+    }
+  }
+`;
+
+export const LOGIN_CON_GOOGLE = gql`
+  mutation LoginConGoogle($idToken: String!) {
+    loginConGoogle(idToken: $idToken) {
+      token
+      usuario {
+        id
+        nombre
+        email
+        avatar
       }
     }
   }
@@ -19,15 +34,17 @@ export const REGISTRO = gql`
       id
       nombre
       email
+      avatar
     }
   }
 `;
 
 export const ANADIR_COCHE_GARAJE = gql`
-  mutation AnadirCocheGaraje($usuarioId: String!, $cocheId: String!, $apodo: String!) {
-    anadirCocheGaraje(input: { usuarioId: $usuarioId, cocheId: $cocheId, apodo: $apodo }) {
+  mutation AnadirCocheGaraje($usuarioId: String!, $cocheId: String!, $apodo: String!, $kilometrajeActual: Int) {
+    anadirCocheGaraje(input: { usuarioId: $usuarioId, cocheId: $cocheId, apodo: $apodo, kilometrajeActual: $kilometrajeActual }) {
       id
       apodo
+      kilometrajeActual
       coche {
         id
         marca
@@ -37,23 +54,14 @@ export const ANADIR_COCHE_GARAJE = gql`
   }
 `;
 
-export const CREAR_COCHE = gql`
-  mutation CrearCoche($input: CocheInput!) {
-    crearCoche(input: $input) {
-      id
-      marca
-      modelo
-    }
-  }
-`;
-
-export const ANADIR_MANTENIMIENTO = gql`
-  mutation AnadirMantenimiento($input: MantenimientoInput!) {
-    anadirMantenimiento(input: $input) {
+export const REGISTRAR_MANTENIMIENTO = gql`
+  mutation RegistrarMantenimiento($input: RegistroMantenimientoInput!) {
+    registrarMantenimiento(input: $input) {
       id
       tarea
-      intervaloKm
-      intervaloMeses
+      fechaRealizado
+      proximoCambioKm
+      proximoCambioFecha
     }
   }
 `;
@@ -61,5 +69,16 @@ export const ANADIR_MANTENIMIENTO = gql`
 export const ELIMINAR_COCHE_GARAJE = gql`
   mutation EliminarCocheDeGaraje($usuarioId: String!, $cocheId: String!) {
     eliminarCocheDeGaraje(usuarioId: $usuarioId, cocheId: $cocheId)
+  }
+`;
+
+export const ACTUALIZAR_USUARIO = gql`
+  mutation ActualizarUsuario($id: ID!, $nombre: String, $avatar: String) {
+    actualizarUsuario(id: $id, nombre: $nombre, avatar: $avatar) {
+      id
+      nombre
+      email
+      avatar
+    }
   }
 `;

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { View, ActivityIndicator, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import { Text, Card } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQuery } from '@apollo/client/react';
 import { GET_MI_GARAJE, Garaje } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
@@ -93,7 +94,7 @@ const GarageScreen = ({ navigation }: any) => {
                 renderItem={({ item }) => {
                     const imagenSource = item.coche.imagen
                         ? { uri: item.coche.imagen }
-                        : require('../../assets/images/logo.jpeg');
+                        : require('../../assets/images/logo.png');
 
                     return (
                         <Card
@@ -114,9 +115,12 @@ const GarageScreen = ({ navigation }: any) => {
                     );
                 }}
                 ListEmptyComponent={
-                    <Text style={{ textAlign: 'center', marginTop: 20, color: '#B0C4DE', fontSize: 16 }}>
-                        No tienes ningún coche guardado. ¡Ve al catálogo y añade uno!
-                    </Text>
+                    <View style={{ flex: 1, alignItems: 'center', marginTop: 50, paddingHorizontal: 40 }}>
+                        <MaterialCommunityIcons name="garage-open" size={80} color={Colors.textoGris} />
+                        <Text style={{ textAlign: 'center', marginTop: 20, color: Colors.textoGris, fontSize: 16 }}>
+                            No tienes ningún coche guardado. ¡Ve al catálogo y añade uno!
+                        </Text>
+                    </View>
                 }
             />
         </View>
