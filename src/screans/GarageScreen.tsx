@@ -155,6 +155,7 @@ const GarageScreen = ({ navigation }: any) => {
                     </View>
                 }
             />
+            </View>
         </View>
     );
 };
