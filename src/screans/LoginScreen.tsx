@@ -27,10 +27,12 @@ const LoginScreen = ({ navigation }: any) => {
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID, 
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    useProxy: false,
     
     // En web, no usamos el proxy ni esquema para evitar la pantalla intermedia de Expo
     redirectUri: AuthSession.makeRedirectUri({
       scheme: Platform.OS === 'web' ? undefined : 'mobimanten',
+      useProxy: false,
     }),
     responseType: AuthSession.ResponseType.IdToken,
   });
