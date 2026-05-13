@@ -1,10 +1,12 @@
 import React from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { Text, Card, Button, Divider, List } from 'react-native-paper';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
 import { RepuestoOpcion } from '../graphql/queries';
 import { ResponsiveContainer } from '../components/ResponsiveContainer';
 import { Platform } from 'react-native';
+import { getAffiliateLink, isAmazonLink } from '../utils/affiliate';
 
 const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const { cocheId, cocheGarajeId, mant } = route.params;
@@ -21,112 +23,183 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     }
 
     const styles = StyleSheet.create({
-        title: {
-            fontSize: 26,
-            fontWeight: 'bold',
-            color: theme.colors.text,
-            marginBottom: 20,
+        container: {
+            padding: 20,
         },
-        infoRow: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+        headerContainer: {
+            marginBottom: 25,
+            alignItems: 'center',
+            backgroundColor: Colors.tarjeta,
+            padding: 20,
+            borderRadius: 15,
+        },
+        title: {
+            fontSize: 24,
+            fontWeight: 'bold',
+            color: Colors.primario,
+            textAlign: 'center',
             marginBottom: 10,
         },
-        infoLabel: {
-            color: Colors.textoGris,
-            fontSize: 16,
+        chipContainer: {
+            flexDirection: 'row',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: 10,
         },
-        infoValue: {
+        statChip: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: Colors.fondo,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: Colors.tarjeta,
+        },
+        statText: {
+            marginLeft: 6,
+            fontSize: 14,
+            fontWeight: '600',
             color: theme.colors.text,
-            fontSize: 16,
-            fontWeight: 'bold',
-        },
-        divider: {
-            backgroundColor: Colors.tarjeta,
-            height: 1,
-            marginVertical: 20,
         },
         sectionTitle: {
             fontSize: 20,
             fontWeight: 'bold',
             color: theme.colors.text,
-            marginBottom: 10,
-        },
-        noData: {
-            color: Colors.textoGris,
-            fontStyle: 'italic',
-        },
-        buyButton: {
             marginBottom: 15,
-            paddingVertical: 8,
-        },
-        registerButton: {
-            borderColor: Colors.primario,
-            paddingVertical: 8,
             marginTop: 10,
         },
         repuestoCard: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
+            borderRadius: 16,
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: 'rgba(255, 140, 0, 0.1)',
+        },
+        amazonBadge: {
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            backgroundColor: '#FF9900',
+            paddingHorizontal: 8,
+            paddingVertical: 2,
+            borderRadius: 4,
+            zIndex: 1,
+        },
+        amazonBadgeText: {
+            fontSize: 10,
+            fontWeight: 'bold',
+            color: '#000000',
+        },
+        cardContent: {
+            padding: 16,
+        },
+        brandText: {
+            color: Colors.primario,
+            fontSize: 12,
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            letterSpacing: 1,
+            marginBottom: 4,
+        },
+        repuestoName: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginBottom: 4,
+        },
+        durationText: {
+            fontSize: 13,
+            color: Colors.textoGris,
+        },
+        buyButton: {
+            marginTop: 12,
+            borderRadius: 25,
+        },
+        registerButton: {
+            marginVertical: 20,
+            paddingVertical: 10,
             borderRadius: 12,
-            elevation: 4,
+            elevation: 2,
+        },
+        noData: {
+            color: Colors.textoGris,
+            textAlign: 'center',
+            fontStyle: 'italic',
+            padding: 20,
         }
     });
 
     const handleOpenLink = async (url: string) => {
         if (!url) return;
-        const supported = await Linking.canOpenURL(url);
-        if (supported) {
+        try {
             await Linking.openURL(url);
+        } catch (e) {
+            console.error("Error opening link", e);
         }
     };
 
     const repuestos = mant.opcionesRepuestos || [];
 
     return (
-        <ResponsiveContainer contentContainerStyle={{ padding: 20 }}>
-            <Text style={styles.title}>{mant.tarea}</Text>
-            
-            <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Frecuencia por Kilometraje:</Text>
-                <Text style={styles.infoValue}>{mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : 'No especificado'}</Text>
+        <ResponsiveContainer contentContainerStyle={styles.container}>
+            <View style={styles.headerContainer}>
+                <MaterialCommunityIcons name="wrench-clock" size={48} color={Colors.primario} style={{ marginBottom: 10 }} />
+                <Text style={styles.title}>{mant.tarea}</Text>
+                
+                <View style={styles.chipContainer}>
+                    <View style={styles.statChip}>
+                        <MaterialCommunityIcons name="speedometer" size={16} color={Colors.primario} />
+                        <Text style={styles.statText}>{mant.intervaloKm ? `${mant.intervaloKm} km` : 'N/A'}</Text>
+                    </View>
+                    <View style={styles.statChip}>
+                        <MaterialCommunityIcons name="calendar-range" size={16} color={Colors.primario} />
+                        <Text style={styles.statText}>{mant.intervaloMeses ? `${mant.intervaloMeses} meses` : 'N/A'}</Text>
+                    </View>
+                </View>
             </View>
-            
-            <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Frecuencia de Tiempo:</Text>
-                <Text style={styles.infoValue}>{mant.intervaloMeses ? `Cada ${mant.intervaloMeses} meses` : 'No especificado'}</Text>
-            </View>
-
-            <Divider style={styles.divider} />
 
             <Text style={styles.sectionTitle}>Repuestos Recomendados</Text>
+            
             {repuestos.length > 0 ? (
-                repuestos.map((rep: RepuestoOpcion, idx: number) => (
-                    <Card key={idx} style={styles.repuestoCard}>
-                        <Card.Title 
-                            title={`${rep.nombre} (${rep.marca})`}
-                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
-                            subtitle={rep.duracionKm ? `Dura aprox. ${rep.duracionKm} km` : ''}
-                            subtitleStyle={{ color: Colors.textoGris }}
-                            left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
-                        />
-                        {rep.enlaceCompra && (
-                            <Card.Actions>
-                                <Button 
-                                    onPress={() => handleOpenLink(rep.enlaceCompra!)}
-                                    textColor={Colors.primario}
-                                >
-                                    Comprar
-                                </Button>
-                            </Card.Actions>
-                        )}
-                    </Card>
-                ))
+                repuestos.map((rep: RepuestoOpcion, idx: number) => {
+                    const isAmazon = isAmazonLink(rep.enlaceCompra || '');
+                    return (
+                        <View key={idx} style={styles.repuestoCard}>
+                            {isAmazon && (
+                                <View style={styles.amazonBadge}>
+                                    <Text style={styles.amazonBadgeText}>AMAZON'S CHOICE</Text>
+                                </View>
+                            )}
+                            <View style={styles.cardContent}>
+                                <Text style={styles.brandText}>{rep.marca}</Text>
+                                <Text style={styles.repuestoName}>{rep.nombre}</Text>
+                                <Text style={styles.durationText}>
+                                    <MaterialCommunityIcons name="clock-outline" size={14} color={Colors.textoGris} />
+                                    {rep.duracionKm ? ` Vida útil: ${rep.duracionKm} km` : ' Larga duración'}
+                                </Text>
+                                
+                                {rep.enlaceCompra && (
+                                    <Button 
+                                        mode="contained"
+                                        onPress={() => handleOpenLink(getAffiliateLink(rep.enlaceCompra!))}
+                                        buttonColor={isAmazon ? "#FF9900" : Colors.primario}
+                                        textColor={isAmazon ? "#000000" : "#FFFFFF"}
+                                        style={styles.buyButton}
+                                        icon={isAmazon ? "cart" : "link"}
+                                        labelStyle={{ fontWeight: 'bold' }}
+                                    >
+                                        {isAmazon ? "Ver en Amazon" : "Comprar ahora"}
+                                    </Button>
+                                )}
+                            </View>
+                        </View>
+                    );
+                })
             ) : (
-                <Text style={styles.noData}>No hay repuestos específicos para esta tarea en el catálogo.</Text>
+                <Text style={styles.noData}>No hay repuestos específicos para esta tarea.</Text>
             )}
-
-            <Divider style={styles.divider} />
 
             <Button 
                 mode="contained" 
@@ -138,10 +211,10 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
                     tarea: mant.tarea,
                     mantenimientoId: mant.id
                 })}
+                icon="check-circle"
             >
-                {cocheGarajeId ? "Registrar Mantenimiento Realizado" : "Añade el coche a tu garaje para registrar"}
+                {cocheGarajeId ? "Registrar como Realizado" : "Añade el coche para registrar"}
             </Button>
-
         </ResponsiveContainer>
     );
 };
