@@ -2,7 +2,8 @@ import React from 'react';
 import {FlatList, RefreshControl, Platform, useWindowDimensions} from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { Coche } from '../graphql/queries';
-import { useAppTheme } from '../styles/theme';
+import { useAppTheme, useIsDesktop } from '../styles/theme';
+
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View } from 'react-native';
@@ -18,14 +19,17 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const { width } = useWindowDimensions();
+    const isDesktop = useIsDesktop();
+
 
     // Determinar número de columnas según el ancho de pantalla en web
     const getNumColumns = () => {
-        if (Platform.OS !== 'web') return 1;
-        if (width > 900) return 3;
-        if (width > 600) return 2;
-        return 1;
+        if (!isDesktop) return 1;
+        if (width > 1200) return 3;
+        if (width > 800) return 2;
+        return 2;
     };
+
 
     const numColumns = getNumColumns();
 
@@ -45,7 +49,8 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
             keyExtractor={(item) => item.id}
             key={numColumns} // Re-renderizar cuando cambie el número de columnas
             numColumns={numColumns}
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: Platform.OS === 'web' ? 8 : 0 }}
+            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: isDesktop ? 8 : 0 }}
+
             columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
             refreshControl={
                 <RefreshControl
@@ -64,23 +69,24 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                     <Card
                         style={{ 
                             flex: 1 / numColumns,
-                            marginHorizontal: Platform.OS === 'web' ? 15 : 8, 
-                            marginVertical: Platform.OS === 'web' ? 20 : 10, 
+                            marginHorizontal: isDesktop ? 15 : 8, 
+                            marginVertical: isDesktop ? 20 : 10, 
                             backgroundColor: Colors.tarjeta,
                             elevation: 4,
                             borderRadius: 12,
                             overflow: 'hidden',
-                            maxWidth: Platform.OS === 'web' && numColumns === 1 ? 600 : 'none',
-                            alignSelf: Platform.OS === 'web' && numColumns === 1 ? 'center' : 'auto',
-                            width: Platform.OS === 'web' && numColumns === 1 ? '100%' : 'auto'
+                            maxWidth: isDesktop && numColumns === 1 ? 600 : 'none',
+                            alignSelf: isDesktop && numColumns === 1 ? 'center' : 'auto',
+                            width: isDesktop && numColumns === 1 ? '100%' : 'auto'
                         }}
+
                         onPress={() => navigation.navigate('CarDetails', { cocheId: item.id })}
                     >
                         <Card.Cover
                             source={imagenSource}
                             resizeMode="cover"
                             style={{ 
-                                height: Platform.OS === 'web' ? 280 : 180, 
+                                height: isDesktop ? 280 : 180, 
                                 backgroundColor: Colors.fondo,
                                 borderBottomLeftRadius: 0, 
                                 borderBottomRightRadius: 0 

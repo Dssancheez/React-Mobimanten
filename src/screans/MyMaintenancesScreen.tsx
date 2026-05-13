@@ -4,7 +4,8 @@ import { Text, Card, SegmentedButtons } from 'react-native-paper';
 import { useQuery, useApolloClient } from '@apollo/client/react';
 import { GET_HISTORIAL_USUARIO, GET_MI_GARAJE, HistorialMantenimiento, Garaje } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -38,7 +39,8 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const { width } = useWindowDimensions();
-    const isWeb = Platform.OS === 'web';
+    const isDesktop = useIsDesktop();
+
 
     const styles = StyleSheet.create({
         noData: {
@@ -50,8 +52,9 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
-            width: isWeb && width > 1200 ? '23%' : isWeb && width > 800 ? '48%' : '100%',
-            marginHorizontal: isWeb && width > 800 ? '1%' : 0,
+            width: isDesktop && width > 1200 ? '23%' : isDesktop && width > 800 ? '48%' : '100%',
+            marginHorizontal: isDesktop && width > 800 ? '1%' : 0,
+
             elevation: 4,
             borderRadius: 12,
         },
@@ -212,7 +215,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
 
             <ResponsiveContainer>
                 <View style={{ 
-                    flexDirection: isWeb && width > 600 ? 'row' : 'column', 
+                    flexDirection: isDesktop && width > 600 ? 'row' : 'column', 
                     flexWrap: 'wrap',
                     padding: 16
                 }}>

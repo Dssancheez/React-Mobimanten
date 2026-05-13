@@ -1,5 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { MD3DarkTheme, MD3LightTheme, useTheme } from 'react-native-paper';
+import { Platform, useWindowDimensions } from 'react-native';
+
+export const BREAKPOINT_WEB = 768;
+
 
 export const lightColors = {
     primario: '#FF8C00', // Naranja
@@ -50,6 +54,12 @@ export const darkTheme = {
 export type AppTheme = typeof lightTheme;
 
 export const useAppTheme = () => useTheme<AppTheme>();
+
+export const useIsDesktop = () => {
+    const { width } = useWindowDimensions();
+    return Platform.OS === 'web' && width >= BREAKPOINT_WEB;
+};
+
 
 export const useGlobalStyles = () => {
     const theme = useAppTheme();

@@ -8,7 +8,8 @@ import { Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
+
 
 import HomeScreen from '../screans/HomeScreen';
 import LoginScreen from '../screans/LoginScreen';
@@ -70,14 +71,17 @@ const MainTabs = () => {
   const insets = useSafeAreaInsets();
 
   const isWeb = Platform.OS === 'web';
+  const isDesktop = useIsDesktop();
   const { width } = useWindowDimensions();
+
 
   return (
     <View style={{ 
         flex: 1, 
         backgroundColor: Colors.fondo 
     }}>
-      {isWeb && (
+      {isDesktop && (
+
         <View style={{ 
           height: 80, 
           backgroundColor: Colors.fondo, 
@@ -101,7 +105,8 @@ const MainTabs = () => {
         </View>
       )}
 
-      {!isWeb && (
+      {!isDesktop && (
+
         <View style={{ 
           flexDirection: 'row', 
           paddingTop: 50, 
@@ -120,26 +125,28 @@ const MainTabs = () => {
         backgroundColor: Colors.fondo
       }}>
         <Tab.Navigator
-            tabBarPosition={isWeb ? "top" : "bottom"}
-            swipeEnabled={!isWeb}
+            tabBarPosition={isDesktop ? "top" : "bottom"}
+            swipeEnabled={!isDesktop}
             screenOptions={{
                 tabBarStyle: {
                     backgroundColor: Colors.tarjeta,
-                    height: isWeb ? 65 : 70,
+                    height: isDesktop ? 65 : 70,
                     borderTopWidth: 0,
-                    borderBottomWidth: isWeb ? 1 : 0,
+                    borderBottomWidth: isDesktop ? 1 : 0,
                     borderBottomColor: Colors.tarjeta,
                     elevation: 0,
-                    paddingTop: isWeb ? 5 : 0,
+                    paddingTop: isDesktop ? 5 : 0,
                 },
+
                 tabBarActiveTintColor: Colors.primario,
                 tabBarInactiveTintColor: Colors.textoGris,
                 tabBarIndicatorStyle: { 
                     backgroundColor: Colors.primario, 
-                    top: isWeb ? undefined : 0,
-                    bottom: isWeb ? 0 : undefined,
+                    top: isDesktop ? undefined : 0,
+                    bottom: isDesktop ? 0 : undefined,
                     height: 3
                 },
+
                 tabBarShowIcon: true,
                 tabBarLabelStyle: { fontSize: 10, textTransform: 'none' },
             }}

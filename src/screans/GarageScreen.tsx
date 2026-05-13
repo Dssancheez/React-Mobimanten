@@ -5,7 +5,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQuery } from '@apollo/client/react';
 import { GET_MI_GARAJE, Garaje } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
+
 
 const GarageScreen = ({ navigation }: any) => {
     const { usuario } = useContext(AuthContext);
@@ -14,25 +15,29 @@ const GarageScreen = ({ navigation }: any) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const { width } = useWindowDimensions();
+    const isDesktop = useIsDesktop();
+
 
     const getNumColumns = () => {
-        if (Platform.OS !== 'web') return 1;
-        if (width > 900) return 3;
-        if (width > 600) return 2;
-        return 1;
+        if (!isDesktop) return 1;
+        if (width > 1200) return 3;
+        if (width > 800) return 2;
+        return 2; // Default for desktop below 800 but above 768
     };
+
 
     const numColumns = getNumColumns();
 
     const styles = StyleSheet.create({
         card: {
-            marginHorizontal: Platform.OS === 'web' ? 15 : 8, 
-            marginVertical: Platform.OS === 'web' ? 15 : 8, 
+            marginHorizontal: isDesktop ? 15 : 8, 
+            marginVertical: isDesktop ? 15 : 8, 
             backgroundColor: Colors.tarjeta,
             flex: 1,
         },
+
         cardImage: {
-            height: Platform.OS === 'web' ? 320 : 200, 
+            height: isDesktop ? 320 : 200, 
             backgroundColor: Colors.fondo,
             borderBottomLeftRadius: 0, 
             borderBottomRightRadius: 0 
@@ -96,7 +101,8 @@ const GarageScreen = ({ navigation }: any) => {
                 keyExtractor={(item) => item.id}
                 key={numColumns}
                 numColumns={numColumns}
-                contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: Platform.OS === 'web' ? 8 : 0 }}
+                contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: isDesktop ? 8 : 0 }}
+
                 columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
                 refreshControl={
                     <RefreshControl
@@ -115,8 +121,9 @@ const GarageScreen = ({ navigation }: any) => {
                         <Card
                             style={[
                                 styles.card,
-                                Platform.OS === 'web' && numColumns === 1 && { maxWidth: 600, alignSelf: 'center', width: '100%' }
+                                isDesktop && numColumns === 1 && { maxWidth: 600, alignSelf: 'center', width: '100%' }
                             ]}
+
                             onPress={() => navigation.navigate('CarDetails', { cocheId: item.coche.id })}
                         >
                             <Card.Cover

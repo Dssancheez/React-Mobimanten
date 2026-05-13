@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ScrollView, Platform, StyleSheet, useWindowDimensions } from 'react-native';
-import { useGlobalStyles } from '../styles/theme';
+import { useGlobalStyles, useIsDesktop } from '../styles/theme';
+
 
 interface ResponsiveContainerProps {
     children: React.ReactNode;
@@ -18,8 +19,9 @@ export const ResponsiveContainer = ({
     contentContainerStyle 
 }: ResponsiveContainerProps) => {
     const globalStyles = useGlobalStyles();
-    const { width } = useWindowDimensions();
+    const isDesktop = useIsDesktop();
     const isWeb = Platform.OS === 'web';
+
 
     const outerStyle = [
         globalStyles.container,
@@ -27,6 +29,7 @@ export const ResponsiveContainer = ({
         { backgroundColor: globalStyles.container.backgroundColor },
         style
     ];
+
 
     const innerStyle = [
         { flex: 1, width: '100%' },
@@ -44,7 +47,8 @@ export const ResponsiveContainer = ({
                     ]}
                     showsVerticalScrollIndicator={true}
                     // Forzar el scroll nativo en web
-                    {...(isWeb ? { accessibilityRole: 'main' } : {})}
+                    {...(isDesktop ? { accessibilityRole: 'main' } : {})}
+
                 >
                     {children}
                 </ScrollView>

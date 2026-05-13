@@ -5,7 +5,8 @@ import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_COCHES, GET_MANTENIMIENTOS, GET_MI_GARAJE, Coche, Mantenimiento } from '../graphql/queries';
 import { ANADIR_COCHE_GARAJE, ELIMINAR_COCHE_GARAJE } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { ResponsiveContainer } from '../components/ResponsiveContainer';
@@ -18,6 +19,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const { width } = useWindowDimensions();
+    const isDesktop = useIsDesktop();
+
 
     const styles = StyleSheet.create({
         image: {
@@ -30,7 +33,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             padding: 30,
             backgroundColor: Colors.tarjeta,
             borderRadius: 20,
-            margin: Platform.OS === 'web' ? 30 : 20,
+            margin: isDesktop ? 30 : 20,
+
             elevation: 8,
             alignItems: 'center',
             gap: 40,
@@ -97,8 +101,9 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             marginBottom: 15,
             elevation: 4,
             borderRadius: 12,
-            width: Platform.OS === 'web' ? (width > 1600 ? '23.5%' : width > 1100 ? '31.5%' : '48%') : '100%',
-            marginRight: Platform.OS === 'web' ? '1.5%' : 0,
+            width: isDesktop ? (width > 1600 ? '23.5%' : width > 1100 ? '31.5%' : '48%') : '100%',
+            marginRight: isDesktop ? '1.5%' : 0,
+
         },
         cardTitle: {
             fontSize: 18,
@@ -220,7 +225,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     return (
         <View style={{ flex: 1 }}>
             <ResponsiveContainer contentContainerStyle={{ paddingBottom: 40 }}>
-                {Platform.OS === 'web' ? (
+                {isDesktop ? (
+
                     <View style={styles.webHero}>
                         <Image 
                             source={imagenSource} 
@@ -359,7 +365,8 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                 )
                             );
 
-                            if (Platform.OS === 'web') {
+                            if (isDesktop) {
+
                                 return (
                                     <View style={{ paddingHorizontal: 20 }}>
                                         {renderSection("Mantenimientos de Motor", categorias.Motor, "engine")}
