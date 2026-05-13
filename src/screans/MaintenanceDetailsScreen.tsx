@@ -27,11 +27,18 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
             padding: 20,
         },
         headerContainer: {
-            marginBottom: 25,
+            marginBottom: 35,
             alignItems: 'center',
             backgroundColor: Colors.tarjeta,
-            padding: 20,
-            borderRadius: 15,
+            padding: isDesktop ? 40 : 20,
+            borderRadius: 24,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.15)',
+            ...Platform.select({
+                web: {
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                }
+            })
         },
         title: {
             fontSize: 24,
@@ -143,7 +150,9 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const repuestos = mant.opcionesRepuestos || [];
 
     return (
-        <ResponsiveContainer contentContainerStyle={styles.container}>
+        <ResponsiveContainer contentContainerStyle={[globalStyles.webMaxWidth, { paddingBottom: 60 }]}>
+            <View style={{ marginTop: isDesktop ? 40 : 10 }}>
+
             <View style={styles.headerContainer}>
                 <MaterialCommunityIcons name="wrench-clock" size={48} color={Colors.primario} style={{ marginBottom: 10 }} />
                 <Text style={styles.title}>{mant.tarea}</Text>
@@ -215,6 +224,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
             >
                 {cocheGarajeId ? "Registrar como Realizado" : "Añade el coche para registrar"}
             </Button>
+            </View>
         </ResponsiveContainer>
     );
 };

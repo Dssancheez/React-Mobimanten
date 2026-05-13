@@ -91,17 +91,23 @@ const GarageScreen = ({ navigation }: any) => {
 
     return (
         <View style={globalStyles.container}>
-            <View style={{ padding: 16 }}>
-                <Text style={{ color: theme.colors.text, fontSize: 24, fontWeight: 'bold' }}>
-                    Tus vehículos guardados
-                </Text>
-            </View>
-            <FlatList
-                data={garajeItems}
-                keyExtractor={(item) => item.id}
-                key={numColumns}
-                numColumns={numColumns}
-                contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: isDesktop ? 8 : 0 }}
+            <View style={globalStyles.webMaxWidth}>
+                <View style={{ paddingVertical: isDesktop ? 40 : 20 }}>
+                    <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
+                        Mi Garaje
+                    </Text>
+                    {isDesktop && (
+                        <Text style={{ color: Colors.textoGris, fontSize: 18 }}>
+                            Gestiona tus vehículos y sus mantenimientos inteligentes.
+                        </Text>
+                    )}
+                </View>
+                <FlatList
+                    data={garajeItems}
+                    keyExtractor={(item) => item.id}
+                    key={numColumns}
+                    numColumns={numColumns}
+                    contentContainerStyle={{ paddingBottom: 60 }}
 
                 columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
                 refreshControl={

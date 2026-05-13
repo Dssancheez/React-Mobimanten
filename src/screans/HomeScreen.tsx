@@ -13,6 +13,7 @@ const HomeScreen = ({navigation}: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const isDesktop = useIsDesktop();
 
 
 
@@ -44,25 +45,41 @@ const HomeScreen = ({navigation}: any) => {
 
     return (
         <View style={globalStyles.container}>
-            <Searchbar
-                placeholder="Marca, modelo, motor o año..."
-                onChangeText={setSearchQuery}
-                value={searchQuery}
-                style={{
-                    margin: 16,
-                    backgroundColor: Colors.tarjeta,
-                    borderRadius: 12
-                }}
-                iconColor={Colors.primario}
-                inputStyle={{color: theme.colors.text}}
-                placeholderTextColor={Colors.textoGris}
-            />
+            <View style={globalStyles.webMaxWidth}>
+                {isDesktop && (
+                    <View style={{ marginTop: 40, marginBottom: 20 }}>
+                        <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
+                            Catálogo de Mantenimiento
+                        </Text>
+                        <Text style={{ color: Colors.textoGris, fontSize: 18, marginBottom: 20 }}>
+                            Busca tu vehículo para ver el mantenimiento recomendado por el fabricante.
+                        </Text>
+                    </View>
+                )}
+                
+                <Searchbar
+                    placeholder="Marca, modelo, motor o año..."
+                    onChangeText={setSearchQuery}
+                    value={searchQuery}
+                    style={{
+                        marginVertical: 16,
+                        backgroundColor: Colors.tarjeta,
+                        borderRadius: 16,
+                        elevation: 4,
+                        borderWidth: isDesktop ? 1 : 0,
+                        borderColor: 'rgba(255, 126, 0, 0.2)',
+                    }}
+                    iconColor={Colors.primario}
+                    inputStyle={{ color: theme.colors.text }}
+                    placeholderTextColor={Colors.textoGris}
+                />
 
-            <ListaCoches 
-                navigation={navigation}
-                coches={cochesFiltrados || []}
-                refetch={refetch}
-            />
+                <ListaCoches 
+                    navigation={navigation}
+                    coches={cochesFiltrados || []}
+                    refetch={refetch}
+                />
+            </View>
         </View>
     );
 };

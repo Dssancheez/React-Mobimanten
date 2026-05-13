@@ -36,6 +36,10 @@ if (Platform.OS === 'web') {
             padding: 0;
             height: 100%;
             overflow: hidden;
+            background-color: #000000;
+        }
+        body {
+            background: radial-gradient(circle at top right, #252525 0%, #000000 100%);
         }
         #root {
             display: flex;

@@ -60,10 +60,10 @@ export const useIsDesktop = () => {
     return Platform.OS === 'web' && width >= BREAKPOINT_WEB;
 };
 
-
 export const useGlobalStyles = () => {
     const theme = useAppTheme();
     const colors = theme.customColors;
+    const isDesktop = useIsDesktop();
 
     return StyleSheet.create({
         container: {
@@ -77,18 +77,29 @@ export const useGlobalStyles = () => {
             backgroundColor: colors.fondo,
         },
         tituloPrincipal: {
-            fontSize: 24,
+            fontSize: isDesktop ? 32 : 24,
             fontWeight: 'bold',
             color: colors.textoPrincipal,
-            textAlign: 'center',
+            textAlign: isDesktop ? 'left' : 'center',
             marginVertical: 10
         },
-        webContainer: {
-            flex: 1,
+        glassCard: {
+            backgroundColor: colors.tarjeta,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            ...Platform.select({
+                web: {
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+                }
+            })
+        },
+        webMaxWidth: {
+            maxWidth: 1200,
             width: '100%',
-            maxWidth: 1000,
             alignSelf: 'center',
-            backgroundColor: colors.fondo,
+            paddingHorizontal: isDesktop ? 30 : 15
         }
     });
 };

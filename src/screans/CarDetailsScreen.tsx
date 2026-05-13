@@ -30,39 +30,36 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         },
         webHero: {
             flexDirection: 'row',
-            padding: 30,
+            padding: isDesktop ? 40 : 20,
             backgroundColor: Colors.tarjeta,
-            borderRadius: 20,
-            margin: isDesktop ? 30 : 20,
-
+            borderRadius: 24,
+            marginVertical: isDesktop ? 40 : 20,
             elevation: 8,
             alignItems: 'center',
-            gap: 40,
+            gap: 50,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.15)',
+            ...Platform.select({
+                web: {
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                }
+            })
         },
         webImage: {
-            width: 400,
-            height: 250,
-            borderRadius: 15,
+            width: 450,
+            height: 300,
+            borderRadius: 20,
         },
         webSpecs: {
             flex: 1,
             justifyContent: 'center',
         },
-        headerInfo: {
-            flexDirection: 'row',
-            padding: 20,
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: Colors.fondo,
-            borderBottomLeftRadius: 20,
-            borderBottomRightRadius: 20,
-            marginBottom: 10,
-        },
         title: {
-            fontSize: isDesktop ? 32 : 26,
+            fontSize: isDesktop ? 42 : 28,
             fontWeight: 'bold',
             color: theme.colors.text,
-            marginBottom: isDesktop ? 10 : 5,
+            marginBottom: 15,
+            letterSpacing: -0.5,
         },
 
         detailRow: {
@@ -228,7 +225,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={{ flex: 1 }}>
-            <ResponsiveContainer maxWidth={1200} contentContainerStyle={{ paddingBottom: 40 }}>
+            <ResponsiveContainer maxWidth={1200} contentContainerStyle={[globalStyles.webMaxWidth, { paddingBottom: 60 }]}>
                 {isDesktop ? (
 
                     <View style={styles.webHero}>
