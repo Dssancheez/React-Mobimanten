@@ -17,18 +17,18 @@ import * as WebBrowser from 'expo-web-browser';
 if (Platform.OS === 'web') {
     // 1. Intento estándar de Expo
     WebBrowser.maybeCompleteAuthSession();
-    
+
     // 2. Fallback manual: Si detectamos parámetros de Google y estamos en un popup, cerramos y avisamos
     const url = window.location.href;
     const isAuthRedirect = url.includes('state=') || url.includes('code=') || url.includes('id_token=');
-    
+
     if (isAuthRedirect && window.opener) {
         // Usamos '*' para el origin para evitar fallos si hay discrepancias entre www y no-www
-        window.opener.postMessage(url, "*"); 
+        window.opener.postMessage(url, "*");
         // Cerrar lo más rápido posible si detectamos que es una redirección de auth
         setTimeout(() => window.close(), 200);
     }
-    
+
     const style = document.createElement('style');
     style.textContent = `
         html, body, #root {
