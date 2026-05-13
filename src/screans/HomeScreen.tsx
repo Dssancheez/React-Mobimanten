@@ -4,7 +4,7 @@ import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
 import {useGlobalStyles, useAppTheme, useIsDesktop} from "@/src/styles/theme";
-import {Searchbar, Text, TextInput, Chip} from "react-native-paper";
+import {Searchbar, Text, TextInput, Chip, Button} from "react-native-paper";
 
 const HomeScreen = ({navigation}: any) => {
     const [filters, setFilters] = useState({
