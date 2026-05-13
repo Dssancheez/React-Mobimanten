@@ -106,19 +106,30 @@ const MainTabs = () => {
       )}
 
       {!isDesktop && (
-
         <View style={{ 
           flexDirection: 'row', 
-          paddingTop: 50, 
-          paddingBottom: 10, 
+          paddingTop: isWeb ? 20 : 50, 
+          paddingBottom: 15, 
           paddingHorizontal: 20, 
           backgroundColor: Colors.fondo, 
           alignItems: 'center', 
-          justifyContent: 'center' 
+          justifyContent: 'center',
+          borderBottomWidth: 0.5,
+          borderBottomColor: Colors.tarjeta,
         }}>
-          <Text style={{ fontSize: 22, fontWeight: 'bold', color: Colors.primario }}>MobiManten</Text>
+          <Text style={{ 
+            fontSize: 28, 
+            color: Colors.primario,
+            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
+            fontStyle: 'italic',
+            fontWeight: 'bold',
+            letterSpacing: 0.5
+          }}>
+            MobiManten
+          </Text>
         </View>
       )}
+
       <View style={{ 
         flex: 1, 
         width: '100%', 
@@ -130,12 +141,13 @@ const MainTabs = () => {
             screenOptions={{
                 tabBarStyle: {
                     backgroundColor: Colors.tarjeta,
-                    height: isDesktop ? 65 : 70,
+                    height: isDesktop ? 65 : (isWeb ? 80 : 70),
                     borderTopWidth: 0,
                     borderBottomWidth: isDesktop ? 1 : 0,
                     borderBottomColor: Colors.tarjeta,
                     elevation: 0,
-                    paddingTop: isDesktop ? 5 : 0,
+                    paddingTop: 5,
+                    paddingBottom: !isDesktop && isWeb ? 15 : 0,
                 },
 
                 tabBarActiveTintColor: Colors.primario,
@@ -148,7 +160,8 @@ const MainTabs = () => {
                 },
 
                 tabBarShowIcon: true,
-                tabBarLabelStyle: { fontSize: 10, textTransform: 'none' },
+                tabBarLabelStyle: { fontSize: 10, textTransform: 'none', fontWeight: 'bold' },
+
             }}
         >
             <Tab.Screen
