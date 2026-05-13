@@ -70,22 +70,6 @@ const GarageStack = () => {
     );
 };
 
-const MainTabs = () => {
-  const theme = useAppTheme();
-  const Colors = theme.customColors;
-  const insets = useSafeAreaInsets();
-
-  const isWeb = Platform.OS === 'web';
-  const isDesktop = useIsDesktop();
-  const { width } = useWindowDimensions();
-
-
-  return (
-    <SafeAreaView style={{ 
-        flex: 1, 
-        backgroundColor: Colors.fondo 
-    }}>
-
 const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
