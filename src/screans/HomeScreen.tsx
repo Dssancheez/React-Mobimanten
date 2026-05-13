@@ -55,10 +55,10 @@ const HomeScreen = ({navigation}: any) => {
             ]}>
                 {/* Sidebar para Escritorio / Header para Móvil */}
                 <View style={isDesktop ? { 
-                    width: 380, 
-                    paddingLeft: 40, 
-                    paddingRight: 40, 
-                    paddingTop: 40,
+                    width: 420, 
+                    paddingLeft: 50, 
+                    paddingRight: 50, 
+                    paddingTop: 50,
                     borderRightWidth: 1,
                     borderRightColor: 'rgba(255, 126, 0, 0.08)',
                     height: '100%',

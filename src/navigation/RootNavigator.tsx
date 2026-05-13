@@ -69,26 +69,26 @@ const GarageStack = () => {
         </Stack.Navigator>
     );
 };
-
-const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
+const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const { usuario } = useContext(AuthContext);
 
     return (
         <View style={{ 
-            height: 85, 
+            height: 90, 
             backgroundColor: Colors.fondo, 
             flexDirection: 'row', 
             alignItems: 'center', 
-            paddingHorizontal: 50,
+            paddingHorizontal: 60,
             borderBottomWidth: 1,
-            borderBottomColor: 'rgba(255, 126, 0, 0.1)',
+            borderBottomColor: 'rgba(255, 126, 0, 0.08)',
             zIndex: 1000
         }}>
             {/* Logo */}
-            <TouchableOpacity onPress={() => navigation.navigate('Catálogo')} style={{ marginRight: 60 }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Catálogo')} style={{ marginRight: 80 }}>
                 <Text style={{ 
-                    fontSize: 30, 
+                    fontSize: 32, 
                     color: Colors.primario,
                     fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
                     fontStyle: 'italic',
@@ -99,9 +99,9 @@ const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
                 </Text>
             </TouchableOpacity>
 
-            {/* Nav Links */}
-            <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
-                {state.routes.map((route: any, index: number) => {
+            {/* Nav Links - Filtrando 'Perfil' para no duplicar */}
+            <View style={{ flexDirection: 'row', gap: 20, flex: 1 }}>
+                {state.routes.filter((r: any) => r.name !== 'Perfil').map((route: any, index: number) => {
                     const { options } = descriptors[route.key];
                     const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
                     const isFocused = state.index === index;
@@ -123,8 +123,8 @@ const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
                             key={index}
                             onPress={onPress}
                             style={{
-                                paddingHorizontal: 20,
-                                paddingVertical: 10,
+                                paddingHorizontal: 25,
+                                paddingVertical: 12,
                                 borderRadius: 12,
                                 backgroundColor: isFocused ? 'rgba(255, 126, 0, 0.08)' : 'transparent',
                             }}
@@ -132,8 +132,8 @@ const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
                             <Text style={{ 
                                 color: isFocused ? Colors.primario : Colors.textoGris,
                                 fontWeight: 'bold',
-                                fontSize: 15,
-                                letterSpacing: 0.3
+                                fontSize: 16,
+                                letterSpacing: 0.5
                             }}>
                                 {label}
                             </Text>
@@ -142,12 +142,40 @@ const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
                 })}
             </View>
 
-            {/* Right side placeholder or Action button */}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-                <MaterialCommunityIcons name="bell-outline" size={24} color={Colors.textoGris} />
-                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.tarjeta, alignItems: 'center', justifyContent: 'center' }}>
-                    <MaterialCommunityIcons name="account" size={24} color={Colors.primario} />
-                </View>
+            {/* Right side Actions */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 30 }}>
+                <TouchableOpacity>
+                    <MaterialCommunityIcons name="bell-outline" size={26} color={Colors.textoGris} />
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('Perfil')}
+                    style={{ 
+                        flexDirection: 'row', 
+                        alignItems: 'center', 
+                        gap: 12,
+                        backgroundColor: Colors.tarjeta,
+                        padding: 6,
+                        paddingRight: 15,
+                        borderRadius: 30,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255, 126, 0, 0.1)'
+                    }}
+                >
+                    {usuario?.avatar ? (
+                        <Image 
+                            source={{ uri: usuario.avatar }} 
+                            style={{ width: 40, height: 40, borderRadius: 20 }} 
+                        />
+                    ) : (
+                        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primario, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ color: 'white', fontWeight: 'bold' }}>{usuario?.nombre?.charAt(0) || 'U'}</Text>
+                        </View>
+                    )}
+                    <Text style={{ color: theme.colors.text, fontWeight: 'bold', fontSize: 14 }}>
+                        {usuario?.nombre?.split(' ')[0] || 'Mi Perfil'}
+                    </Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -158,6 +186,7 @@ const MainTabs = () => {
   const Colors = theme.customColors;
   const isWeb = Platform.OS === 'web';
   const isDesktop = useIsDesktop();
+  const { usuario } = useContext(AuthContext);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fondo }}>
@@ -287,17 +316,29 @@ const MainTabs = () => {
                     name="Perfil"
                     component={ProfileScreen}
                     options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="account" color={color} size={26} />
+                        tabBarLabel: 'Perfil',
+                        tabBarIcon: ({ color, focused }) => (
+                            usuario?.avatar ? (
+                                <Image 
+                                    source={{ uri: usuario.avatar }} 
+                                    style={{ 
+                                        width: 26, 
+                                        height: 26, 
+                                        borderRadius: 13,
+                                        borderWidth: focused ? 2 : 0,
+                                        borderColor: Colors.primario
+                                    }} 
+                                />
+                            ) : (
+                                <MaterialCommunityIcons name="account" color={color} size={26} />
+                            )
                         ),
                     }}
                 />
             </BottomTab.Navigator>
         )}
       </View>
-
     </SafeAreaView>
-
   );
 };
 
