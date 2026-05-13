@@ -4,7 +4,7 @@ import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
 import {useGlobalStyles, useAppTheme, useIsDesktop} from "@/src/styles/theme";
-import {Searchbar, Text, TextInput, Chip, Button} from "react-native-paper";
+import {Searchbar, Text, TextInput, Chip, Button, Menu, Divider} from "react-native-paper";
 
 const HomeScreen = ({navigation}: any) => {
     const [filters, setFilters] = useState({
@@ -13,6 +13,7 @@ const HomeScreen = ({navigation}: any) => {
         motor: '',
         anio: ''
     });
+    const [menuVisible, setMenuVisible] = useState(false);
 
     const {data, loading, error, refetch} = useQuery<{ getCoches: Coche[] }>(GET_COCHES);
     const globalStyles = useGlobalStyles();
@@ -54,13 +55,14 @@ const HomeScreen = ({navigation}: any) => {
             ]}>
                 {/* Sidebar para Escritorio / Header para Móvil */}
                 <View style={isDesktop ? { 
-                    width: 320, 
-                    paddingLeft: 20, 
-                    paddingRight: 20, 
-                    paddingTop: 30,
+                    width: 380, 
+                    paddingLeft: 40, 
+                    paddingRight: 40, 
+                    paddingTop: 40,
                     borderRightWidth: 1,
-                    borderRightColor: 'rgba(255, 126, 0, 0.1)',
-                    height: '100%'
+                    borderRightColor: 'rgba(255, 126, 0, 0.08)',
+                    height: '100%',
+                    backgroundColor: 'rgba(255, 126, 0, 0.02)'
                 } : { paddingHorizontal: 20 }}>
                     
                     <View style={isDesktop ? { position: 'sticky', top: 20 } : {}}>
@@ -106,32 +108,40 @@ const HomeScreen = ({navigation}: any) => {
                                 textColor={theme.colors.text}
                             />
                             
-                            {isDesktop && (
-                                <View>
-                                    <Text style={{ color: Colors.textoGris, fontSize: 12, marginBottom: 8, marginTop: 10 }}>Año de fabricación</Text>
-                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                                        <Chip 
-                                            selected={filters.anio === ''} 
-                                            onPress={() => setFilters({...filters, anio: ''})}
-                                            style={{ backgroundColor: filters.anio === '' ? Colors.primario : Colors.tarjeta }}
-                                            textStyle={{ color: filters.anio === '' ? 'white' : theme.colors.text, fontSize: 11 }}
+                            <View style={{ marginTop: 5 }}>
+                                <Menu
+                                    visible={menuVisible}
+                                    onDismiss={() => setMenuVisible(false)}
+                                    anchor={
+                                        <Button 
+                                            mode="outlined" 
+                                            onPress={() => setMenuVisible(true)}
+                                            style={{ backgroundColor: Colors.tarjeta, borderRadius: 4 }}
+                                            textColor={theme.colors.text}
+                                            contentStyle={{ justifyContent: 'space-between', flexDirection: 'row-reverse' }}
+                                            icon="chevron-down"
                                         >
-                                            Todos
-                                        </Chip>
-                                        {añosUnicos.map(año => (
-                                            <Chip 
-                                                key={año}
-                                                selected={filters.anio === año} 
-                                                onPress={() => setFilters({...filters, anio: año})}
-                                                style={{ backgroundColor: filters.anio === año ? Colors.primario : Colors.tarjeta }}
-                                                textStyle={{ color: filters.anio === año ? 'white' : theme.colors.text, fontSize: 11 }}
-                                            >
-                                                {año}
-                                            </Chip>
-                                        ))}
-                                    </View>
-                                </View>
-                            )}
+                                            {filters.anio === '' ? 'Año de fabricación' : `Año: ${filters.anio}`}
+                                        </Button>
+                                    }
+                                    contentStyle={{ backgroundColor: Colors.tarjeta }}
+                                >
+                                    <Menu.Item 
+                                        onPress={() => { setFilters({...filters, anio: ''}); setMenuVisible(false); }} 
+                                        title="Todos los años" 
+                                        titleStyle={{ color: theme.colors.text }}
+                                    />
+                                    <Divider />
+                                    {añosUnicos.map(año => (
+                                        <Menu.Item 
+                                            key={año}
+                                            onPress={() => { setFilters({...filters, anio: año}); setMenuVisible(false); }} 
+                                            title={año} 
+                                            titleStyle={{ color: theme.colors.text }}
+                                        />
+                                    ))}
+                                </Menu>
+                            </View>
 
                             <Button 
                                 mode="text" 

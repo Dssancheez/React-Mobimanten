@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ActivityIndicator, View, Image, Platform, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, View, Image, Platform, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -86,31 +86,97 @@ const MainTabs = () => {
         backgroundColor: Colors.fondo 
     }}>
 
-      {isDesktop && (
+const CustomWebTabBar = ({ state, descriptors, navigation }: any) => {
+    const theme = useAppTheme();
+    const Colors = theme.customColors;
 
+    return (
         <View style={{ 
-          height: 80, 
-          backgroundColor: Colors.fondo, 
-          flexDirection: 'row', 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          paddingHorizontal: 30,
-          borderBottomWidth: 0.5,
-          borderBottomColor: Colors.tarjeta,
-          zIndex: 1000
+            height: 85, 
+            backgroundColor: Colors.fondo, 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            paddingHorizontal: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: 'rgba(255, 126, 0, 0.1)',
+            zIndex: 1000
         }}>
-          <Text style={{ 
-            fontSize: 32, 
-            color: Colors.primario,
-            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
-            fontStyle: 'italic',
-            letterSpacing: 0.5
-          }}>
-            MobiManten
-          </Text>
-        </View>
-      )}
+            {/* Logo */}
+            <TouchableOpacity onPress={() => navigation.navigate('Catálogo')} style={{ marginRight: 60 }}>
+                <Text style={{ 
+                    fontSize: 30, 
+                    color: Colors.primario,
+                    fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                    letterSpacing: 0.5
+                }}>
+                    MobiManten
+                </Text>
+            </TouchableOpacity>
 
+            {/* Nav Links */}
+            <View style={{ flexDirection: 'row', gap: 10, flex: 1 }}>
+                {state.routes.map((route: any, index: number) => {
+                    const { options } = descriptors[route.key];
+                    const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
+                    const isFocused = state.index === index;
+
+                    const onPress = () => {
+                        const event = navigation.emit({
+                            type: 'tabPress',
+                            target: route.key,
+                            canPreventDefault: true,
+                        });
+
+                        if (!isFocused && !event.defaultPrevented) {
+                            navigation.navigate(route.name);
+                        }
+                    };
+
+                    return (
+                        <TouchableOpacity
+                            key={index}
+                            onPress={onPress}
+                            style={{
+                                paddingHorizontal: 20,
+                                paddingVertical: 10,
+                                borderRadius: 12,
+                                backgroundColor: isFocused ? 'rgba(255, 126, 0, 0.08)' : 'transparent',
+                            }}
+                        >
+                            <Text style={{ 
+                                color: isFocused ? Colors.primario : Colors.textoGris,
+                                fontWeight: 'bold',
+                                fontSize: 15,
+                                letterSpacing: 0.3
+                            }}>
+                                {label}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
+
+            {/* Right side placeholder or Action button */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+                <MaterialCommunityIcons name="bell-outline" size={24} color={Colors.textoGris} />
+                <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.tarjeta, alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="account" size={24} color={Colors.primario} />
+                </View>
+            </View>
+        </View>
+    );
+};
+
+const MainTabs = () => {
+  const theme = useAppTheme();
+  const Colors = theme.customColors;
+  const isWeb = Platform.OS === 'web';
+  const isDesktop = useIsDesktop();
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fondo }}>
       {!isDesktop && (
         <View style={{ 
           flexDirection: 'row', 
@@ -136,34 +202,14 @@ const MainTabs = () => {
         </View>
       )}
 
-      <View style={{ 
-        flex: 1, 
-        width: '100%', 
-        backgroundColor: Colors.fondo
-      }}>
+      <View style={{ flex: 1, width: '100%', backgroundColor: Colors.fondo }}>
         {isDesktop ? (
             <Tab.Navigator
+                tabBar={props => <CustomWebTabBar {...props} />}
                 tabBarPosition="top"
                 swipeEnabled={false}
                 screenOptions={{
-                    tabBarStyle: {
-                        backgroundColor: Colors.tarjeta,
-                        height: 65,
-                        borderTopWidth: 0,
-                        borderBottomWidth: 1,
-                        borderBottomColor: Colors.tarjeta,
-                        elevation: 0,
-                        paddingTop: 5,
-                    },
-                    tabBarActiveTintColor: Colors.primario,
-                    tabBarInactiveTintColor: Colors.textoGris,
-                    tabBarIndicatorStyle: { 
-                        backgroundColor: Colors.primario, 
-                        bottom: 0,
-                        height: 3
-                    },
                     tabBarShowIcon: true,
-                    tabBarLabelStyle: { fontSize: 10, textTransform: 'none', fontWeight: 'bold' },
                 }}
             >
                 <Tab.Screen
