@@ -29,8 +29,6 @@ export const ResponsiveContainer = ({
         isWeb && { flex: 1 },
         isDesktop && { 
             backgroundColor: isWeb ? (theme.customColors.fondo === '#FFFFFF' ? '#F5F5F5' : '#0A0A0A') : globalStyles.container.backgroundColor,
-            alignItems: 'center',
-            justifyContent: 'center',
         },
         style
     ];
@@ -60,12 +58,7 @@ export const ResponsiveContainer = ({
                     {...(isDesktop ? { accessibilityRole: 'main' } : {})}
 
                 >
-                    <View style={[
-                        { width: '100%', flex: 1 },
-                        isDesktop && { maxWidth: maxWidth }
-                    ]}>
-                        {children}
-                    </View>
+                    {children}
                 </ScrollView>
             </View>
         );
@@ -77,12 +70,7 @@ export const ResponsiveContainer = ({
                 innerStyle,
                 isDesktop && { alignItems: 'center', justifyContent: 'center' }
             ]}>
-                <View style={[
-                    { width: '100%', flex: 1 },
-                    isDesktop && { maxWidth: maxWidth }
-                ]}>
-                    {children}
-                </View>
+                {children}
             </View>
         </View>
     );

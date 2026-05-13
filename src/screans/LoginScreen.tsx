@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Image, KeyboardAvoidingView, Platform, Divider, Alert } from 'react-native';
-import { Text, TextInput, Button } from 'react-native-paper';
+import { View, StyleSheet, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { Text, TextInput, Button, Divider } from 'react-native-paper';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN, LOGIN_CON_GOOGLE } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
@@ -20,6 +20,7 @@ const LoginScreen = ({ navigation }: any) => {
   const globalStyles = useGlobalStyles();
   const theme = useAppTheme();
   const Colors = theme.customColors;
+  const isDesktop = useIsDesktop();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     // Usa diferentes IDs para cada plataforma si los tienes, si no, el de web
@@ -92,11 +93,11 @@ const LoginScreen = ({ navigation }: any) => {
 
 
 
-  const isDesktop = useIsDesktop();
 
   const styles = StyleSheet.create({
     content: {
       flex: 1,
+      width: '100%',
       justifyContent: 'center',
       padding: 20,
       ...(isDesktop ? {

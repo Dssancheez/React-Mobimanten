@@ -22,6 +22,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const styles = StyleSheet.create({
     scroll: {
       flexGrow: 1,
+      width: '100%',
       justifyContent: 'center',
       padding: 20,
       ...(isDesktop ? {
