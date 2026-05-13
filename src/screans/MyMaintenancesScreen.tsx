@@ -179,6 +179,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
 
             return {
                 id: r.id,
+                cocheGarajeId: r.cocheGarajeId,
                 tarea: r.tarea,
                 apodo: r.cocheApodo || 'Mi Coche',
                 diasRestantes,
@@ -231,6 +232,10 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                 <Card
                                     key={index}
                                     style={[styles.card, alerta.urgente && styles.cardUrgente]}
+                                    onPress={() => navigation.navigate('RegisterMaintenance', {
+                                        cocheGarajeId: alerta.cocheGarajeId,
+                                        tarea: alerta.tarea
+                                    })}
                                 >
                                     <Card.Content>
                                         <Text style={{ 
