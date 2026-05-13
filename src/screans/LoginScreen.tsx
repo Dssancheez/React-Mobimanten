@@ -27,7 +27,6 @@ const LoginScreen = ({ navigation }: any) => {
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     useProxy: false,
     redirectUri: AuthSession.makeRedirectUri({
-      scheme: Platform.OS === 'web' ? undefined : 'mobimanten',
       useProxy: false,
     }),
     responseType: AuthSession.ResponseType.IdToken,
