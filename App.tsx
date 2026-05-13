@@ -23,7 +23,8 @@ if (Platform.OS === 'web') {
     const isAuthRedirect = url.includes('state=') || url.includes('code=') || url.includes('id_token=');
     
     if (isAuthRedirect && window.opener) {
-        window.opener.postMessage(url, window.location.origin);
+        // Usamos '*' para el origin para evitar fallos si hay discrepancias entre www y no-www
+        window.opener.postMessage(url, "*"); 
         // Cerrar lo más rápido posible si detectamos que es una redirección de auth
         setTimeout(() => window.close(), 200);
     }
