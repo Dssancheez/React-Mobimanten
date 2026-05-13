@@ -9,6 +9,16 @@ import { ActivityIndicator, View, Image, Platform, useWindowDimensions, Touchabl
 import { Text } from 'react-native-paper';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 
+// Mapeo de imágenes locales para que funcionen con require
+const AVATARES_LOCALES: { [key: string]: any } = {
+    'BMW-Logo.png': require('../../assets/images/BMW-Logo.png'),
+    'Mustang-Logo.png': require('../../assets/images/Mustang-Logo.png'),
+    'SEAT-Logo.png': require('../../assets/images/SEAT-Logo.png'),
+    'ferrari-logo.png': require('../../assets/images/ferrari-logo.png'),
+    'renault-logo.png': require('../../assets/images/renault-logo.png'),
+    'toyota-logo.png': require('../../assets/images/toyota-logo.png'),
+    'logo.png': require('../../assets/images/logo.png'),
+};
 
 import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
@@ -162,10 +172,10 @@ const GarageStack = () => {
                         borderColor: 'rgba(255, 126, 0, 0.1)'
                     }}
                 >
-                    {usuario?.avatar ? (
+                    {usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
                         <Image 
-                            source={{ uri: usuario.avatar }} 
-                            style={{ width: 40, height: 40, borderRadius: 20 }} 
+                            source={AVATARES_LOCALES[usuario.avatar]} 
+                            style={{ width: 40, height: 40, borderRadius: 20, resizeMode: 'contain' }} 
                         />
                     ) : (
                         <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.primario, alignItems: 'center', justifyContent: 'center' }}>
@@ -318,15 +328,16 @@ const MainTabs = () => {
                     options={{
                         tabBarLabel: 'Perfil',
                         tabBarIcon: ({ color, focused }) => (
-                            usuario?.avatar ? (
+                            usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
                                 <Image 
-                                    source={{ uri: usuario.avatar }} 
+                                    source={AVATARES_LOCALES[usuario.avatar]} 
                                     style={{ 
                                         width: 26, 
                                         height: 26, 
                                         borderRadius: 13,
                                         borderWidth: focused ? 2 : 0,
-                                        borderColor: Colors.primario
+                                        borderColor: Colors.primario,
+                                        resizeMode: 'contain'
                                     }} 
                                 />
                             ) : (

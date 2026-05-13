@@ -21,8 +21,9 @@ const HomeScreen = ({navigation}: any) => {
     const Colors = theme.customColors;
     const isDesktop = useIsDesktop();
 
-    // Obtener años únicos para el filtro
-    const añosUnicos = Array.from(new Set(data?.getCoches.map(c => c.anio.toString()) || [])).sort((a, b) => b.localeCompare(a));
+    // Generar rango de años desde 1850 hasta hoy
+    const currentYear = new Date().getFullYear();
+    const añosFiltro = Array.from({ length: currentYear - 1850 + 1 }, (_, i) => (currentYear - i).toString());
 
     const cochesFiltrados = data?.getCoches.filter((coche: Coche) => {
         return (
@@ -45,7 +46,7 @@ const HomeScreen = ({navigation}: any) => {
                 Error de conexion con el servidor
             </Text>
         </View>
-    )
+    );
 
     return (
         <View style={globalStyles.container}>
@@ -55,10 +56,10 @@ const HomeScreen = ({navigation}: any) => {
             ]}>
                 {/* Sidebar para Escritorio / Header para Móvil */}
                 <View style={isDesktop ? { 
-                    width: 420, 
-                    paddingLeft: 50, 
-                    paddingRight: 50, 
-                    paddingTop: 50,
+                    width: 350, 
+                    paddingLeft: 30, 
+                    paddingRight: 15, 
+                    paddingTop: 40,
                     borderRightWidth: 1,
                     borderRightColor: 'rgba(255, 126, 0, 0.08)',
                     height: '100%',
@@ -124,7 +125,7 @@ const HomeScreen = ({navigation}: any) => {
                                             {filters.anio === '' ? 'Año de fabricación' : `Año: ${filters.anio}`}
                                         </Button>
                                     }
-                                    contentStyle={{ backgroundColor: Colors.tarjeta }}
+                                    contentStyle={{ backgroundColor: Colors.tarjeta, maxHeight: 400 }}
                                 >
                                     <Menu.Item 
                                         onPress={() => { setFilters({...filters, anio: ''}); setMenuVisible(false); }} 
@@ -132,7 +133,7 @@ const HomeScreen = ({navigation}: any) => {
                                         titleStyle={{ color: theme.colors.text }}
                                     />
                                     <Divider />
-                                    {añosUnicos.map(año => (
+                                    {añosFiltro.map(año => (
                                         <Menu.Item 
                                             key={año}
                                             onPress={() => { setFilters({...filters, anio: año}); setMenuVisible(false); }} 
