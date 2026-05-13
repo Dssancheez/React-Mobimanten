@@ -25,12 +25,13 @@ const LoginScreen = ({ navigation }: any) => {
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     useProxy: false,
+    prompt: 'select_account',
     redirectUri: AuthSession.makeRedirectUri({
       scheme: Platform.OS === 'web' ? undefined : 'mobimanten',
       useProxy: false,
     }),
     responseType: AuthSession.ResponseType.IdToken,
-  }, { useProxy: false });
+  });
 
   const [loginMutation, { loading, error }] = useMutation<any>(LOGIN);
   const [loginConGoogleMutation, { loading: googleLoading }] = useMutation<any>(LOGIN_CON_GOOGLE);

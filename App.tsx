@@ -20,10 +20,12 @@ if (Platform.OS === 'web') {
     
     // 2. Fallback manual: Si detectamos parámetros de Google y estamos en un popup, cerramos y avisamos
     const url = window.location.href;
-    if ((url.includes('#state=') || url.includes('?state=')) && window.opener) {
+    const isAuthRedirect = url.includes('state=') || url.includes('code=') || url.includes('id_token=');
+    
+    if (isAuthRedirect && window.opener) {
         window.opener.postMessage(url, window.location.origin);
-        // Pequeño delay para asegurar que el mensaje se envía antes de cerrar
-        setTimeout(() => window.close(), 500);
+        // Cerrar lo más rápido posible si detectamos que es una redirección de auth
+        setTimeout(() => window.close(), 200);
     }
     
     const style = document.createElement('style');
