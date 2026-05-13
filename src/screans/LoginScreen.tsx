@@ -37,30 +37,36 @@ const LoginScreen = ({ navigation }: any) => {
   const [loginConGoogleMutation, { loading: googleLoading }] = useMutation<any>(LOGIN_CON_GOOGLE);
 
   useEffect(() => {
+    console.log("Google Auth Response:", response?.type, response);
     if (response?.type === 'success') {
-      const { id_token } = response.params;
-      const token = id_token || response.authentication?.idToken;
+      const { id_token, access_token } = response.params;
+      const token = id_token || response.authentication?.idToken || access_token;
+
+      console.log("Token extraído:", token ? "Token presente (truncado: " + token.substring(0, 10) + "...)" : "Token NO encontrado");
 
       if (token) {
         handleGoogleLogin(token);
       } else {
-        Alert.alert("Error", "No se pudo obtener el token de Google.");
+        Alert.alert("Error", "No se pudo obtener el token de Google de la respuesta.");
       }
     } else if (response?.type === 'error') {
+      console.error("Google Auth Error:", response.error);
       Alert.alert("Error de Google", response.error?.message || "Error desconocido");
     }
   }, [response]);
 
   const handleGoogleLogin = async (idToken: string) => {
     try {
+      console.log("Enviando token al backend...");
       const { data } = await loginConGoogleMutation({
         variables: { idToken }
       });
+      console.log("Respuesta del backend:", data);
       if (data?.loginConGoogle) {
         await login(data.loginConGoogle.usuario, data.loginConGoogle.token);
       }
     } catch (e: any) {
-      console.error("Google login error", e);
+      console.error("Error en mutación loginConGoogle:", e);
       Alert.alert("Error de Servidor", e.message || "Error al conectar con el backend.");
     }
   };
