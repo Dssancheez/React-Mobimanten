@@ -29,24 +29,6 @@ if (Platform.OS === 'web') {
         setTimeout(() => window.close(), 200);
     }
 
-    const style = document.createElement('style');
-    style.textContent = `
-        html, body, #root {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000000;
-        }
-        body {
-            background: radial-gradient(circle at top right, #252525 0%, #000000 100%);
-        }
-        #root {
-            display: flex;
-            flex-direction: column;
-        }
-    `;
-    document.head.append(style);
 }
 
 const MainApp = () => {
