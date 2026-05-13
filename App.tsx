@@ -11,8 +11,12 @@ import { AuthProvider } from './src/context/AuthContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ThemeProvider, ThemeContext } from './src/context/ThemeContext';
 import { Platform } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 
+// Manejar la redirección de autenticación en web lo antes posible
 if (Platform.OS === 'web') {
+    WebBrowser.maybeCompleteAuthSession();
+    
     const style = document.createElement('style');
     style.textContent = `
         html, body, #root {
@@ -25,7 +29,6 @@ if (Platform.OS === 'web') {
             display: flex;
             flex-direction: column;
         }
-
     `;
     document.head.append(style);
 }
