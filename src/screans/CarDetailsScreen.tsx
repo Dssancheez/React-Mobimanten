@@ -102,10 +102,10 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
             elevation: 4,
-            borderRadius: 12,
-            width: isDesktop ? (width > 1600 ? '23.5%' : width > 1100 ? '31.5%' : '48%') : '100%',
+            borderRadius: 15,
+            width: isDesktop ? (width > 1200 ? '48.5%' : '100%') : '100%',
             marginRight: isDesktop ? '1.5%' : 0,
-
+            overflow: 'hidden',
         },
         cardTitle: {
             fontSize: 18,
@@ -226,7 +226,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={{ flex: 1 }}>
-            <ResponsiveContainer contentContainerStyle={{ paddingBottom: 40 }}>
+            <ResponsiveContainer maxWidth={1200} contentContainerStyle={{ paddingBottom: 40 }}>
                 {isDesktop ? (
 
                     <View style={styles.webHero}>
@@ -320,21 +320,34 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
                             const renderCard = (mant: Mantenimiento) => (
                                 <Card key={mant.id} style={styles.card}>
-                                    <Card.Content>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
-                                            <MaterialCommunityIcons name="tools" size={20} color={Colors.primario} style={{ marginRight: 10 }} />
-                                            <Text style={styles.cardTitle}>{mant.tarea}</Text>
+                                    <View style={{ 
+                                        flexDirection: isDesktop ? 'row' : 'column', 
+                                        padding: 16,
+                                        alignItems: isDesktop ? 'center' : 'flex-start',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                        <View style={{ flex: 1, marginRight: isDesktop ? 20 : 0 }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                                                <MaterialCommunityIcons name="tools" size={22} color={Colors.primario} style={{ marginRight: 12 }} />
+                                                <Text style={[styles.cardTitle, { marginBottom: 0 }]}>{mant.tarea}</Text>
+                                            </View>
+                                            <Text style={[styles.cardSubtitle, { marginLeft: 34 }]}>
+                                                <MaterialCommunityIcons name="update" size={14} color={Colors.textoGris} />
+                                                {" "}{mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
+                                                {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
+                                                {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
+                                            </Text>
                                         </View>
-                                        <Text style={styles.cardSubtitle}>
-                                            {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
-                                            {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
-                                            {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
-                                        </Text>
-                                    </Card.Content>
-                                    <Card.Actions>
+                                        
                                         <Button
                                             mode="contained"
                                             buttonColor={Colors.primario}
+                                            style={{ 
+                                                marginTop: isDesktop ? 0 : 15,
+                                                width: isDesktop ? 'auto' : '100%',
+                                                borderRadius: 10
+                                            }}
+                                            contentStyle={{ height: 45 }}
                                             onPress={() => {
                                                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                                                 const garajeItem = garajeData?.obtenerMiGaraje?.find((g: any) => String(g.coche.id) === String(cocheId));
@@ -347,7 +360,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                         >
                                             Ver Detalles
                                         </Button>
-                                    </Card.Actions>
+                                    </View>
                                 </Card>
                             );
 

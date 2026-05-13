@@ -36,7 +36,7 @@ export const ResponsiveContainer = ({
         return (
             <View style={outerStyle}>
                 <ScrollView 
-                    style={innerStyle} 
+                    style={{ flex: 1, width: '100%' }} 
                     contentContainerStyle={[
                         { flexGrow: 1, paddingBottom: 40 },
                         contentContainerStyle
@@ -44,7 +44,9 @@ export const ResponsiveContainer = ({
                     showsVerticalScrollIndicator={true}
                     {...(isDesktop ? { accessibilityRole: 'main' } : {})}
                 >
-                    {children}
+                    <View style={innerStyle}>
+                        {children}
+                    </View>
                 </ScrollView>
             </View>
         );
