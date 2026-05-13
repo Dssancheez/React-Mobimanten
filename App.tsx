@@ -23,7 +23,9 @@ if (Platform.OS === 'web') {
         }
         #root {
             display: flex;
+            flex-direction: column;
         }
+
     `;
     document.head.append(style);
 }

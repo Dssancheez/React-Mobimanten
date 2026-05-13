@@ -7,7 +7,8 @@ import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActivityIndicator, View, Image, Platform, useWindowDimensions } from 'react-native';
 import { Text } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+
 
 import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
@@ -80,10 +81,11 @@ const MainTabs = () => {
 
 
   return (
-    <View style={{ 
+    <SafeAreaView style={{ 
         flex: 1, 
         backgroundColor: Colors.fondo 
     }}>
+
       {isDesktop && (
 
         <View style={{ 
@@ -207,11 +209,18 @@ const MainTabs = () => {
                     headerShown: false,
                     tabBarStyle: {
                         backgroundColor: Colors.tarjeta,
-                        height: isWeb ? 80 : 70,
+                        height: isWeb ? 85 : 70,
                         borderTopWidth: 0,
                         paddingTop: 10,
-                        paddingBottom: isWeb ? 15 : 10,
+                        paddingBottom: isWeb ? 25 : 10,
+                        position: isWeb ? 'absolute' : 'relative',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1000,
+                        elevation: 5,
                     },
+
                     tabBarActiveTintColor: Colors.primario,
                     tabBarInactiveTintColor: Colors.textoGris,
                     tabBarLabelStyle: { fontSize: 12, fontWeight: 'bold' },
@@ -257,7 +266,8 @@ const MainTabs = () => {
         )}
       </View>
 
-    </View>
+    </SafeAreaView>
+
   );
 };
 
