@@ -232,9 +232,12 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                 <Card
                                     key={index}
                                     style={[styles.card, alerta.urgente && styles.cardUrgente]}
-                                    onPress={() => navigation.navigate('RegisterMaintenance', {
-                                        cocheGarajeId: alerta.cocheGarajeId,
-                                        tarea: alerta.tarea
+                                    onPress={() => navigation.navigate('Mi Garaje', {
+                                        screen: 'RegisterMaintenance',
+                                        params: {
+                                            cocheGarajeId: alerta.cocheGarajeId,
+                                            tarea: alerta.tarea
+                                        }
                                     })}
                                 >
                                     <Card.Content>
