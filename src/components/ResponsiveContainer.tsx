@@ -27,8 +27,8 @@ export const ResponsiveContainer = ({
         style
     ];
 
-    const innerStyle = [
-        { flex: 1, width: '100%' },
+    const contentWrapperStyle = [
+        { width: '100%' },
         isDesktop && { maxWidth: maxWidth, alignSelf: 'center' }
     ];
 
@@ -36,7 +36,7 @@ export const ResponsiveContainer = ({
         return (
             <View style={outerStyle}>
                 <ScrollView 
-                    style={innerStyle} 
+                    style={{ flex: 1, width: '100%' }} 
                     contentContainerStyle={[
                         { flexGrow: 1, paddingBottom: 40 },
                         contentContainerStyle
@@ -44,7 +44,9 @@ export const ResponsiveContainer = ({
                     showsVerticalScrollIndicator={true}
                     {...(isDesktop ? { accessibilityRole: 'main' } : {})}
                 >
-                    {children}
+                    <View style={contentWrapperStyle}>
+                        {children}
+                    </View>
                 </ScrollView>
             </View>
         );
@@ -52,7 +54,7 @@ export const ResponsiveContainer = ({
 
     return (
         <View style={outerStyle}>
-            <View style={innerStyle}>
+            <View style={contentWrapperStyle}>
                 {children}
             </View>
         </View>

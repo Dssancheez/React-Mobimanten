@@ -2,7 +2,7 @@ import React from 'react';
 import {FlatList, RefreshControl, Platform, useWindowDimensions} from 'react-native';
 import { Card, Text } from 'react-native-paper';
 import { Coche } from '../graphql/queries';
-import { useAppTheme, useIsDesktop } from '../styles/theme';
+import { useAppTheme, useIsDesktop, useGlobalStyles } from '../styles/theme';
 
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -43,14 +43,18 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
         setRefreshing(false);
     };
 
+    const globalStyles = useGlobalStyles();
+
     return (
         <FlatList
             data={coches}
             keyExtractor={(item) => item.id}
-            key={numColumns} // Re-renderizar cuando cambie el número de columnas
+            key={numColumns}
             numColumns={numColumns}
-            contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: isDesktop ? 8 : 0 }}
-
+            contentContainerStyle={[
+                globalStyles.webMaxWidth, 
+                { paddingBottom: 60, alignSelf: 'center' }
+            ]}
             columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
             refreshControl={
                 <RefreshControl

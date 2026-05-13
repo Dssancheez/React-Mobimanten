@@ -73,13 +73,13 @@ const HomeScreen = ({navigation}: any) => {
                     inputStyle={{ color: theme.colors.text }}
                     placeholderTextColor={Colors.textoGris}
                 />
-
-                <ListaCoches 
-                    navigation={navigation}
-                    coches={cochesFiltrados || []}
-                    refetch={refetch}
-                />
             </View>
+
+            <ListaCoches 
+                navigation={navigation}
+                coches={cochesFiltrados || []}
+                refetch={refetch}
+            />
         </View>
     );
 };

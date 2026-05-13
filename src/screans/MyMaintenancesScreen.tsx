@@ -203,19 +203,21 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
 
     return (
         <View style={globalStyles.container}>
-            <View style={{ padding: 16 }}>
-                <SegmentedButtons
-                    value={viewMode}
-                    onValueChange={setViewMode}
-                    buttons={[
-                        { value: 'proximos', label: 'Próximos', icon: 'bell-alert' },
-                        { value: 'historial', label: 'Historial', icon: 'history' },
-                    ]}
-                    theme={{ colors: { secondaryContainer: Colors.primario } }}
-                />
+            <View style={globalStyles.webMaxWidth}>
+                <View style={{ padding: 16 }}>
+                    <SegmentedButtons
+                        value={viewMode}
+                        onValueChange={setViewMode}
+                        buttons={[
+                            { value: 'proximos', label: 'Próximos', icon: 'bell-alert' },
+                            { value: 'historial', label: 'Historial', icon: 'history' },
+                        ]}
+                        theme={{ colors: { secondaryContainer: Colors.primario } }}
+                    />
+                </View>
             </View>
 
-            <ResponsiveContainer>
+            <ResponsiveContainer maxWidth={1200}>
                 <View style={{ 
                     flexDirection: isDesktop && width > 600 ? 'row' : 'column', 
                     flexWrap: 'wrap',

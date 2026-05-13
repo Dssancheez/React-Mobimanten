@@ -91,23 +91,27 @@ const GarageScreen = ({ navigation }: any) => {
 
     return (
         <View style={globalStyles.container}>
-            <View style={globalStyles.webMaxWidth}>
-                <View style={{ paddingVertical: isDesktop ? 40 : 20 }}>
-                    <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
-                        Mi Garaje
-                    </Text>
-                    {isDesktop && (
-                        <Text style={{ color: Colors.textoGris, fontSize: 18 }}>
-                            Gestiona tus vehículos y sus mantenimientos inteligentes.
+            <FlatList
+                data={garajeItems}
+                keyExtractor={(item) => item.id}
+                key={numColumns}
+                numColumns={numColumns}
+                contentContainerStyle={[
+                    globalStyles.webMaxWidth, 
+                    { paddingBottom: 60, alignSelf: 'center' }
+                ]}
+                ListHeaderComponent={
+                    <View style={{ paddingVertical: isDesktop ? 40 : 20 }}>
+                        <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
+                            Mi Garaje
                         </Text>
-                    )}
-                </View>
-                <FlatList
-                    data={garajeItems}
-                    keyExtractor={(item) => item.id}
-                    key={numColumns}
-                    numColumns={numColumns}
-                    contentContainerStyle={{ paddingBottom: 60 }}
+                        {isDesktop && (
+                            <Text style={{ color: Colors.textoGris, fontSize: 18 }}>
+                                Gestiona tus vehículos y sus mantenimientos inteligentes.
+                            </Text>
+                        )}
+                    </View>
+                }
 
                 columnWrapperStyle={numColumns > 1 ? { justifyContent: 'flex-start' } : undefined}
                 refreshControl={
@@ -155,7 +159,6 @@ const GarageScreen = ({ navigation }: any) => {
                     </View>
                 }
             />
-            </View>
         </View>
     );
 };
