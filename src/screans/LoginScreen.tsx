@@ -100,17 +100,17 @@ const LoginScreen = ({ navigation }: any) => {
       justifyContent: 'center',
       padding: 20,
       ...(isDesktop ? {
-        backgroundColor: Colors.tarjeta,
+        backgroundColor: theme.colors.background, // Blanco o color de fondo del tema
         borderRadius: 20,
         marginVertical: 40,
         padding: 40,
         elevation: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
+        shadowOpacity: 0.15,
+        shadowRadius: 15,
         borderWidth: 1,
-        borderColor: 'rgba(255, 140, 0, 0.1)', // Subtle orange border
+        borderColor: 'rgba(255, 140, 0, 0.2)', // Naranja MobiManten sutil
       } : {}),
     },
     header: {
@@ -180,8 +180,7 @@ const LoginScreen = ({ navigation }: any) => {
 
   return (
     <ResponsiveContainer
-      style={globalStyles.container}
-      maxWidth={500}
+      maxWidth={450}
       scrollable={true}
     >
       <View style={styles.content}>

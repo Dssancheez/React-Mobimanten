@@ -25,17 +25,17 @@ const RegisterScreen = ({ navigation }: any) => {
       justifyContent: 'center',
       padding: 20,
       ...(isDesktop ? {
-        backgroundColor: Colors.tarjeta,
+        backgroundColor: theme.colors.background,
         borderRadius: 20,
         marginVertical: 40,
         padding: 40,
         elevation: 8,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
+        shadowOpacity: 0.15,
+        shadowRadius: 15,
         borderWidth: 1,
-        borderColor: 'rgba(255, 140, 0, 0.1)',
+        borderColor: 'rgba(255, 140, 0, 0.2)',
       } : {}),
     },
     header: {
@@ -102,7 +102,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <ResponsiveContainer 
-        maxWidth={500}
+        maxWidth={450}
         scrollable={true}
     >
       <View style={styles.scroll}>

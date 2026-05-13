@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ScrollView, Platform, StyleSheet, useWindowDimensions } from 'react-native';
-import { useGlobalStyles, useIsDesktop } from '../styles/theme';
+import { useGlobalStyles, useIsDesktop, useAppTheme } from '../styles/theme';
 
 
 interface ResponsiveContainerProps {
@@ -18,6 +18,7 @@ export const ResponsiveContainer = ({
     style,
     contentContainerStyle 
 }: ResponsiveContainerProps) => {
+    const theme = useAppTheme();
     const globalStyles = useGlobalStyles();
     const isDesktop = useIsDesktop();
     const isWeb = Platform.OS === 'web';
@@ -26,7 +27,11 @@ export const ResponsiveContainer = ({
     const outerStyle = [
         globalStyles.container,
         isWeb && { flex: 1 },
-        { backgroundColor: globalStyles.container.backgroundColor },
+        isDesktop && { 
+            backgroundColor: isWeb ? (theme.customColors.fondo === '#FFFFFF' ? '#F5F5F5' : '#0A0A0A') : globalStyles.container.backgroundColor,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
         style
     ];
 
