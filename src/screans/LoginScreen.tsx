@@ -22,18 +22,29 @@ const LoginScreen = ({ navigation }: any) => {
   const Colors = theme.customColors;
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    // Usa diferentes IDs para cada plataforma si los tienes, si no, el de web
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID, 
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    redirectUri: "https://auth.expo.io/@anonymous/React-MobiManten",
+    
+    // En web, no usamos el proxy ni esquema para evitar la pantalla intermedia de Expo
+    redirectUri: AuthSession.makeRedirectUri({
+      scheme: Platform.OS === 'web' ? undefined : 'mobimanten',
+    }),
     responseType: AuthSession.ResponseType.IdToken,
   });
+
+
 
   const [loginMutation, { loading, error }] = useMutation<any>(LOGIN);
   const [loginConGoogleMutation, { loading: googleLoading }] = useMutation<any>(LOGIN_CON_GOOGLE);
 
   useEffect(() => {
+    const redirectUri = AuthSession.makeRedirectUri();
+    console.log("Redirect URI being used:", redirectUri);
     console.log("Google Auth Response:", response?.type);
+    
     if (response?.type === 'success') {
       const { id_token } = response.params;
       // El token puede venir en params (id_token) o en el objeto authentication del response
@@ -58,8 +69,9 @@ const LoginScreen = ({ navigation }: any) => {
       if (data?.loginConGoogle) {
         await login(data.loginConGoogle.usuario, data.loginConGoogle.token);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Google login error", e);
+      Alert.alert("Error de Servidor", e.message || "Error al conectar con el backend.");
     }
   };
 
@@ -76,51 +88,7 @@ const LoginScreen = ({ navigation }: any) => {
     }
   };
 
-  const handleCustomProxyLogin = async () => {
-    if (!request) return;
 
-    try {
-      const returnUrl = AuthSession.makeRedirectUri();
-      
-      const authUrl = encodeURIComponent(request.url);
-      const encodedReturnUrl = encodeURIComponent(returnUrl);
-      const proxyUrl = `https://auth.expo.io/@anonymous/React-MobiManten/start?authUrl=${authUrl}&returnUrl=${encodedReturnUrl}`;
-
-      const result = await WebBrowser.openAuthSessionAsync(proxyUrl, returnUrl);
-
-      if (result.type === 'success' && result.url) {
-        console.log("DEBUG - Full Redirect URL from Proxy:", result.url);
-        let queryString = '';
-        if (result.url.includes('#')) {
-          queryString = result.url.split('#')[1];
-        } else if (result.url.includes('?')) {
-          queryString = result.url.split('?')[1];
-        }
-
-        let id_token = null;
-        if (queryString) {
-          const paramsArr = queryString.split('&');
-          for (let param of paramsArr) {
-            const [key, val] = param.split('=');
-            if (key === 'id_token' || key === 'access_token') {
-              id_token = decodeURIComponent(val);
-              break;
-            }
-          }
-        }
-        
-        if (id_token) {
-          handleGoogleLogin(id_token);
-        } else {
-          console.warn("Token not found. Query string parsed:", queryString);
-          Alert.alert("Error", "No se encontró el token en la respuesta");
-        }
-      }
-    } catch (e) {
-      console.error("Proxy login error", e);
-      Alert.alert("Error", "Fallo al iniciar sesión con Google");
-    }
-  };
 
   const styles = StyleSheet.create({
     content: {
@@ -257,7 +225,8 @@ const LoginScreen = ({ navigation }: any) => {
 
           <Button
             mode="outlined"
-            onPress={handleCustomProxyLogin}
+            onPress={() => promptAsync()}
+
             loading={googleLoading}
             disabled={loading || googleLoading || !request}
             style={styles.googleButton}
