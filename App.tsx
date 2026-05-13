@@ -15,7 +15,16 @@ import * as WebBrowser from 'expo-web-browser';
 
 // Manejar la redirección de autenticación en web lo antes posible
 if (Platform.OS === 'web') {
+    // 1. Intento estándar de Expo
     WebBrowser.maybeCompleteAuthSession();
+    
+    // 2. Fallback manual: Si detectamos parámetros de Google y estamos en un popup, cerramos y avisamos
+    const url = window.location.href;
+    if ((url.includes('#state=') || url.includes('?state=')) && window.opener) {
+        window.opener.postMessage(url, window.location.origin);
+        // Pequeño delay para asegurar que el mensaje se envía antes de cerrar
+        setTimeout(() => window.close(), 500);
+    }
     
     const style = document.createElement('style');
     style.textContent = `
