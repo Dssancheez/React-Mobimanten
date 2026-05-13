@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, Platform, StyleSheet } from 'react-native';
+import { View, ScrollView, Platform } from 'react-native';
 import { useGlobalStyles, useIsDesktop } from '../styles/theme';
 
 interface ResponsiveContainerProps {
@@ -19,42 +19,42 @@ export const ResponsiveContainer = ({
 }: ResponsiveContainerProps) => {
     const globalStyles = useGlobalStyles();
     const isDesktop = useIsDesktop();
+    const isWeb = Platform.OS === 'web';
 
-    // Contenedor principal que ocupa todo el espacio
-    const containerStyle = [
+    const outerStyle = [
         globalStyles.container,
+        isWeb && { flex: 1 },
         style
     ];
 
-    // Contenido centrado si es escritorio
-    const renderContent = () => (
-        <View style={[
-            { width: '100%' },
-            isDesktop && { maxWidth: maxWidth, alignSelf: 'center' }
-        ]}>
-            {children}
-        </View>
-    );
+    const innerStyle = [
+        { flex: 1, width: '100%' },
+        isDesktop && { maxWidth: maxWidth, alignSelf: 'center' }
+    ];
 
     if (scrollable) {
         return (
-            <View style={containerStyle}>
+            <View style={outerStyle}>
                 <ScrollView 
+                    style={innerStyle} 
                     contentContainerStyle={[
                         { flexGrow: 1, paddingBottom: 40 },
                         contentContainerStyle
                     ]}
                     showsVerticalScrollIndicator={true}
+                    {...(isDesktop ? { accessibilityRole: 'main' } : {})}
                 >
-                    {renderContent()}
+                    {children}
                 </ScrollView>
             </View>
         );
     }
 
     return (
-        <View style={[containerStyle, isDesktop && { justifyContent: 'center' }]}>
-            {renderContent()}
+        <View style={outerStyle}>
+            <View style={innerStyle}>
+                {children}
+            </View>
         </View>
     );
 };
