@@ -110,7 +110,7 @@ const GarageStack = () => {
             </TouchableOpacity>
 
             {/* Nav Links - Filtrando 'Perfil' para no duplicar */}
-            <View style={{ flexDirection: 'row', gap: 20, flex: 1 }}>
+            <View style={{ flexDirection: 'row', gap: 35, flex: 1, justifyContent: 'center' }}>
                 {state.routes.filter((r: any) => r.name !== 'Perfil').map((route: any, index: number) => {
                     const { options } = descriptors[route.key];
                     const label = options.tabBarLabel !== undefined ? options.tabBarLabel : options.title !== undefined ? options.title : route.name;
