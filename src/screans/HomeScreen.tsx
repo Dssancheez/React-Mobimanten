@@ -45,41 +45,78 @@ const HomeScreen = ({navigation}: any) => {
 
     return (
         <View style={globalStyles.container}>
-            <View style={globalStyles.webMaxWidth}>
-                {isDesktop && (
-                    <View style={{ marginTop: 40, marginBottom: 20 }}>
-                        <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
-                            Catálogo de Mantenimiento
-                        </Text>
-                        <Text style={{ color: Colors.textoGris, fontSize: 18, marginBottom: 20 }}>
-                            Busca tu vehículo para ver el mantenimiento recomendado por el fabricante.
-                        </Text>
-                    </View>
-                )}
-                
-                <Searchbar
-                    placeholder="Marca, modelo, motor o año..."
-                    onChangeText={setSearchQuery}
-                    value={searchQuery}
-                    style={{
-                        marginVertical: 16,
+            <View style={[
+                { flex: 1, alignSelf: 'center', width: '100%' },
+                isDesktop ? { flexDirection: 'row', maxWidth: 1400, paddingHorizontal: 20 } : { maxWidth: 1000 }
+            ]}>
+                {/* Sidebar para Escritorio / Header para Móvil */}
+                <View style={isDesktop ? { width: 350, paddingRight: 40, paddingTop: 40 } : { paddingHorizontal: 20 }}>
+                    <View style={isDesktop ? { 
+                        position: 'sticky', 
+                        top: 20,
                         backgroundColor: Colors.tarjeta,
-                        borderRadius: 16,
-                        elevation: 4,
-                        borderWidth: isDesktop ? 1 : 0,
-                        borderColor: 'rgba(255, 126, 0, 0.2)',
-                    }}
-                    iconColor={Colors.primario}
-                    inputStyle={{ color: theme.colors.text }}
-                    placeholderTextColor={Colors.textoGris}
-                />
-            </View>
+                        padding: 25,
+                        borderRadius: 24,
+                        borderWidth: 1,
+                        borderColor: 'rgba(255, 126, 0, 0.15)',
+                    } : {}}>
+                        <Text style={[globalStyles.tituloPrincipal, { fontSize: isDesktop ? 28 : 24, marginBottom: 5 }]}>
+                            {isDesktop ? 'Filtros' : 'Catálogo'}
+                        </Text>
+                        <Text style={{ color: Colors.textoGris, fontSize: 14, marginBottom: 20 }}>
+                            {isDesktop ? 'Encuentra el mantenimiento exacto para tu motor.' : 'Busca tu vehículo para ver su mantenimiento.'}
+                        </Text>
 
-            <ListaCoches 
-                navigation={navigation}
-                coches={cochesFiltrados || []}
-                refetch={refetch}
-            />
+                        <Searchbar
+                            placeholder="Marca, modelo..."
+                            onChangeText={setSearchQuery}
+                            value={searchQuery}
+                            style={{
+                                marginBottom: 20,
+                                backgroundColor: isDesktop ? Colors.fondo : Colors.tarjeta,
+                                borderRadius: 12,
+                                elevation: 0,
+                                borderWidth: 1,
+                                borderColor: 'rgba(255, 126, 0, 0.1)',
+                            }}
+                            iconColor={Colors.primario}
+                            inputStyle={{ color: theme.colors.text, fontSize: 14 }}
+                            placeholderTextColor={Colors.textoGris}
+                        />
+
+                        {isDesktop && (
+                            <View>
+                                <Text style={{ color: Colors.primario, fontWeight: 'bold', marginBottom: 15, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                    Sugerencias
+                                </Text>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                    {['BMW', 'Audi', 'TDI', 'GTI', '2024'].map(tag => (
+                                        <View key={tag} style={{ 
+                                            backgroundColor: 'rgba(255, 126, 0, 0.05)', 
+                                            paddingHorizontal: 12, 
+                                            paddingVertical: 6, 
+                                            borderRadius: 8,
+                                            borderWidth: 1,
+                                            borderColor: 'rgba(255, 126, 0, 0.1)'
+                                        }}>
+                                            <Text style={{ color: Colors.textoGris, fontSize: 12 }}>{tag}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+
+                {/* Lista de Coches Principal */}
+                <View style={{ flex: 1, paddingTop: isDesktop ? 40 : 0 }}>
+                    <ListaCoches 
+                        navigation={navigation}
+                        coches={cochesFiltrados || []}
+                        refetch={refetch}
+                    />
+                </View>
+            </View>
         </View>
     );
 };
