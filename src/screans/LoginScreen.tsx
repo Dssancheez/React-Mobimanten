@@ -4,7 +4,7 @@ import { Text, TextInput, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/client/react';
 import { LOGIN, LOGIN_CON_GOOGLE } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import * as AuthSession from 'expo-auth-session';
@@ -35,7 +35,7 @@ const LoginScreen = ({ navigation }: any) => {
       useProxy: false,
     }),
     responseType: AuthSession.ResponseType.IdToken,
-  });
+  }, { useProxy: false });
 
 
 
@@ -92,11 +92,26 @@ const LoginScreen = ({ navigation }: any) => {
 
 
 
+  const isDesktop = useIsDesktop();
+
   const styles = StyleSheet.create({
     content: {
       flex: 1,
       justifyContent: 'center',
       padding: 20,
+      ...(isDesktop ? {
+        backgroundColor: Colors.tarjeta,
+        borderRadius: 20,
+        marginVertical: 40,
+        padding: 40,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 140, 0, 0.1)', // Subtle orange border
+      } : {}),
     },
     header: {
       alignItems: 'center',
@@ -124,7 +139,7 @@ const LoginScreen = ({ navigation }: any) => {
     },
     input: {
       marginBottom: 15,
-      backgroundColor: Colors.tarjeta,
+      backgroundColor: isDesktop ? Colors.fondo : Colors.tarjeta,
     },
     button: {
       marginTop: 10,
@@ -154,7 +169,7 @@ const LoginScreen = ({ navigation }: any) => {
     dividerLine: {
       flex: 1,
       height: 1,
-      backgroundColor: Colors.tarjeta,
+      backgroundColor: isDesktop ? Colors.fondo : Colors.tarjeta,
     },
     dividerText: {
       marginHorizontal: 10,

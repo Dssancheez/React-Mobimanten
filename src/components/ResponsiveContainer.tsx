@@ -33,7 +33,12 @@ export const ResponsiveContainer = ({
 
     const innerStyle = [
         { flex: 1, width: '100%' },
-        // En web permitimos que ocupe todo el ancho para una experiencia de escritorio real
+        isDesktop && { 
+            maxWidth: maxWidth, 
+            alignSelf: 'center',
+            // En escritorio, si el ancho es menor que la pantalla, centramos el contenedor
+            width: '100%',
+        },
     ];
 
     if (scrollable) {
@@ -43,14 +48,19 @@ export const ResponsiveContainer = ({
                     style={innerStyle} 
                     contentContainerStyle={[
                         { flexGrow: 1, paddingBottom: 40 },
+                        isDesktop && { alignItems: 'center' }, 
                         contentContainerStyle
                     ]}
                     showsVerticalScrollIndicator={true}
-                    // Forzar el scroll nativo en web
                     {...(isDesktop ? { accessibilityRole: 'main' } : {})}
 
                 >
-                    {children}
+                    <View style={[
+                        { width: '100%', flex: 1 },
+                        isDesktop && { maxWidth: maxWidth }
+                    ]}>
+                        {children}
+                    </View>
                 </ScrollView>
             </View>
         );
@@ -58,8 +68,16 @@ export const ResponsiveContainer = ({
 
     return (
         <View style={outerStyle}>
-            <View style={innerStyle}>
-                {children}
+            <View style={[
+                innerStyle,
+                isDesktop && { alignItems: 'center', justifyContent: 'center' }
+            ]}>
+                <View style={[
+                    { width: '100%', flex: 1 },
+                    isDesktop && { maxWidth: maxWidth }
+                ]}>
+                    {children}
+                </View>
             </View>
         </View>
     );

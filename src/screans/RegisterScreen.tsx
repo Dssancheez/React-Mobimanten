@@ -4,7 +4,8 @@ import { Text, TextInput, Button } from 'react-native-paper';
 import { useMutation } from '@apollo/client/react';
 import { REGISTRO, LOGIN } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
+import { ResponsiveContainer } from '../components/ResponsiveContainer';
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nombre, setNombre] = useState('');
@@ -16,11 +17,26 @@ const RegisterScreen = ({ navigation }: any) => {
   const theme = useAppTheme();
   const Colors = theme.customColors;
 
+  const isDesktop = useIsDesktop();
+
   const styles = StyleSheet.create({
     scroll: {
       flexGrow: 1,
       justifyContent: 'center',
       padding: 20,
+      ...(isDesktop ? {
+        backgroundColor: Colors.tarjeta,
+        borderRadius: 20,
+        marginVertical: 40,
+        padding: 40,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 140, 0, 0.1)',
+      } : {}),
     },
     header: {
       marginBottom: 40,
@@ -40,7 +56,7 @@ const RegisterScreen = ({ navigation }: any) => {
     },
     input: {
       marginBottom: 15,
-      backgroundColor: Colors.tarjeta,
+      backgroundColor: isDesktop ? Colors.fondo : Colors.tarjeta,
     },
     button: {
       marginTop: 15,
@@ -85,11 +101,11 @@ const RegisterScreen = ({ navigation }: any) => {
   const isLoading = loadingRegistro || loadingLogin;
 
   return (
-    <KeyboardAvoidingView 
-        style={globalStyles.container} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <ResponsiveContainer 
+        maxWidth={500}
+        scrollable={true}
     >
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <View style={styles.scroll}>
         <View style={styles.header}>
             <Text style={styles.title}>Crear Cuenta</Text>
             <Text style={styles.subtitle}>Únete a MobiManten para gestionar tus vehículos</Text>
@@ -153,8 +169,8 @@ const RegisterScreen = ({ navigation }: any) => {
             ¿Ya tienes cuenta? Inicia sesión
             </Button>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </ResponsiveContainer>
   );
 };
 
