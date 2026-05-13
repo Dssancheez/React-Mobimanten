@@ -2,7 +2,7 @@ import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View, ScrollView, StyleSheet, Linking } from 'react-native';
 import { Text, Card, Button, Divider, List } from 'react-native-paper';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
 import { RepuestoOpcion } from '../graphql/queries';
 import { ResponsiveContainer } from '../components/ResponsiveContainer';
 import { Platform } from 'react-native';
@@ -13,6 +13,7 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const isDesktop = useIsDesktop();
 
     if (!mant) {
         return (

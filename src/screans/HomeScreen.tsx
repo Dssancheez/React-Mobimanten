@@ -3,7 +3,7 @@ import {ActivityIndicator, View, Platform} from 'react-native';
 import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
-import {useGlobalStyles, useAppTheme} from "@/src/styles/theme";
+import {useGlobalStyles, useAppTheme, useIsDesktop} from "@/src/styles/theme";
 import {Searchbar, Text} from "react-native-paper";
 
 const HomeScreen = ({navigation}: any) => {
