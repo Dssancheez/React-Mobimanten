@@ -1,7 +1,9 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActivityIndicator, View, Image, Platform, useWindowDimensions } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -22,7 +24,9 @@ import ProfileScreen from '../screans/ProfileScreen';
 import MyMaintenancesScreen from '../screans/MyMaintenancesScreen';
 
 const Tab = createMaterialTopTabNavigator();
+const BottomTab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 
 const CatalogStack = () => {
     const theme = useAppTheme();
@@ -135,73 +139,124 @@ const MainTabs = () => {
         width: '100%', 
         backgroundColor: Colors.fondo
       }}>
-        <Tab.Navigator
-            tabBarPosition={isDesktop ? "top" : "bottom"}
-            swipeEnabled={!isDesktop}
-            screenOptions={{
-                tabBarStyle: {
-                    backgroundColor: Colors.tarjeta,
-                    height: isDesktop ? 65 : (isWeb ? 80 : 70),
-                    borderTopWidth: 0,
-                    borderBottomWidth: isDesktop ? 1 : 0,
-                    borderBottomColor: Colors.tarjeta,
-                    elevation: 0,
-                    paddingTop: 5,
-                    paddingBottom: !isDesktop && isWeb ? 15 : 0,
-                },
-
-                tabBarActiveTintColor: Colors.primario,
-                tabBarInactiveTintColor: Colors.textoGris,
-                tabBarIndicatorStyle: { 
-                    backgroundColor: Colors.primario, 
-                    top: isDesktop ? undefined : 0,
-                    bottom: isDesktop ? 0 : undefined,
-                    height: 3
-                },
-
-                tabBarShowIcon: true,
-                tabBarLabelStyle: { fontSize: 10, textTransform: 'none', fontWeight: 'bold' },
-
-            }}
-        >
-            <Tab.Screen
-                name="Catálogo"
-                component={CatalogStack}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="car-search" color={color} size={24} />
-                    ),
+        {isDesktop ? (
+            <Tab.Navigator
+                tabBarPosition="top"
+                swipeEnabled={false}
+                screenOptions={{
+                    tabBarStyle: {
+                        backgroundColor: Colors.tarjeta,
+                        height: 65,
+                        borderTopWidth: 0,
+                        borderBottomWidth: 1,
+                        borderBottomColor: Colors.tarjeta,
+                        elevation: 0,
+                        paddingTop: 5,
+                    },
+                    tabBarActiveTintColor: Colors.primario,
+                    tabBarInactiveTintColor: Colors.textoGris,
+                    tabBarIndicatorStyle: { 
+                        backgroundColor: Colors.primario, 
+                        bottom: 0,
+                        height: 3
+                    },
+                    tabBarShowIcon: true,
+                    tabBarLabelStyle: { fontSize: 10, textTransform: 'none', fontWeight: 'bold' },
                 }}
-            />
-            <Tab.Screen
-                name="Mi Garaje"
-                component={GarageStack}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="garage" color={color} size={24} />
-                    ),
+            >
+                <Tab.Screen
+                    name="Catálogo"
+                    component={CatalogStack}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="car-search" color={color} size={24} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Mi Garaje"
+                    component={GarageStack}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="garage" color={color} size={24} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Historial"
+                    component={MyMaintenancesScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Perfil"
+                    component={ProfileScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="account" color={color} size={24} />
+                        ),
+                    }}
+                />
+            </Tab.Navigator>
+        ) : (
+            <BottomTab.Navigator
+                screenOptions={{
+                    headerShown: false,
+                    tabBarStyle: {
+                        backgroundColor: Colors.tarjeta,
+                        height: isWeb ? 80 : 70,
+                        borderTopWidth: 0,
+                        paddingTop: 10,
+                        paddingBottom: isWeb ? 15 : 10,
+                    },
+                    tabBarActiveTintColor: Colors.primario,
+                    tabBarInactiveTintColor: Colors.textoGris,
+                    tabBarLabelStyle: { fontSize: 12, fontWeight: 'bold' },
                 }}
-            />
-            <Tab.Screen
-                name="Historial"
-                component={MyMaintenancesScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Perfil"
-                component={ProfileScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="account" color={color} size={24} />
-                    ),
-                }}
-            />
-        </Tab.Navigator>
+            >
+                <BottomTab.Screen
+                    name="Catálogo"
+                    component={CatalogStack}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="car-search" color={color} size={26} />
+                        ),
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Mi Garaje"
+                    component={GarageStack}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="garage" color={color} size={26} />
+                        ),
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Historial"
+                    component={MyMaintenancesScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="calendar-clock" color={color} size={26} />
+                        ),
+                    }}
+                />
+                <BottomTab.Screen
+                    name="Perfil"
+                    component={ProfileScreen}
+                    options={{
+                        tabBarIcon: ({ color }) => (
+                            <MaterialCommunityIcons name="account" color={color} size={26} />
+                        ),
+                    }}
+                />
+            </BottomTab.Navigator>
+        )}
       </View>
+
     </View>
   );
 };
