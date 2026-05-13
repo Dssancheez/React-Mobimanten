@@ -4,27 +4,31 @@ import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
 import {useGlobalStyles, useAppTheme, useIsDesktop} from "@/src/styles/theme";
-import {Searchbar, Text} from "react-native-paper";
+import {Searchbar, Text, TextInput, Chip} from "react-native-paper";
 
 const HomeScreen = ({navigation}: any) => {
+    const [filters, setFilters] = useState({
+        marca: '',
+        modelo: '',
+        motor: '',
+        anio: ''
+    });
 
-    const [searchQuery, setSearchQuery] = useState('');
     const {data, loading, error, refetch} = useQuery<{ getCoches: Coche[] }>(GET_COCHES);
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const isDesktop = useIsDesktop();
 
-
+    // Obtener años únicos para el filtro
+    const añosUnicos = Array.from(new Set(data?.getCoches.map(c => c.anio.toString()) || [])).sort((a, b) => b.localeCompare(a));
 
     const cochesFiltrados = data?.getCoches.filter((coche: Coche) => {
-        const busqueda = searchQuery.toLowerCase();
-
         return (
-            coche.marca.toLowerCase().includes(busqueda) ||
-            coche.modelo.toLowerCase().includes(busqueda) ||
-            coche.motor.toLowerCase().includes(busqueda) ||
-            coche.anio.toString().includes(busqueda)
+            coche.marca.toLowerCase().includes(filters.marca.toLowerCase()) &&
+            coche.modelo.toLowerCase().includes(filters.modelo.toLowerCase()) &&
+            coche.motor.toLowerCase().includes(filters.motor.toLowerCase()) &&
+            (filters.anio === '' || coche.anio.toString() === filters.anio)
         );
     });
 
@@ -42,74 +46,108 @@ const HomeScreen = ({navigation}: any) => {
         </View>
     )
 
-
     return (
         <View style={globalStyles.container}>
             <View style={[
-                { flex: 1, alignSelf: 'center', width: '100%' },
-                isDesktop ? { flexDirection: 'row', maxWidth: 1400, paddingHorizontal: 20 } : { maxWidth: 1000 }
+                { flex: 1, width: '100%' },
+                isDesktop ? { flexDirection: 'row' } : { maxWidth: 1000, alignSelf: 'center' }
             ]}>
                 {/* Sidebar para Escritorio / Header para Móvil */}
-                <View style={isDesktop ? { width: 350, paddingRight: 40, paddingTop: 40 } : { paddingHorizontal: 20 }}>
-                    <View style={isDesktop ? { 
-                        position: 'sticky', 
-                        top: 20,
-                        backgroundColor: Colors.tarjeta,
-                        padding: 25,
-                        borderRadius: 24,
-                        borderWidth: 1,
-                        borderColor: 'rgba(255, 126, 0, 0.15)',
-                    } : {}}>
-                        <Text style={[globalStyles.tituloPrincipal, { fontSize: isDesktop ? 28 : 24, marginBottom: 5 }]}>
-                            {isDesktop ? 'Filtros' : 'Catálogo'}
+                <View style={isDesktop ? { 
+                    width: 320, 
+                    paddingLeft: 20, 
+                    paddingRight: 20, 
+                    paddingTop: 30,
+                    borderRightWidth: 1,
+                    borderRightColor: 'rgba(255, 126, 0, 0.1)',
+                    height: '100%'
+                } : { paddingHorizontal: 20 }}>
+                    
+                    <View style={isDesktop ? { position: 'sticky', top: 20 } : {}}>
+                        <Text style={[globalStyles.tituloPrincipal, { fontSize: isDesktop ? 26 : 24, marginBottom: 5 }]}>
+                            {isDesktop ? 'Buscador' : 'Catálogo'}
                         </Text>
-                        <Text style={{ color: Colors.textoGris, fontSize: 14, marginBottom: 20 }}>
-                            {isDesktop ? 'Encuentra el mantenimiento exacto para tu motor.' : 'Busca tu vehículo para ver su mantenimiento.'}
+                        <Text style={{ color: Colors.textoGris, fontSize: 13, marginBottom: 25 }}>
+                            Filtra por los detalles de tu vehículo.
                         </Text>
 
-                        <Searchbar
-                            placeholder="Marca, modelo..."
-                            onChangeText={setSearchQuery}
-                            value={searchQuery}
-                            style={{
-                                marginBottom: 20,
-                                backgroundColor: isDesktop ? Colors.fondo : Colors.tarjeta,
-                                borderRadius: 12,
-                                elevation: 0,
-                                borderWidth: 1,
-                                borderColor: 'rgba(255, 126, 0, 0.1)',
-                            }}
-                            iconColor={Colors.primario}
-                            inputStyle={{ color: theme.colors.text, fontSize: 14 }}
-                            placeholderTextColor={Colors.textoGris}
-                        />
-
-                        {isDesktop && (
-                            <View>
-                                <Text style={{ color: Colors.primario, fontWeight: 'bold', marginBottom: 15, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>
-                                    Sugerencias
-                                </Text>
-                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                                    {['BMW', 'Audi', 'TDI', 'GTI', '2024'].map(tag => (
-                                        <View key={tag} style={{ 
-                                            backgroundColor: 'rgba(255, 126, 0, 0.05)', 
-                                            paddingHorizontal: 12, 
-                                            paddingVertical: 6, 
-                                            borderRadius: 8,
-                                            borderWidth: 1,
-                                            borderColor: 'rgba(255, 126, 0, 0.1)'
-                                        }}>
-                                            <Text style={{ color: Colors.textoGris, fontSize: 12 }}>{tag}</Text>
-                                        </View>
-                                    ))}
+                        <View style={{ gap: 15 }}>
+                            <TextInput
+                                label="Marca"
+                                value={filters.marca}
+                                onChangeText={(val) => setFilters({...filters, marca: val})}
+                                mode="outlined"
+                                dense
+                                style={{ backgroundColor: Colors.tarjeta }}
+                                outlineColor="rgba(255, 126, 0, 0.2)"
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+                            <TextInput
+                                label="Modelo"
+                                value={filters.modelo}
+                                onChangeText={(val) => setFilters({...filters, modelo: val})}
+                                mode="outlined"
+                                dense
+                                style={{ backgroundColor: Colors.tarjeta }}
+                                outlineColor="rgba(255, 126, 0, 0.2)"
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+                            <TextInput
+                                label="Motor"
+                                value={filters.motor}
+                                onChangeText={(val) => setFilters({...filters, motor: val})}
+                                mode="outlined"
+                                dense
+                                style={{ backgroundColor: Colors.tarjeta }}
+                                outlineColor="rgba(255, 126, 0, 0.2)"
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+                            
+                            {isDesktop && (
+                                <View>
+                                    <Text style={{ color: Colors.textoGris, fontSize: 12, marginBottom: 8, marginTop: 10 }}>Año de fabricación</Text>
+                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                                        <Chip 
+                                            selected={filters.anio === ''} 
+                                            onPress={() => setFilters({...filters, anio: ''})}
+                                            style={{ backgroundColor: filters.anio === '' ? Colors.primario : Colors.tarjeta }}
+                                            textStyle={{ color: filters.anio === '' ? 'white' : theme.colors.text, fontSize: 11 }}
+                                        >
+                                            Todos
+                                        </Chip>
+                                        {añosUnicos.map(año => (
+                                            <Chip 
+                                                key={año}
+                                                selected={filters.anio === año} 
+                                                onPress={() => setFilters({...filters, anio: año})}
+                                                style={{ backgroundColor: filters.anio === año ? Colors.primario : Colors.tarjeta }}
+                                                textStyle={{ color: filters.anio === año ? 'white' : theme.colors.text, fontSize: 11 }}
+                                            >
+                                                {año}
+                                            </Chip>
+                                        ))}
+                                    </View>
                                 </View>
-                            </View>
-                        )}
+                            )}
+
+                            <Button 
+                                mode="text" 
+                                onPress={() => setFilters({marca: '', modelo: '', motor: '', anio: ''})}
+                                textColor={Colors.textoGris}
+                                style={{ marginTop: 10 }}
+                                icon="refresh"
+                            >
+                                Limpiar filtros
+                            </Button>
+                        </View>
                     </View>
                 </View>
 
                 {/* Lista de Coches Principal */}
-                <View style={{ flex: 1, paddingTop: isDesktop ? 40 : 0 }}>
+                <View style={{ flex: 1, paddingTop: isDesktop ? 20 : 0 }}>
                     <ListaCoches 
                         navigation={navigation}
                         coches={cochesFiltrados || []}
