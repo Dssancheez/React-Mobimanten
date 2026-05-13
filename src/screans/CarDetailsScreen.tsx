@@ -59,17 +59,19 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             marginBottom: 10,
         },
         title: {
-            fontSize: 32,
+            fontSize: isDesktop ? 32 : 26,
             fontWeight: 'bold',
             color: theme.colors.text,
-            marginBottom: 10,
+            marginBottom: isDesktop ? 10 : 5,
         },
+
         detailRow: {
             flexDirection: 'row',
             alignItems: 'center',
-            marginTop: 8,
-            gap: 15,
+            marginTop: 4,
+            gap: isDesktop ? 15 : 10,
         },
+
         specBadge: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -267,15 +269,17 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                             resizeMode="cover" 
                         />
                         <View style={styles.headerInfo}>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
+                            <View style={{ flex: 1, paddingRight: 10 }}>
+                                <Text style={styles.title} numberOfLines={2}>{coche.marca} {coche.modelo}</Text>
                                 <View style={styles.detailRow}>
                                     <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
                                     <Text style={styles.subtitle}>{coche.motor}</Text>
+                                    <View style={{ width: 10 }} />
                                     <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
                                     <Text style={styles.subtitle}>{coche.anio}</Text>
                                 </View>
                             </View>
+
                             <IconButton
                                 icon={isFavorito ? "star" : "star-outline"}
                                 iconColor={isFavorito ? "#FFD700" : Colors.primario}
