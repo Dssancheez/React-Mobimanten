@@ -101,11 +101,13 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
-            elevation: 4,
-            borderRadius: 15,
+            elevation: 2,
+            borderRadius: 16,
             width: isDesktop ? (width > 1200 ? '48.5%' : '100%') : '100%',
             marginRight: isDesktop ? '1.5%' : 0,
             overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.1)',
         },
         cardTitle: {
             fontSize: 18,
@@ -250,7 +252,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                             <View style={{ marginTop: 25 }}>
                                 <Button
                                     mode="contained"
-                                    buttonColor={isFavorito ? "#FFD700" : Colors.primario}
+                                    buttonColor={isFavorito ? "#2E7D32" : Colors.primario}
                                     icon={isFavorito ? "star" : "star-plus"}
                                     onPress={handleOpenModal}
                                     disabled={adding || removing}
@@ -282,7 +284,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
 
                             <IconButton
                                 icon={isFavorito ? "star" : "star-outline"}
-                                iconColor={isFavorito ? "#FFD700" : Colors.primario}
+                                iconColor={isFavorito ? "#2E7D32" : Colors.primario}
                                 size={35}
                                 onPress={handleOpenModal}
                                 disabled={adding || removing}
@@ -327,16 +329,27 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                         justifyContent: 'space-between'
                                     }}>
                                         <View style={{ flex: 1, marginRight: isDesktop ? 20 : 0 }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                                                <MaterialCommunityIcons name="tools" size={22} color={Colors.primario} style={{ marginRight: 12 }} />
-                                                <Text style={[styles.cardTitle, { marginBottom: 0 }]}>{mant.tarea}</Text>
-                                            </View>
-                                            <Text style={[styles.cardSubtitle, { marginLeft: 34 }]}>
-                                                <MaterialCommunityIcons name="update" size={14} color={Colors.textoGris} />
-                                                {" "}{mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
-                                                {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
-                                                {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
+                                            <Text style={{ 
+                                                color: Colors.primario, 
+                                                fontSize: 11, 
+                                                fontWeight: 'bold', 
+                                                textTransform: 'uppercase', 
+                                                letterSpacing: 1.2,
+                                                marginBottom: 4 
+                                            }}>
+                                                Recomendado
                                             </Text>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                                                <Text style={[styles.cardTitle, { marginBottom: 0, fontSize: 19 }]}>{mant.tarea}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <MaterialCommunityIcons name="update" size={14} color={Colors.textoGris} />
+                                                <Text style={[styles.cardSubtitle, { marginLeft: 6 }]}>
+                                                    {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
+                                                    {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
+                                                    {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
+                                                </Text>
+                                            </View>
                                         </View>
                                         
                                         <Button

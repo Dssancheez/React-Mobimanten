@@ -54,14 +54,16 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
             marginBottom: 15,
             width: isDesktop && width > 1200 ? '23%' : isDesktop && width > 800 ? '48%' : '100%',
             marginHorizontal: isDesktop && width > 800 ? '1%' : 0,
-
-            elevation: 4,
-            borderRadius: 12,
+            elevation: 2,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.1)',
+            overflow: 'hidden',
         },
         cardUrgente: {
             backgroundColor: '#D32F2F',
             borderColor: '#FF5252',
-            borderWidth: 1,
+            borderWidth: 2,
         },
         headerRow: {
             flexDirection: 'row',
@@ -229,16 +231,26 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                     style={[styles.card, alerta.urgente && styles.cardUrgente]}
                                 >
                                     <Card.Content>
+                                        <Text style={{ 
+                                            color: alerta.urgente ? '#FFE4E1' : Colors.primario, 
+                                            fontSize: 10, 
+                                            fontWeight: 'bold', 
+                                            textTransform: 'uppercase', 
+                                            letterSpacing: 1.1,
+                                            marginBottom: 4 
+                                        }}>
+                                            {alerta.urgente ? 'Urgente' : 'Próximo'}
+                                        </Text>
                                         <View style={styles.headerRow}>
-                                            <Text style={[styles.cardTitle, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
+                                            <Text style={[styles.cardTitle, { fontSize: 19 }, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
                                                 {alerta.tarea}
                                             </Text>
                                             {alerta.urgente && (
                                                 <MaterialCommunityIcons name="alert" size={24} color="white" />
                                             )}
                                         </View>
-                                        <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
-                                            Vehículo: {alerta.apodo}
+                                        <Text style={[styles.cardSubtitle, { marginBottom: 12 }, alerta.urgente && { color: '#FFE4E1' }]}>
+                                            {alerta.apodo}
                                         </Text>
 
                                         <View style={styles.diasContainer}>
@@ -269,12 +281,25 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                             historialSorted.map((reg) => (
                                 <Card key={reg.id} style={styles.card}>
                                     <Card.Content>
+                                        <Text style={{ 
+                                            color: Colors.primario, 
+                                            fontSize: 10, 
+                                            fontWeight: 'bold', 
+                                            textTransform: 'uppercase', 
+                                            letterSpacing: 1.1,
+                                            marginBottom: 4 
+                                        }}>
+                                            Realizado
+                                        </Text>
                                         <View style={styles.headerRow}>
-                                            <Text style={styles.cardTitle}>{reg.tarea}</Text>
+                                            <Text style={[styles.cardTitle, { fontSize: 19 }]}>{reg.tarea}</Text>
                                             <Text style={styles.fecha}>{reg.fechaRealizado}</Text>
                                         </View>
-                                        <Text style={styles.cardSubtitle}>Vehículo: {reg.cocheApodo}</Text>
-                                        <Text style={styles.kmTexto}>{reg.kilometrosRealizado} km</Text>
+                                        <Text style={[styles.cardSubtitle, { marginBottom: 8 }]}>{reg.cocheApodo}</Text>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <MaterialCommunityIcons name="speedometer" size={14} color={Colors.textoGris} />
+                                            <Text style={[styles.kmTexto, { marginBottom: 0, marginLeft: 6 }]}>{reg.kilometrosRealizado} km</Text>
+                                        </View>
                                         {reg.observaciones ? (
                                             <Text style={styles.observaciones}>Nota: {reg.observaciones}</Text>
                                         ) : null}
