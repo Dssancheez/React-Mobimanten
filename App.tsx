@@ -29,6 +29,20 @@ if (Platform.OS === 'web') {
         setTimeout(() => window.close(), 200);
     }
 
+    const style = document.createElement('style');
+    style.textContent = `
+        html, body, #root {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #root {
+            display: flex;
+            flex-direction: column;
+        }
+    `;
+    document.head.append(style);
 }
 
 const MainApp = () => {
