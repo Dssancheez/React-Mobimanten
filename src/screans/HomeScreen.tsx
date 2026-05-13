@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ActivityIndicator, View, Platform} from 'react-native';
+import {ActivityIndicator, View, Platform, ScrollView} from 'react-native';
 import {ListaCoches} from '../components/ListaCoches';
 import {useQuery} from "@apollo/client/react";
 import {Coche, GET_COCHES} from "@/src/graphql/queries";
@@ -70,8 +70,8 @@ const HomeScreen = ({navigation}: any) => {
                 {isDesktop ? (
                     /* Sidebar para Escritorio (Filtros Avanzados) */
                     <View style={{ 
-                        width: 320, 
-                        paddingLeft: 20, 
+                        width: 330, 
+                        paddingLeft: 30, 
                         paddingRight: 5, 
                         paddingTop: 40,
                         borderRightWidth: 1,
@@ -138,22 +138,28 @@ const HomeScreen = ({navigation}: any) => {
                                                 {filters.anio === '' ? 'Año de fabricación' : `Año: ${filters.anio}`}
                                             </Button>
                                         }
-                                        contentStyle={{ backgroundColor: Colors.tarjeta, maxHeight: 400 }}
+                                        contentStyle={{ 
+                                            backgroundColor: Colors.tarjeta, 
+                                            maxHeight: 300,
+                                            width: 280, 
+                                        }}
                                     >
-                                        <Menu.Item 
-                                            onPress={() => { setFilters({...filters, anio: ''}); setMenuVisible(false); }} 
-                                            title="Todos los años" 
-                                            titleStyle={{ color: theme.colors.text }}
-                                        />
-                                        <Divider />
-                                        {añosFiltro.map(año => (
+                                        <ScrollView style={{ maxHeight: 300 }}>
                                             <Menu.Item 
-                                                key={año}
-                                                onPress={() => { setFilters({...filters, anio: año}); setMenuVisible(false); }} 
-                                                title={año} 
+                                                onPress={() => { setFilters({...filters, anio: ''}); setMenuVisible(false); }} 
+                                                title="Todos los años" 
                                                 titleStyle={{ color: theme.colors.text }}
                                             />
-                                        ))}
+                                            <Divider />
+                                            {añosFiltro.map(año => (
+                                                <Menu.Item 
+                                                    key={año}
+                                                    onPress={() => { setFilters({...filters, anio: año}); setMenuVisible(false); }} 
+                                                    title={año} 
+                                                    titleStyle={{ color: theme.colors.text }}
+                                                />
+                                            ))}
+                                        </ScrollView>
                                     </Menu>
                                 </View>
 
