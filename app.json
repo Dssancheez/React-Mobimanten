@@ -4,7 +4,7 @@
     "slug": "React-MobiManten",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.jpeg",
+    "icon": "./assets/images/logo.png",
     "scheme": "mobimanten",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/logo.jpeg",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -23,7 +23,7 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/logo.jpeg",
+      "favicon": "./assets/images/logo.png",
       "name": "MobiManten",
       "shortName": "MobiManten",
       "description": "Tu asistente inteligente de mantenimiento de vehículos",
@@ -36,7 +36,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/logo.jpeg",
+          "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
