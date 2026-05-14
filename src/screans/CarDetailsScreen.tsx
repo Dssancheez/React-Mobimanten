@@ -242,6 +242,10 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                     <Text style={styles.subtitle}>{coche.motor}</Text>
                                 </View>
                                 <View style={styles.specBadge}>
+                                    <MaterialCommunityIcons name="gas-station-outline" size={20} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.combustible}</Text>
+                                </View>
+                                <View style={styles.specBadge}>
                                     <MaterialCommunityIcons name="calendar-range" size={20} color={Colors.primario} />
                                     <Text style={styles.subtitle}>{coche.anio}</Text>
                                 </View>
@@ -273,6 +277,9 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
                                 <View style={styles.detailRow}>
                                     <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
                                     <Text style={styles.subtitle}>{coche.motor}</Text>
+                                    <View style={{ width: 10 }} />
+                                    <MaterialCommunityIcons name="gas-station-outline" size={18} color={Colors.primario} />
+                                    <Text style={styles.subtitle}>{coche.combustible}</Text>
                                     <View style={{ width: 10 }} />
                                     <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
                                     <Text style={styles.subtitle}>{coche.anio}</Text>

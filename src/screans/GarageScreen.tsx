@@ -150,6 +150,9 @@ const GarageScreen = ({ navigation }: any) => {
                                 <Text style={styles.cocheDetails}>
                                     {item.coche.marca} {item.coche.modelo} • {item.coche.motor}
                                 </Text>
+                                <Text style={[styles.cocheDetails, { fontSize: 13, color: Colors.primario, marginTop: 2 }]}>
+                                    Tipo: {item.coche.combustible}
+                                </Text>
                             </Card.Content>
                         </Card>
                     );

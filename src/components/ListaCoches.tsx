@@ -98,7 +98,7 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                         />
                         <Card.Title
                             title={`${item.marca} ${item.modelo}`}
-                            subtitle={`${item.motor} • Año ${item.anio}`}
+                            subtitle={`${item.motor} • ${item.combustible} • Año ${item.anio}`}
                             titleStyle={{ color: Colors.primario, fontWeight: 'bold', fontSize: 18 }}
                             subtitleStyle={{ color: Colors.textoGris }}
                         />
