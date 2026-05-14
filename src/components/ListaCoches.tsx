@@ -25,7 +25,7 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
     // Determinar número de columnas según el ancho de pantalla en web
     const getNumColumns = () => {
         if (!isDesktop) return 1;
-        if (width > 1200) return 2;
+        if (width > 1200) return 3;
         if (width > 800) return 2;
         return 2;
     };
