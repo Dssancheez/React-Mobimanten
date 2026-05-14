@@ -13,19 +13,25 @@ import { ThemeProvider, ThemeContext } from './src/context/ThemeContext';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
-// Manejar la redirección de autenticación en web lo antes posible
+// Manejar la limpieza de Service Workers antiguos y redirecciones de auth
 if (Platform.OS === 'web') {
-    // 1. Intento estándar de Expo
+    // 1. Unregister any existing service workers to fix the "blank screen" issue
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+                console.log('Service Worker unregistered');
+            }
+        });
+    }
+
+    // 2. Intento estándar de Expo para auth
     WebBrowser.maybeCompleteAuthSession();
 
-    // 2. Fallback manual: Si detectamos parámetros de Google y estamos en un popup, cerramos y avisamos
+    // 3. Fallback manual para auth
     const url = window.location.href;
-    const isAuthRedirect = url.includes('state=') || url.includes('code=') || url.includes('id_token=');
-
-    if (isAuthRedirect && window.opener) {
-        // Usamos '*' para el origin para evitar fallos si hay discrepancias entre www y no-www
+    if ((url.includes('state=') || url.includes('code=')) && window.opener) {
         window.opener.postMessage(url, "*");
-        // Cerrar lo más rápido posible si detectamos que es una redirección de auth
         setTimeout(() => window.close(), 200);
     }
 
