@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, FlatList, ActivityIndicator, Image, Platform } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, Button, Avatar, Switch, List, Card, Divider, Modal, Portal } from 'react-native-paper';
 import { AuthContext } from '../context/AuthContext';
 import { useGlobalStyles, useAppTheme } from '../styles/theme';
