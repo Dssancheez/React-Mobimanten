@@ -39,7 +39,6 @@ const ProfileScreen = ({ navigation }: any) => {
     const Colors = theme.customColors;
 
     const styles = StyleSheet.create({
-    const styles = StyleSheet.create({
         container: {
             flex: 1,
             backgroundColor: isDarkMode ? 'rgba(18, 18, 18, 0.7)' : 'rgba(255, 255, 255, 0.6)', // Más transparente
