@@ -176,11 +176,7 @@ const HomeScreen = ({navigation}: any) => {
                         </View>
                     </View>
                 ) : (
-                    /* Header para Móvil (Buscador Único) */
                     <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
-                        <Text style={[globalStyles.tituloPrincipal, { marginBottom: 15 }]}>
-                            Catálogo
-                        </Text>
                         <Searchbar
                             placeholder="Buscar coche..."
                             onChangeText={setSearchQuery}

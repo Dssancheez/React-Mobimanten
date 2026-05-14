@@ -208,43 +208,10 @@ const MainTabs = ({ navigation }: any) => {
                 tabBarShowIcon: true,
             }}
         >
-            <Tab.Screen
-                name="Catálogo"
-                component={CatalogStack}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="car-search" color={color} size={24} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Mi Garaje"
-                component={GarageStack}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="garage" color={color} size={24} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Historial"
-                component={MyMaintenancesScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Perfil"
-                component={ProfileScreen}
-                options={{
-                    tabBarIcon: ({ color }) => (
-                        <MaterialCommunityIcons name="account" color={color} size={24} />
-                    ),
-                }}
-            />
-        </Tab.Navigator>
+                <Tab.Screen name="Catálogo" component={CatalogStack} />
+                <Tab.Screen name="Mi Garaje" component={GarageStack} />
+                <Tab.Screen name="Historial" component={MyMaintenancesScreen} />
+            </Tab.Navigator>
     );
   }
 
@@ -292,11 +259,12 @@ const MainTabs = ({ navigation }: any) => {
             ),
             tabBarStyle: {
                 backgroundColor: Colors.tarjeta,
-                height: isWeb ? 85 : 70,
+                height: 70,
                 borderTopWidth: 0,
                 paddingTop: 10,
-                paddingBottom: isWeb ? 25 : 10,
+                paddingBottom: 10,
                 elevation: 5,
+                paddingHorizontal: 40, // Centrar los 3 iconos agrupándolos
             },
             tabBarActiveTintColor: Colors.primario,
             tabBarInactiveTintColor: Colors.textoGris,
@@ -330,14 +298,8 @@ const MainTabs = ({ navigation }: any) => {
                 ),
             }}
         />
-        <BottomTab.Screen
-            name="Perfil"
-            component={ProfileScreen}
-            options={{
-                tabBarButton: () => null, // Ocultar del TabBar
-            }}
-        />
     </BottomTab.Navigator>
+
   );
 };
 
@@ -345,6 +307,16 @@ const AppStack = () => {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen 
+                name="Perfil" 
+                component={ProfileScreen} 
+                options={{ 
+                    headerShown: true, 
+                    title: 'Mi Perfil',
+                    headerStyle: { backgroundColor: '#121212' },
+                    headerTintColor: '#FF7E00'
+                }} 
+            />
         </Stack.Navigator>
     );
 };

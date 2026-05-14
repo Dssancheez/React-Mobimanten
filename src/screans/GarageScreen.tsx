@@ -102,9 +102,11 @@ const GarageScreen = ({ navigation }: any) => {
                 ]}
                 ListHeaderComponent={
                     <View style={{ paddingVertical: isDesktop ? 40 : 20 }}>
-                        <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
-                            Mi Garaje
-                        </Text>
+                        {isDesktop && (
+                            <Text style={[globalStyles.tituloPrincipal, { marginBottom: 5 }]}>
+                                Mi Garaje
+                            </Text>
+                        )}
                         {isDesktop && (
                             <Text style={{ color: Colors.textoGris, fontSize: 18 }}>
                                 Gestiona tus vehículos y sus mantenimientos inteligentes.
