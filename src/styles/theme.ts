@@ -96,10 +96,10 @@ export const useGlobalStyles = () => {
             })
         },
         webMaxWidth: {
-            maxWidth: 1200,
+            maxWidth: 1800,
             width: '100%',
             alignSelf: 'center',
-            paddingLeft: isDesktop ? 30 : 15,
+            paddingLeft: isDesktop ? 20 : 15,
             paddingRight: isDesktop ? 5 : 10
         }
     });
