@@ -200,31 +200,6 @@ const MainTabs = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fondo }}>
-      {!isDesktop && (
-        <View style={{ 
-          flexDirection: 'row', 
-          paddingTop: isWeb ? 20 : 50, 
-          paddingBottom: 15, 
-          paddingHorizontal: 20, 
-          backgroundColor: Colors.fondo, 
-          alignItems: 'center', 
-          justifyContent: 'center',
-          borderBottomWidth: 0.5,
-          borderBottomColor: Colors.tarjeta,
-        }}>
-          <Text style={{ 
-            fontSize: 28, 
-            color: Colors.primario,
-            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
-            fontStyle: 'italic',
-            fontWeight: 'bold',
-            letterSpacing: 0.5
-          }}>
-            MobiManten
-          </Text>
-        </View>
-      )}
-
       <View style={{ flex: 1, width: '100%', backgroundColor: Colors.fondo }}>
         {isDesktop ? (
             <Tab.Navigator
@@ -275,7 +250,19 @@ const MainTabs = () => {
         ) : (
             <BottomTab.Navigator
                 screenOptions={{
-                    headerShown: false,
+                    headerShown: true,
+                    headerStyle: { 
+                        backgroundColor: Colors.fondo, 
+                        elevation: 0, 
+                        shadowOpacity: 0,
+                        height: 60
+                    },
+                    headerTitle: '',
+                    headerRight: () => (
+                        <TouchableOpacity style={{ marginRight: 20 }}>
+                            <MaterialCommunityIcons name="bell-outline" color={Colors.textoSecundario} size={26} />
+                        </TouchableOpacity>
+                    ),
                     tabBarStyle: {
                         backgroundColor: Colors.tarjeta,
                         height: isWeb ? 85 : 70,
