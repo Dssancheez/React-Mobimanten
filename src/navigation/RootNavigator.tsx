@@ -198,155 +198,146 @@ const MainTabs = ({ navigation }: any) => {
   const isDesktop = useIsDesktop();
   const { usuario } = useContext(AuthContext);
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.fondo }}>
-      <View style={{ flex: 1, width: '100%', backgroundColor: Colors.fondo }}>
-        {isDesktop ? (
-            <Tab.Navigator
-                tabBar={props => <CustomWebTabBar {...props} />}
-                tabBarPosition="top"
-                swipeEnabled={false}
-                screenOptions={{
-                    tabBarShowIcon: true,
+  if (isDesktop) {
+    return (
+        <Tab.Navigator
+            tabBar={props => <CustomWebTabBar {...props} />}
+            tabBarPosition="top"
+            swipeEnabled={false}
+            screenOptions={{
+                tabBarShowIcon: true,
+            }}
+        >
+            <Tab.Screen
+                name="Catálogo"
+                component={CatalogStack}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="car-search" color={color} size={24} />
+                    ),
                 }}
-            >
-                <Tab.Screen
-                    name="Catálogo"
-                    component={CatalogStack}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="car-search" color={color} size={24} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Mi Garaje"
-                    component={GarageStack}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="garage" color={color} size={24} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Historial"
-                    component={MyMaintenancesScreen}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
-                        ),
-                    }}
-                />
-                <Tab.Screen
-                    name="Perfil"
-                    component={ProfileScreen}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="account" color={color} size={24} />
-                        ),
-                    }}
-                />
-            </Tab.Navigator>
-        ) : (
-            <BottomTab.Navigator
-                screenOptions={{
-                    headerShown: true,
-                    headerStyle: { 
-                        backgroundColor: Colors.fondo, 
-                        elevation: 0, 
-                        shadowOpacity: 0,
-                        height: 60
-                    },
-                    headerTitleAlign: 'center',
-                    headerTitle: () => (
-                        <Text style={{ 
-                            fontSize: 22, 
-                            color: Colors.primario,
-                            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
-                            fontStyle: 'italic',
-                            fontWeight: 'bold',
-                            letterSpacing: 0.5
-                        }}>
-                            MobiManten
-                        </Text>
+            />
+            <Tab.Screen
+                name="Mi Garaje"
+                component={GarageStack}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="garage" color={color} size={24} />
                     ),
-                    headerLeft: () => (
-                        <TouchableOpacity 
-                            onPress={() => navigation.navigate('Perfil')}
-                            style={{ marginLeft: 15 }}
-                        >
-                            {usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
-                                <Image 
-                                    source={AVATARES_LOCALES[usuario.avatar]} 
-                                    style={{ width: 38, height: 38, borderRadius: 19, resizeMode: 'contain' }} 
-                                />
-                            ) : (
-                                <MaterialCommunityIcons name="account-circle" color={Colors.primario} size={38} />
-                            )}
-                        </TouchableOpacity>
+                }}
+            />
+            <Tab.Screen
+                name="Historial"
+                component={MyMaintenancesScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="calendar-clock" color={color} size={24} />
                     ),
-                    headerRight: () => (
-                        <TouchableOpacity style={{ marginRight: 20 }}>
-                            <MaterialCommunityIcons name="bell-outline" color={Colors.primario} size={26} />
-                        </TouchableOpacity>
+                }}
+            />
+            <Tab.Screen
+                name="Perfil"
+                component={ProfileScreen}
+                options={{
+                    tabBarIcon: ({ color }) => (
+                        <MaterialCommunityIcons name="account" color={color} size={24} />
                     ),
-                    tabBarStyle: {
-                        backgroundColor: Colors.tarjeta,
-                        height: isWeb ? 85 : 70,
-                        borderTopWidth: 0,
-                        paddingTop: 10,
-                        paddingBottom: isWeb ? 25 : 10,
-                        position: isWeb ? 'absolute' : 'relative',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        zIndex: 1000,
-                        elevation: 5,
-                    },
+                }}
+            />
+        </Tab.Navigator>
+    );
+  }
 
-                    tabBarActiveTintColor: Colors.primario,
-                    tabBarInactiveTintColor: Colors.textoGris,
-                    tabBarLabelStyle: { fontSize: 12, fontWeight: 'bold' },
-                }}
-            >
-                <BottomTab.Screen
-                    name="Catálogo"
-                    component={CatalogStack}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="car-search" color={color} size={26} />
-                        ),
-                    }}
-                />
-                <BottomTab.Screen
-                    name="Mi Garaje"
-                    component={GarageStack}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="garage" color={color} size={26} />
-                        ),
-                    }}
-                />
-                <BottomTab.Screen
-                    name="Historial"
-                    component={MyMaintenancesScreen}
-                    options={{
-                        tabBarIcon: ({ color }) => (
-                            <MaterialCommunityIcons name="calendar-clock" color={color} size={26} />
-                        ),
-                    }}
-                />
-                <BottomTab.Screen
-                    name="Perfil"
-                    component={ProfileScreen}
-                    options={{
-                        tabBarButton: () => null, // Ocultar del TabBar
-                    }}
-                />
-            </BottomTab.Navigator>
-        )}
-      </View>
-    </SafeAreaView>
+  return (
+    <BottomTab.Navigator
+        screenOptions={{
+            headerShown: true,
+            headerStyle: { 
+                backgroundColor: Colors.fondo, 
+                elevation: 0, 
+                shadowOpacity: 0,
+            },
+            headerTitleAlign: 'center',
+            headerTitle: () => (
+                <Text style={{ 
+                    fontSize: 22, 
+                    color: Colors.primario,
+                    fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                    letterSpacing: 0.5
+                }}>
+                    MobiManten
+                </Text>
+            ),
+            headerLeft: () => (
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('Perfil')}
+                    style={{ marginLeft: 15 }}
+                >
+                    {usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
+                        <Image 
+                            source={AVATARES_LOCALES[usuario.avatar]} 
+                            style={{ width: 38, height: 38, borderRadius: 19, resizeMode: 'contain' }} 
+                        />
+                    ) : (
+                        <MaterialCommunityIcons name="account-circle" color={Colors.primario} size={38} />
+                    )}
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity style={{ marginRight: 20 }}>
+                    <MaterialCommunityIcons name="bell-outline" color={Colors.primario} size={26} />
+                </TouchableOpacity>
+            ),
+            tabBarStyle: {
+                backgroundColor: Colors.tarjeta,
+                height: isWeb ? 85 : 70,
+                borderTopWidth: 0,
+                paddingTop: 10,
+                paddingBottom: isWeb ? 25 : 10,
+                elevation: 5,
+            },
+            tabBarActiveTintColor: Colors.primario,
+            tabBarInactiveTintColor: Colors.textoGris,
+            tabBarLabelStyle: { fontSize: 12, fontWeight: 'bold' },
+        }}
+    >
+        <BottomTab.Screen
+            name="Catálogo"
+            component={CatalogStack}
+            options={{
+                tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons name="car-search" color={color} size={26} />
+                ),
+            }}
+        />
+        <BottomTab.Screen
+            name="Mi Garaje"
+            component={GarageStack}
+            options={{
+                tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons name="garage" color={color} size={26} />
+                ),
+            }}
+        />
+        <BottomTab.Screen
+            name="Historial"
+            component={MyMaintenancesScreen}
+            options={{
+                tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons name="calendar-clock" color={color} size={26} />
+                ),
+            }}
+        />
+        <BottomTab.Screen
+            name="Perfil"
+            component={ProfileScreen}
+            options={{
+                tabBarButton: () => null, // Ocultar del TabBar
+            }}
+        />
+    </BottomTab.Navigator>
   );
 };
 
