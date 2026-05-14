@@ -257,6 +257,7 @@ const MainTabs = ({ navigation }: any) => {
                         shadowOpacity: 0,
                         height: 60
                     },
+                    headerTitleAlign: 'center',
                     headerTitle: () => (
                         <Text style={{ 
                             fontSize: 22, 
@@ -272,15 +273,15 @@ const MainTabs = ({ navigation }: any) => {
                     headerLeft: () => (
                         <TouchableOpacity 
                             onPress={() => navigation.navigate('Perfil')}
-                            style={{ marginLeft: 20 }}
+                            style={{ marginLeft: 15 }}
                         >
                             {usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
                                 <Image 
                                     source={AVATARES_LOCALES[usuario.avatar]} 
-                                    style={{ width: 32, height: 32, borderRadius: 16, resizeMode: 'contain' }} 
+                                    style={{ width: 38, height: 38, borderRadius: 19, resizeMode: 'contain' }} 
                                 />
                             ) : (
-                                <MaterialCommunityIcons name="account-circle" color={Colors.primario} size={32} />
+                                <MaterialCommunityIcons name="account-circle" color={Colors.primario} size={38} />
                             )}
                         </TouchableOpacity>
                     ),
