@@ -39,12 +39,13 @@ const ProfileScreen = ({ navigation }: any) => {
     const Colors = theme.customColors;
 
     const styles = StyleSheet.create({
+    const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: 'rgba(20, 20, 20, 0.9)', // Negro translúcido tirando a gris
+            backgroundColor: isDarkMode ? 'rgba(18, 18, 18, 0.7)' : 'rgba(255, 255, 255, 0.6)', // Más transparente
             paddingTop: Platform.OS === 'ios' ? 50 : 20,
             // @ts-ignore - backdropFilter solo funciona en web pero no rompe en nativo
-            backdropFilter: 'blur(15px)',
+            backdropFilter: 'blur(25px)',
         },
         header: {
             flexDirection: 'row',
@@ -56,10 +57,10 @@ const ProfileScreen = ({ navigation }: any) => {
             margin: 16,
             padding: 20,
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)', // Tarjeta muy sutil
-            borderRadius: 16,
+            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)', // Muy sutil
+            borderRadius: 24,
             borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
         },
         avatarContainer: {
             width: 100,
@@ -174,19 +175,19 @@ const ProfileScreen = ({ navigation }: any) => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <MaterialCommunityIcons name="chevron-left" size={32} color={Colors.primario} />
                 </TouchableOpacity>
-                <Text style={[styles.userName, { marginLeft: 15 }]}>Mi Perfil</Text>
+                <Text style={[styles.userName, { marginLeft: 15, color: isDarkMode ? 'white' : '#121212' }]}>Mi Perfil</Text>
             </View>
 
             <ScrollView>
                 <Card style={styles.headerCard}>
                     <View style={{ alignItems: 'center', width: '100%' }}>
                         {renderProfileAvatar()}
-                        <Text style={styles.userName}>{usuario?.nombre || 'Usuario'}</Text>
-                        <Text style={styles.userEmail}>{usuario?.email || 'Sin correo'}</Text>
+                        <Text style={[styles.userName, { color: isDarkMode ? 'white' : '#121212' }]}>{usuario?.nombre || 'Usuario'}</Text>
+                        <Text style={[styles.userEmail, { color: isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }]}>{usuario?.email || 'Sin correo'}</Text>
                     </View>
                 </Card>
 
-                <Text style={styles.sectionTitle}>Ajustes de la Aplicación</Text>
+                <Text style={[styles.sectionTitle, { color: Colors.primario }]}>Ajustes de la Aplicación</Text>
                 <List.Section>
                     <List.Item
                         title="Modo Oscuro"
@@ -200,27 +201,27 @@ const ProfileScreen = ({ navigation }: any) => {
                             />
                         )}
                         style={{ paddingVertical: 10 }}
-                        titleStyle={{ color: 'white' }}
-                        descriptionStyle={{ color: 'rgba(255,255,255,0.6)' }}
+                        titleStyle={{ color: isDarkMode ? 'white' : '#121212' }}
+                        descriptionStyle={{ color: isDarkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)' }}
                     />
                 </List.Section>
 
-                <Text style={styles.sectionTitle}>Cuenta y Seguridad</Text>
+                <Text style={[styles.sectionTitle, { color: Colors.primario }]}>Cuenta y Seguridad</Text>
                 <List.Section>
                     <List.Item
                         title="Editar Perfil"
                         left={props => <List.Icon {...props} icon="account-edit-outline" color={Colors.primario} />}
-                        right={() => <List.Icon icon="chevron-right" color="rgba(255,255,255,0.3)" />}
+                        right={() => <List.Icon icon="chevron-right" color={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} />}
                         onPress={() => setModalVisible(true)}
-                        titleStyle={{ color: 'white' }}
+                        titleStyle={{ color: isDarkMode ? 'white' : '#121212' }}
                     />
-                    <Divider style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+                    <Divider style={{ backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }} />
                     <List.Item
                         title="Cambiar Contraseña"
                         left={props => <List.Icon {...props} icon="lock-outline" color={Colors.primario} />}
-                        right={() => <List.Icon icon="chevron-right" color="rgba(255,255,255,0.3)" />}
+                        right={() => <List.Icon icon="chevron-right" color={isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.2)'} />}
                         onPress={() => {}}
-                        titleStyle={{ color: 'white' }}
+                        titleStyle={{ color: isDarkMode ? 'white' : '#121212' }}
                     />
                 </List.Section>
 
