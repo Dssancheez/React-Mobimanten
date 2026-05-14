@@ -12,7 +12,8 @@ const HomeScreen = ({navigation}: any) => {
         marca: '',
         modelo: '',
         motor: '',
-        anio: ''
+        anio: '',
+        tipo: ''
     });
     const [menuVisible, setMenuVisible] = useState(false);
 
@@ -42,6 +43,7 @@ const HomeScreen = ({navigation}: any) => {
             coche.marca.toLowerCase().includes(filters.marca.toLowerCase()) &&
             coche.modelo.toLowerCase().includes(filters.modelo.toLowerCase()) &&
             coche.motor.toLowerCase().includes(filters.motor.toLowerCase()) &&
+            coche.combustible.toLowerCase().includes(filters.tipo.toLowerCase()) &&
             (filters.anio === '' || coche.anio.toString() === filters.anio)
         );
     });
@@ -121,6 +123,19 @@ const HomeScreen = ({navigation}: any) => {
                                     activeOutlineColor={Colors.primario}
                                     textColor={theme.colors.text}
                                 />
+                                <TextInput
+                                    label="Tipo"
+                                    placeholder="Gasolina, hibrido, diesel..."
+                                    value={filters.tipo}
+                                    onChangeText={(val) => setFilters({...filters, tipo: val})}
+                                    mode="outlined"
+                                    dense
+                                    style={{ backgroundColor: Colors.tarjeta }}
+                                    outlineColor="rgba(255, 126, 0, 0.2)"
+                                    activeOutlineColor={Colors.primario}
+                                    textColor={theme.colors.text}
+                                    placeholderTextColor={Colors.textoGris}
+                                />
                                 
                                 <View style={{ marginTop: 5 }}>
                                     <Menu
@@ -165,7 +180,7 @@ const HomeScreen = ({navigation}: any) => {
 
                                 <Button 
                                     mode="text" 
-                                    onPress={() => setFilters({marca: '', modelo: '', motor: '', anio: ''})}
+                                    onPress={() => setFilters({marca: '', modelo: '', motor: '', anio: '', tipo: ''})}
                                     textColor={Colors.textoGris}
                                     style={{ marginTop: 10 }}
                                     icon="refresh"
