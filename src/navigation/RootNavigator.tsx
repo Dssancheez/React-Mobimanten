@@ -191,7 +191,7 @@ const GarageStack = () => {
     );
 };
 
-const MainTabs = () => {
+const MainTabs = ({ navigation }: any) => {
   const theme = useAppTheme();
   const Colors = theme.customColors;
   const isWeb = Platform.OS === 'web';
@@ -257,10 +257,36 @@ const MainTabs = () => {
                         shadowOpacity: 0,
                         height: 60
                     },
-                    headerTitle: '',
+                    headerTitle: () => (
+                        <Text style={{ 
+                            fontSize: 22, 
+                            color: Colors.primario,
+                            fontFamily: Platform.OS === 'ios' ? 'Snell Roundhand' : 'serif',
+                            fontStyle: 'italic',
+                            fontWeight: 'bold',
+                            letterSpacing: 0.5
+                        }}>
+                            MobiManten
+                        </Text>
+                    ),
+                    headerLeft: () => (
+                        <TouchableOpacity 
+                            onPress={() => navigation.navigate('Perfil')}
+                            style={{ marginLeft: 20 }}
+                        >
+                            {usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
+                                <Image 
+                                    source={AVATARES_LOCALES[usuario.avatar]} 
+                                    style={{ width: 32, height: 32, borderRadius: 16, resizeMode: 'contain' }} 
+                                />
+                            ) : (
+                                <MaterialCommunityIcons name="account-circle" color={Colors.primario} size={32} />
+                            )}
+                        </TouchableOpacity>
+                    ),
                     headerRight: () => (
                         <TouchableOpacity style={{ marginRight: 20 }}>
-                            <MaterialCommunityIcons name="bell-outline" color={Colors.textoSecundario} size={26} />
+                            <MaterialCommunityIcons name="bell-outline" color={Colors.primario} size={26} />
                         </TouchableOpacity>
                     ),
                     tabBarStyle: {
@@ -313,24 +339,7 @@ const MainTabs = () => {
                     name="Perfil"
                     component={ProfileScreen}
                     options={{
-                        tabBarLabel: 'Perfil',
-                        tabBarIcon: ({ color, focused }) => (
-                            usuario?.avatar && AVATARES_LOCALES[usuario.avatar] ? (
-                                <Image 
-                                    source={AVATARES_LOCALES[usuario.avatar]} 
-                                    style={{ 
-                                        width: 26, 
-                                        height: 26, 
-                                        borderRadius: 13,
-                                        borderWidth: focused ? 2 : 0,
-                                        borderColor: Colors.primario,
-                                        resizeMode: 'contain'
-                                    }} 
-                                />
-                            ) : (
-                                <MaterialCommunityIcons name="account" color={color} size={26} />
-                            )
-                        ),
+                        tabBarButton: () => null, // Ocultar del TabBar
                     }}
                 />
             </BottomTab.Navigator>
