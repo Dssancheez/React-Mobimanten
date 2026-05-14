@@ -40,16 +40,25 @@ const ProfileScreen = () => {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: theme.colors.background,
+            backgroundColor: 'rgba(20, 20, 20, 0.9)', // Negro translúcido tirando a gris
+            paddingTop: Platform.OS === 'ios' ? 50 : 20,
+            // @ts-ignore - backdropFilter solo funciona en web pero no rompe en nativo
+            backdropFilter: 'blur(15px)',
+        },
+        header: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 20,
+            paddingBottom: 20,
         },
         headerCard: {
             margin: 16,
-            marginTop: 20,
             padding: 20,
             alignItems: 'center',
-            backgroundColor: Colors.tarjeta,
+            backgroundColor: 'rgba(255, 255, 255, 0.05)', // Tarjeta muy sutil
             borderRadius: 16,
-            elevation: 4,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.1)',
         },
         avatarContainer: {
             width: 100,
@@ -159,72 +168,71 @@ const ProfileScreen = () => {
     };
 
     return (
-        <ResponsiveContainer>
-            <Card style={styles.headerCard}>
-                <View style={{ alignItems: 'center', width: '100%' }}>
-                    {renderProfileAvatar()}
-                    <Text style={styles.userName}>{usuario?.nombre || 'Usuario'}</Text>
-                    <Text style={styles.userEmail}>{usuario?.email || 'Sin correo'}</Text>
-                </View>
-            </Card>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <MaterialCommunityIcons name="chevron-left" size={32} color={Colors.primario} />
+                </TouchableOpacity>
+                <Text style={[styles.userName, { marginLeft: 15 }]}>Mi Perfil</Text>
+            </View>
 
-            <Text style={styles.sectionTitle}>Ajustes de la Aplicación</Text>
-            <List.Section>
-                <List.Item
-                    title="Modo Oscuro"
-                    description="Cambia el aspecto visual de la app"
-                    left={props => <List.Icon {...props} icon="theme-light-dark" color={Colors.primario} />}
-                    right={() => (
-                        <Switch 
-                            value={isDarkMode} 
-                            onValueChange={toggleTheme} 
-                            color={Colors.primario} 
-                        />
-                    )}
-                    style={{ paddingVertical: 10 }}
-                    titleStyle={{ color: theme.colors.text }}
-                    descriptionStyle={{ color: Colors.textoGris }}
-                />
-                <Divider />
-                <List.Item
-                    title="Notificaciones"
-                    description="Gestiona las alertas de mantenimiento"
-                    left={props => <List.Icon {...props} icon="bell-outline" color={Colors.primario} />}
-                    right={() => <List.Icon icon="chevron-right" color={Colors.textoGris} />}
-                    onPress={() => {}}
-                    titleStyle={{ color: theme.colors.text }}
-                    descriptionStyle={{ color: Colors.textoGris }}
-                />
-            </List.Section>
+            <ScrollView>
+                <Card style={styles.headerCard}>
+                    <View style={{ alignItems: 'center', width: '100%' }}>
+                        {renderProfileAvatar()}
+                        <Text style={styles.userName}>{usuario?.nombre || 'Usuario'}</Text>
+                        <Text style={styles.userEmail}>{usuario?.email || 'Sin correo'}</Text>
+                    </View>
+                </Card>
 
-            <Text style={styles.sectionTitle}>Cuenta y Seguridad</Text>
-            <List.Section>
-                <List.Item
-                    title="Editar Perfil"
-                    left={props => <List.Icon {...props} icon="account-edit-outline" color={Colors.primario} />}
-                    right={() => <List.Icon icon="chevron-right" color={Colors.textoGris} />}
-                    onPress={() => setModalVisible(true)}
-                    titleStyle={{ color: theme.colors.text }}
-                />
-                <Divider />
-                <List.Item
-                    title="Cambiar Contraseña"
-                    left={props => <List.Icon {...props} icon="lock-outline" color={Colors.primario} />}
-                    right={() => <List.Icon icon="chevron-right" color={Colors.textoGris} />}
-                    onPress={() => {}}
-                    titleStyle={{ color: theme.colors.text }}
-                />
-            </List.Section>
+                <Text style={styles.sectionTitle}>Ajustes de la Aplicación</Text>
+                <List.Section>
+                    <List.Item
+                        title="Modo Oscuro"
+                        description="Cambia el aspecto visual de la app"
+                        left={props => <List.Icon {...props} icon="theme-light-dark" color={Colors.primario} />}
+                        right={() => (
+                            <Switch 
+                                value={isDarkMode} 
+                                onValueChange={toggleTheme} 
+                                color={Colors.primario} 
+                            />
+                        )}
+                        style={{ paddingVertical: 10 }}
+                        titleStyle={{ color: 'white' }}
+                        descriptionStyle={{ color: 'rgba(255,255,255,0.6)' }}
+                    />
+                </List.Section>
 
-            <Button 
-                mode="contained" 
-                onPress={logout} 
-                style={styles.logoutButton}
-                buttonColor={Colors.error}
-                icon="logout"
-            >
-                Cerrar Sesión
-            </Button>
+                <Text style={styles.sectionTitle}>Cuenta y Seguridad</Text>
+                <List.Section>
+                    <List.Item
+                        title="Editar Perfil"
+                        left={props => <List.Icon {...props} icon="account-edit-outline" color={Colors.primario} />}
+                        right={() => <List.Icon icon="chevron-right" color="rgba(255,255,255,0.3)" />}
+                        onPress={() => setModalVisible(true)}
+                        titleStyle={{ color: 'white' }}
+                    />
+                    <Divider style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} />
+                    <List.Item
+                        title="Cambiar Contraseña"
+                        left={props => <List.Icon {...props} icon="lock-outline" color={Colors.primario} />}
+                        right={() => <List.Icon icon="chevron-right" color="rgba(255,255,255,0.3)" />}
+                        onPress={() => {}}
+                        titleStyle={{ color: 'white' }}
+                    />
+                </List.Section>
+
+                <Button 
+                    mode="contained" 
+                    onPress={logout} 
+                    style={styles.logoutButton}
+                    buttonColor={Colors.error}
+                    icon="logout"
+                >
+                    Cerrar Sesión
+                </Button>
+            </ScrollView>
 
             <Portal>
                 <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainer}>

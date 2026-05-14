@@ -311,10 +311,30 @@ const AppStack = () => {
                 name="Perfil" 
                 component={ProfileScreen} 
                 options={{ 
-                    headerShown: true, 
-                    title: 'Mi Perfil',
-                    headerStyle: { backgroundColor: '#121212' },
-                    headerTintColor: '#FF7E00'
+                    presentation: 'transparentModal',
+                    headerShown: false,
+                    cardStyle: { backgroundColor: 'transparent' },
+                    gestureDirection: 'horizontal-inverted',
+                    cardStyleInterpolator: ({ current, layouts }) => {
+                      return {
+                        cardStyle: {
+                          transform: [
+                            {
+                              translateX: current.progress.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [-layouts.screen.width, 0],
+                              }),
+                            },
+                          ],
+                        },
+                        overlayStyle: {
+                          opacity: current.progress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 0.5],
+                          }),
+                        },
+                      };
+                    },
                 }} 
             />
         </Stack.Navigator>
