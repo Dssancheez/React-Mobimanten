@@ -30,7 +30,7 @@ const AVATARES_PREDEFINIDOS = [
     { id: '7', name: 'MobiManten', fileName: 'logo.png' },
 ];
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }: any) => {
     const { usuario, logout, login, token } = useContext<any>(AuthContext);
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
     const [modalVisible, setModalVisible] = useState(false);
