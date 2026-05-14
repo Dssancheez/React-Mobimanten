@@ -157,7 +157,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         fetchPolicy: 'cache-and-network',
     });
 
-    const isFavorito = garajeData?.obtenerMiGaraje?.some((g: any) => String(g.coche.id) === String(cocheId));
+    const isFavorito = garajeData?.obtenerMiGaraje?.some((g: any) => g.coche && String(g.coche.id) === String(cocheId));
 
     const [anadirGaraje, { loading: adding }] = useMutation(ANADIR_COCHE_GARAJE, {
         refetchQueries: [

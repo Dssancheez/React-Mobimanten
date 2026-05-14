@@ -125,6 +125,8 @@ const GarageScreen = ({ navigation }: any) => {
                     />
                 }
                 renderItem={({ item }) => {
+                    if (!item.coche) return null; // Saltar si el coche ya no existe en el catálogo
+
                     const imagenSource = item.coche.imagen
                         ? { uri: item.coche.imagen }
                         : require('../../assets/images/logo.png');
