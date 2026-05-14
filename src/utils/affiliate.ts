@@ -2,7 +2,7 @@
  * Utilidad para gestionar enlaces de afiliados de Amazon.
  */
 
-const AMAZON_TAG = process.env.EXPO_PUBLIC_AMAZON_TAG || 'mobimanten-21'; // Tag por defecto o configurable
+const AMAZON_TAG = process.env.EXPO_PUBLIC_AMAZON_TAG || '1912066-21'; // Tag real del usuario
 
 /**
  * Añade el tag de afiliado a una URL de Amazon si no lo tiene.
