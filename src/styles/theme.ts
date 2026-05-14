@@ -99,7 +99,8 @@ export const useGlobalStyles = () => {
             maxWidth: 1200,
             width: '100%',
             alignSelf: 'center',
-            paddingHorizontal: isDesktop ? 30 : 15
+            paddingLeft: isDesktop ? 30 : 15,
+            paddingRight: isDesktop ? 5 : 10
         }
     });
 };

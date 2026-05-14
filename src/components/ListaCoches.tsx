@@ -73,7 +73,8 @@ export const ListaCoches = ({ navigation, coches, refetch }: ListaProps) => {
                     <Card
                         style={{ 
                             flex: 1 / numColumns,
-                            marginHorizontal: isDesktop ? 15 : 8, 
+                            marginLeft: isDesktop ? 15 : 8, 
+                            marginRight: isDesktop ? 5 : 8,
                             marginVertical: isDesktop ? 20 : 10, 
                             backgroundColor: Colors.tarjeta,
                             elevation: 4,
