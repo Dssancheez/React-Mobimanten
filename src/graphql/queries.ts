@@ -8,6 +8,7 @@ export interface Coche {
   motor: string;
   imagen: string;
   tipo?: string;
+  combustible: string;
 }
 
 export interface Garaje {
@@ -61,6 +62,7 @@ export const GET_COCHES = gql`
       motor
       imagen  
       tipo
+      combustible
     }
   }
 `;
@@ -79,6 +81,7 @@ export const GET_MI_GARAJE = gql`
         motor
         imagen
         tipo
+        combustible
       }
     }
   }

@@ -17,18 +17,16 @@ import * as WebBrowser from 'expo-web-browser';
 if (Platform.OS === 'web') {
     // 1. Unregister any existing service workers to fix the "blank screen" issue
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) {
                 registration.unregister();
                 console.log('Service Worker unregistered');
             }
         });
     }
 
-    // 2. Intento estándar de Expo para auth
     WebBrowser.maybeCompleteAuthSession();
 
-    // 3. Fallback manual para auth
     const url = window.location.href;
     if ((url.includes('state=') || url.includes('code=')) && window.opener) {
         window.opener.postMessage(url, "*");
