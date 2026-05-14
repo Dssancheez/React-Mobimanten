@@ -282,7 +282,7 @@ const ProfileScreen = () => {
                     </Button>
                 </Modal>
             </Portal>
-        </ResponsiveContainer>
+        </View>
     );
 };
 
