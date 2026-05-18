@@ -135,9 +135,9 @@ const GarageScreen = ({ navigation }: any) => {
                         <Card
                             style={[
                                 styles.card,
+                                isDesktop && numColumns > 1 && { maxWidth: `${100 / numColumns - 2}%` },
                                 isDesktop && numColumns === 1 && { maxWidth: 600, alignSelf: 'center', width: '100%' }
                             ]}
-
                             onPress={() => navigation.navigate('CarDetails', { cocheId: item.coche.id })}
                         >
                             <Card.Cover

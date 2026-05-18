@@ -61,11 +61,6 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
             borderColor: 'rgba(255, 126, 0, 0.1)',
             overflow: 'hidden',
         },
-        cardUrgente: {
-            backgroundColor: '#D32F2F',
-            borderColor: '#FF5252',
-            borderWidth: 2,
-        },
         headerRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -235,7 +230,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                             alertas.map((alerta, index) => (
                                 <Card
                                     key={index}
-                                    style={[styles.card, alerta.urgente && styles.cardUrgente]}
+                                    style={styles.card}
                                     onPress={() => navigation.navigate('Mi Garaje', {
                                         screen: 'RegisterMaintenance',
                                         params: {
@@ -246,7 +241,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                 >
                                     <Card.Content>
                                         <Text style={{ 
-                                            color: alerta.urgente ? '#FFE4E1' : Colors.primario, 
+                                            color: alerta.urgente ? '#F44336' : Colors.primario, 
                                             fontSize: 10, 
                                             fontWeight: 'bold', 
                                             textTransform: 'uppercase', 
@@ -256,14 +251,11 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                             {alerta.urgente ? 'Urgente' : 'Próximo'}
                                         </Text>
                                         <View style={styles.headerRow}>
-                                            <Text style={[styles.cardTitle, { fontSize: 19 }, alerta.urgente ? { color: 'white' } : { color: theme.colors.text }]}>
+                                            <Text style={[styles.cardTitle, { fontSize: 19, color: theme.colors.text }]}>
                                                 {alerta.tarea}
                                             </Text>
-                                            {alerta.urgente && (
-                                                <MaterialCommunityIcons name="alert" size={24} color="white" />
-                                            )}
                                         </View>
-                                        <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
+                                        <Text style={styles.cardSubtitle}>
                                             {alerta.apodo}
                                         </Text>
 
