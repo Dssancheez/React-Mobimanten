@@ -53,7 +53,7 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
         card: {
             backgroundColor: Colors.tarjeta,
             marginBottom: 15,
-            width: isDesktop && width > 1200 ? '23%' : isDesktop && width > 800 ? '48%' : '100%',
+            width: isDesktop && width > 1200 ? '31.3%' : isDesktop && width > 800 ? '48%' : '100%',
             marginHorizontal: isDesktop && width > 800 ? '1%' : 0,
             elevation: 2,
             borderRadius: 16,
@@ -221,7 +221,8 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                 <View style={{ 
                     flexDirection: isDesktop && width > 600 ? 'row' : 'column', 
                     flexWrap: 'wrap',
-                    padding: 16
+                    paddingVertical: 16,
+                    paddingHorizontal: isDesktop ? 0 : 16
                 }}>
                     {viewMode === 'proximos' ? (
                         alertas.length === 0 ? (
