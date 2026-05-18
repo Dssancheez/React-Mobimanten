@@ -29,33 +29,32 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             backgroundColor: Colors.fondo,
         },
         webHero: {
-            flexDirection: 'row',
-            padding: isDesktop ? 40 : 20,
+            flexDirection: 'column',
+            padding: 20,
             backgroundColor: Colors.tarjeta,
             borderRadius: 24,
-            marginVertical: isDesktop ? 40 : 20,
             elevation: 8,
             alignItems: 'center',
-            gap: 50,
             borderWidth: 1,
             borderColor: 'rgba(255, 126, 0, 0.15)',
             ...Platform.select({
                 web: {
                     boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                }
+                } as any
             })
         },
         webImage: {
-            width: 450,
-            height: 300,
+            width: '100%',
+            height: 250,
             borderRadius: 20,
+            marginBottom: 20,
         },
         webSpecs: {
-            flex: 1,
-            justifyContent: 'center',
+            width: '100%',
+            alignItems: 'flex-start',
         },
         title: {
-            fontSize: isDesktop ? 42 : 28,
+            fontSize: isDesktop ? 32 : 28,
             fontWeight: 'bold',
             color: theme.colors.text,
             marginBottom: 15,
@@ -137,6 +136,12 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
             flexDirection: 'row',
             justifyContent: 'flex-end',
             gap: 10
+        },
+        headerInfo: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            padding: 20,
         }
     });
 
@@ -151,7 +156,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         { variables: { cocheId } }
     );
 
-    const { data: garajeData } = useQuery(GET_MI_GARAJE, {
+    const { data: garajeData } = useQuery<any>(GET_MI_GARAJE, {
         variables: { usuarioId: usuario?.id },
         skip: !usuario?.id,
         fetchPolicy: 'cache-and-network',
@@ -175,12 +180,10 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         if (coche) setApodo(`${coche.marca} ${coche.modelo}`);
     }, [coche]);
 
-    const [expandedId, setExpandedId] = useState<string | number>('motor');
-
     const handleOpenModal = async () => {
         if (isFavorito) {
             try {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Medium);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
                 await eliminarGaraje({
                     variables: {
                         usuarioId: usuario?.id,
@@ -223,231 +226,242 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     const mantenimientos = mantData?.obtenerMantenimientosPorCoche || [];
     const imagenSource = coche.imagen ? { uri: coche.imagen } : require('../../assets/images/logo.png');
 
-    return (
-        <View style={{ flex: 1 }}>
-            <ResponsiveContainer maxWidth={1200} contentContainerStyle={[globalStyles.webMaxWidth, { paddingBottom: 60 }]}>
-                {isDesktop ? (
+    const renderMantenimientosSection = () => (
+        <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Mantenimientos Recomendados</Text>
 
-                    <View style={styles.webHero}>
-                        <Image 
-                            source={imagenSource} 
-                            style={styles.webImage} 
-                            resizeMode="cover" 
-                        />
-                        <View style={styles.webSpecs}>
-                            <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
-                            <View style={styles.detailRow}>
-                                <View style={styles.specBadge}>
-                                    <MaterialCommunityIcons name="engine-outline" size={20} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.motor}</Text>
+            {mantLoading ? (
+                <ActivityIndicator color={Colors.primario} style={{ marginTop: 20 }} />
+            ) : mantenimientos.length === 0 ? (
+                <Text style={{color: Colors.textoGris}}>No hay mantenimientos registrados por el fabricante.</Text>
+            ) : (
+                (() => {
+                    const categorias = {
+                        Motor: [] as Mantenimiento[],
+                        Neumaticos: [] as Mantenimiento[],
+                        Otros: [] as Mantenimiento[],
+                    };
+
+                    mantenimientos.forEach((mant: Mantenimiento) => {
+                        const tareaLower = mant.tarea.toLowerCase();
+                        if (tareaLower.includes('aceite') || tareaLower.includes('correa') || tareaLower.includes('refrigerante') || tareaLower.includes('motor') || tareaLower.includes('bujía') || tareaLower.includes('bujias') || tareaLower.includes('bujia') || tareaLower.includes('filtro')) {
+                            categorias.Motor.push(mant);
+                        } else if (tareaLower.includes('neumático') || tareaLower.includes('neumatico') || tareaLower.includes('llanta') || tareaLower.includes('rueda')) {
+                            categorias.Neumaticos.push(mant);
+                        } else {
+                            categorias.Otros.push(mant);
+                        }
+                    });
+
+                    const renderCard = (mant: Mantenimiento) => (
+                        <Card key={mant.id} style={styles.card}>
+                            <View style={{ 
+                                flexDirection: isDesktop ? 'row' : 'column', 
+                                padding: 16,
+                                alignItems: isDesktop ? 'center' : 'flex-start',
+                                justifyContent: 'space-between'
+                            }}>
+                                <View style={{ flex: 1, marginRight: isDesktop ? 20 : 0 }}>
+                                    <Text style={{ 
+                                        color: Colors.primario, 
+                                        fontSize: 11, 
+                                        fontWeight: 'bold', 
+                                        textTransform: 'uppercase', 
+                                        letterSpacing: 1.2,
+                                        marginBottom: 4 
+                                    }}>
+                                        Recomendado
+                                    </Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                                        <Text style={[styles.cardTitle, { marginBottom: 0, fontSize: 19 }]}>{mant.tarea}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <MaterialCommunityIcons name="update" size={14} color={Colors.textoGris} />
+                                        <Text style={[styles.cardSubtitle, { marginLeft: 6 }]}>
+                                            {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
+                                            {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
+                                            {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
+                                        </Text>
+                                    </View>
                                 </View>
-                                <View style={styles.specBadge}>
-                                    <MaterialCommunityIcons name="gas-station-outline" size={20} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.combustible}</Text>
-                                </View>
-                                <View style={styles.specBadge}>
-                                    <MaterialCommunityIcons name="calendar-range" size={20} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.anio}</Text>
-                                </View>
-                            </View>
-                            <View style={{ marginTop: 25 }}>
+                                
                                 <Button
                                     mode="contained"
-                                    buttonColor={isFavorito ? "#2E7D32" : Colors.primario}
-                                    icon={isFavorito ? "star" : "star-plus"}
-                                    onPress={handleOpenModal}
-                                    disabled={adding || removing}
-                                    style={{ width: 250, borderRadius: 10 }}
+                                    buttonColor={Colors.primario}
+                                    style={{ 
+                                        marginTop: isDesktop ? 0 : 15,
+                                        width: isDesktop ? 'auto' : '100%',
+                                        borderRadius: 10
+                                    }}
+                                    contentStyle={{ height: 45 }}
+                                    onPress={() => {
+                                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                                        const garajeItem = garajeData?.obtenerMiGaraje?.find((g: any) => String(g.coche.id) === String(cocheId));
+                                        navigation.navigate('MaintenanceDetails', { 
+                                            cocheId, 
+                                            cocheGarajeId: garajeItem?.id,
+                                            mant 
+                                        });
+                                    }}
                                 >
-                                    {isFavorito ? "Eliminar del Garaje" : "Añadir a mi Garaje"}
+                                    Ver Detalles
                                 </Button>
+                            </View>
+                        </Card>
+                    );
+
+                    const renderSection = (title: string, items: Mantenimiento[], icon: string) => (
+                        items.length > 0 && (
+                            <View style={{ marginBottom: 30 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+                                    <MaterialCommunityIcons name={icon as any} size={28} color={Colors.primario} />
+                                    <Text style={[styles.sectionTitle, { borderLeftWidth: 0, marginTop: 0 }]}>{title}</Text>
+                                </View>
+                                <View style={{ 
+                                    flexDirection: 'row', 
+                                    flexWrap: 'wrap', 
+                                    width: '100%' 
+                                }}>
+                                    {items.map(renderCard)}
+                                </View>
+                            </View>
+                        )
+                    );
+
+                    if (isDesktop) {
+                        return (
+                            <View style={{ paddingHorizontal: 0 }}>
+                                {renderSection("Mantenimientos de Motor", categorias.Motor, "engine")}
+                                {renderSection("Neumáticos y Ruedas", categorias.Neumaticos, "tire")}
+                                {renderSection("Otros Mantenimientos", categorias.Otros, "tools")}
+                            </View>
+                        );
+                    }
+
+                    return (
+                        <List.Section>
+                            {categorias.Motor.length > 0 && (
+                                <List.Accordion
+                                    title="Mantenimientos de Motor"
+                                    left={props => <List.Icon {...props} icon="engine" color={Colors.primario} />}
+                                    titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                    theme={{ colors: { background: 'transparent' } }}
+                                >
+                                    {categorias.Motor.map(renderCard)}
+                                </List.Accordion>
+                            )}
+                            {categorias.Neumaticos.length > 0 && (
+                                <List.Accordion
+                                    title="Neumáticos y Ruedas"
+                                    left={props => <List.Icon {...props} icon="tire" color={Colors.primario} />}
+                                    titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                    theme={{ colors: { background: 'transparent' } }}
+                                >
+                                    {categorias.Neumaticos.map(renderCard)}
+                                </List.Accordion>
+                            )}
+                            {categorias.Otros.length > 0 && (
+                                <List.Accordion
+                                    title="Otros Mantenimientos"
+                                    left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
+                                    titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
+                                    theme={{ colors: { background: 'transparent' } }}
+                                >
+                                    {categorias.Otros.map(renderCard)}
+                                </List.Accordion>
+                            )}
+                        </List.Section>
+                    );
+                })()
+            )}
+        </View>
+    );
+
+    return (
+        <View style={{ flex: 1 }}>
+            {isDesktop ? (
+                <View style={[globalStyles.webMaxWidth, { flex: 1, flexDirection: 'row', alignSelf: 'center', width: '100%', paddingVertical: 40, paddingHorizontal: 20 }]}>
+                    {/* Left Column (Hero) */}
+                    <View style={{ width: '35%', maxWidth: 450, paddingRight: 40 }}>
+                        <View style={styles.webHero}>
+                            <Image 
+                                source={imagenSource} 
+                                style={styles.webImage} 
+                                resizeMode="cover" 
+                            />
+                            <View style={styles.webSpecs}>
+                                <Text style={styles.title}>{coche.marca} {coche.modelo}</Text>
+                                <View style={styles.detailRow}>
+                                    <View style={styles.specBadge}>
+                                        <MaterialCommunityIcons name="engine-outline" size={20} color={Colors.primario} />
+                                        <Text style={styles.subtitle}>{coche.motor}</Text>
+                                    </View>
+                                    <View style={styles.specBadge}>
+                                        <MaterialCommunityIcons name="gas-station-outline" size={20} color={Colors.primario} />
+                                        <Text style={styles.subtitle}>{coche.combustible}</Text>
+                                    </View>
+                                    <View style={styles.specBadge}>
+                                        <MaterialCommunityIcons name="calendar-range" size={20} color={Colors.primario} />
+                                        <Text style={styles.subtitle}>{coche.anio}</Text>
+                                    </View>
+                                </View>
+                                <View style={{ marginTop: 25, width: '100%' }}>
+                                    <Button
+                                        mode="contained"
+                                        buttonColor={isFavorito ? "#2E7D32" : Colors.primario}
+                                        icon={isFavorito ? "star" : "star-plus"}
+                                        onPress={handleOpenModal}
+                                        disabled={adding || removing}
+                                        style={{ width: '100%', borderRadius: 10 }}
+                                    >
+                                        {isFavorito ? "Eliminar del Garaje" : "Añadir a mi Garaje"}
+                                    </Button>
+                                </View>
                             </View>
                         </View>
                     </View>
-                ) : (
-                    <>
-                        <Image 
-                            source={imagenSource} 
-                            style={styles.image} 
-                            resizeMode="cover" 
-                        />
-                        <View style={styles.headerInfo}>
-                            <View style={{ flex: 1, paddingRight: 10 }}>
-                                <Text style={styles.title} numberOfLines={2}>{coche.marca} {coche.modelo}</Text>
-                                <View style={styles.detailRow}>
-                                    <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.motor}</Text>
-                                    <View style={{ width: 10 }} />
-                                    <MaterialCommunityIcons name="gas-station-outline" size={18} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.combustible}</Text>
-                                    <View style={{ width: 10 }} />
-                                    <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
-                                    <Text style={styles.subtitle}>{coche.anio}</Text>
-                                </View>
-                            </View>
-
-                            <IconButton
-                                icon={isFavorito ? "star" : "star-outline"}
-                                iconColor={isFavorito ? "#2E7D32" : Colors.primario}
-                                size={35}
-                                onPress={handleOpenModal}
-                                disabled={adding || removing}
-                            />
-                        </View>
-                        <Divider style={{ backgroundColor: Colors.tarjeta, height: 2, marginHorizontal: 20 }} />
-                    </>
-                )}
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Mantenimientos Recomendados</Text>
-
-                    {mantLoading ? (
-                        <ActivityIndicator color={Colors.primario} style={{ marginTop: 20 }} />
-                    ) : mantenimientos.length === 0 ? (
-                        <Text style={styles.noData}>No hay mantenimientos registrados por el fabricante.</Text>
-                    ) : (
-                        (() => {
-                            const categorias = {
-                                Motor: [] as Mantenimiento[],
-                                Neumaticos: [] as Mantenimiento[],
-                                Otros: [] as Mantenimiento[],
-                            };
-
-                            mantenimientos.forEach((mant: Mantenimiento) => {
-                                const tareaLower = mant.tarea.toLowerCase();
-                                if (tareaLower.includes('aceite') || tareaLower.includes('correa') || tareaLower.includes('refrigerante') || tareaLower.includes('motor') || tareaLower.includes('bujía') || tareaLower.includes('bujias') || tareaLower.includes('bujia') || tareaLower.includes('filtro')) {
-                                    categorias.Motor.push(mant);
-                                } else if (tareaLower.includes('neumático') || tareaLower.includes('neumatico') || tareaLower.includes('llanta') || tareaLower.includes('rueda')) {
-                                    categorias.Neumaticos.push(mant);
-                                } else {
-                                    categorias.Otros.push(mant);
-                                }
-                            });
-
-                            const renderCard = (mant: Mantenimiento) => (
-                                <Card key={mant.id} style={styles.card}>
-                                    <View style={{ 
-                                        flexDirection: isDesktop ? 'row' : 'column', 
-                                        padding: 16,
-                                        alignItems: isDesktop ? 'center' : 'flex-start',
-                                        justifyContent: 'space-between'
-                                    }}>
-                                        <View style={{ flex: 1, marginRight: isDesktop ? 20 : 0 }}>
-                                            <Text style={{ 
-                                                color: Colors.primario, 
-                                                fontSize: 11, 
-                                                fontWeight: 'bold', 
-                                                textTransform: 'uppercase', 
-                                                letterSpacing: 1.2,
-                                                marginBottom: 4 
-                                            }}>
-                                                Recomendado
-                                            </Text>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-                                                <Text style={[styles.cardTitle, { marginBottom: 0, fontSize: 19 }]}>{mant.tarea}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                                <MaterialCommunityIcons name="update" size={14} color={Colors.textoGris} />
-                                                <Text style={[styles.cardSubtitle, { marginLeft: 6 }]}>
-                                                    {mant.intervaloKm ? `Cada ${mant.intervaloKm} km` : ''}
-                                                    {mant.intervaloKm && mant.intervaloMeses ? ' / ' : ''}
-                                                    {mant.intervaloMeses ? `${mant.intervaloMeses} meses` : ''}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        
-                                        <Button
-                                            mode="contained"
-                                            buttonColor={Colors.primario}
-                                            style={{ 
-                                                marginTop: isDesktop ? 0 : 15,
-                                                width: isDesktop ? 'auto' : '100%',
-                                                borderRadius: 10
-                                            }}
-                                            contentStyle={{ height: 45 }}
-                                            onPress={() => {
-                                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                                                const garajeItem = garajeData?.obtenerMiGaraje?.find((g: any) => String(g.coche.id) === String(cocheId));
-                                                navigation.navigate('MaintenanceDetails', { 
-                                                    cocheId, 
-                                                    cocheGarajeId: garajeItem?.id,
-                                                    mant 
-                                                });
-                                            }}
-                                        >
-                                            Ver Detalles
-                                        </Button>
-                                    </View>
-                                </Card>
-                            );
-
-                            const renderSection = (title: string, items: Mantenimiento[], icon: string) => (
-                                items.length > 0 && (
-                                    <View style={{ marginBottom: 30 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
-                                            <MaterialCommunityIcons name={icon as any} size={28} color={Colors.primario} />
-                                            <Text style={[styles.sectionTitle, { borderLeftWidth: 0, marginTop: 0 }]}>{title}</Text>
-                                        </View>
-                                        <View style={{ 
-                                            flexDirection: 'row', 
-                                            flexWrap: 'wrap', 
-                                            width: '100%' 
-                                        }}>
-                                            {items.map(renderCard)}
-                                        </View>
-                                    </View>
-                                )
-                            );
-
-                            if (isDesktop) {
-
-                                return (
-                                    <View style={{ paddingHorizontal: 20 }}>
-                                        {renderSection("Mantenimientos de Motor", categorias.Motor, "engine")}
-                                        {renderSection("Neumáticos y Ruedas", categorias.Neumaticos, "tire")}
-                                        {renderSection("Otros Mantenimientos", categorias.Otros, "tools")}
-                                    </View>
-                                );
-                            }
-
-                            return (
-                                <List.Section>
-                                    {categorias.Motor.length > 0 && (
-                                        <List.Accordion
-                                            title="Mantenimientos de Motor"
-                                            left={props => <List.Icon {...props} icon="engine" color={Colors.primario} />}
-                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
-                                            theme={{ colors: { background: 'transparent' } }}
-                                        >
-                                            {categorias.Motor.map(renderCard)}
-                                        </List.Accordion>
-                                    )}
-                                    {categorias.Neumaticos.length > 0 && (
-                                        <List.Accordion
-                                            title="Neumáticos y Ruedas"
-                                            left={props => <List.Icon {...props} icon="tire" color={Colors.primario} />}
-                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
-                                            theme={{ colors: { background: 'transparent' } }}
-                                        >
-                                            {categorias.Neumaticos.map(renderCard)}
-                                        </List.Accordion>
-                                    )}
-                                    {categorias.Otros.length > 0 && (
-                                        <List.Accordion
-                                            title="Otros Mantenimientos"
-                                            left={props => <List.Icon {...props} icon="tools" color={Colors.primario} />}
-                                            titleStyle={{ color: theme.colors.text, fontWeight: 'bold' }}
-                                            theme={{ colors: { background: 'transparent' } }}
-                                        >
-                                            {categorias.Otros.map(renderCard)}
-                                        </List.Accordion>
-                                    )}
-                                </List.Section>
-                            );
-                        })()
-                    )}
+                    
+                    {/* Right Column (Scrollable Maintenances) */}
+                    <View style={{ flex: 1 }}>
+                        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+                            {renderMantenimientosSection()}
+                        </ScrollView>
+                    </View>
                 </View>
-            </ResponsiveContainer>
+            ) : (
+                <ResponsiveContainer maxWidth={1200} contentContainerStyle={{ paddingBottom: 60 }}>
+                    <Image 
+                        source={imagenSource} 
+                        style={styles.image} 
+                        resizeMode="cover" 
+                    />
+                    <View style={styles.headerInfo}>
+                        <View style={{ flex: 1, paddingRight: 10 }}>
+                            <Text style={styles.title} numberOfLines={2}>{coche.marca} {coche.modelo}</Text>
+                            <View style={styles.detailRow}>
+                                <MaterialCommunityIcons name="engine-outline" size={18} color={Colors.primario} />
+                                <Text style={styles.subtitle}>{coche.motor}</Text>
+                                <View style={{ width: 10 }} />
+                                <MaterialCommunityIcons name="gas-station-outline" size={18} color={Colors.primario} />
+                                <Text style={styles.subtitle}>{coche.combustible}</Text>
+                                <View style={{ width: 10 }} />
+                                <MaterialCommunityIcons name="calendar-range" size={18} color={Colors.primario} />
+                                <Text style={styles.subtitle}>{coche.anio}</Text>
+                            </View>
+                        </View>
+                        <IconButton
+                            icon={isFavorito ? "star" : "star-outline"}
+                            iconColor={isFavorito ? "#2E7D32" : Colors.primario}
+                            size={35}
+                            onPress={handleOpenModal}
+                            disabled={adding || removing}
+                        />
+                    </View>
+                    <Divider style={{ backgroundColor: Colors.tarjeta, height: 2, marginHorizontal: 20 }} />
+                    
+                    {renderMantenimientosSection()}
+                </ResponsiveContainer>
+            )}
 
             <Portal>
                 <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContent}>
