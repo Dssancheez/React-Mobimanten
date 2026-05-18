@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ResponsiveContainer } from '../components/ResponsiveContainer';
+import { TimelineProgress } from '../components/TimelineProgress';
 import { Platform, useWindowDimensions } from 'react-native';
 
 interface HistorialRecord {
@@ -186,7 +187,10 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                 kmRestantes,
                 urgente: esUrgente,
                 fechaVencimiento: r.proximoCambioFecha,
-                kmVencimiento: r.proximoCambioKm
+                kmVencimiento: r.proximoCambioKm,
+                fechaRealizado: r.fechaRealizado,
+                kmRealizado: r.kilometrosRealizado,
+                kmActuales: kmActuales
             };
         })
         .filter(a => a.diasRestantes <= 30 || a.kmRestantes <= 1000)
@@ -259,27 +263,18 @@ const MyMaintenancesScreen = ({ navigation }: any) => {
                                                 <MaterialCommunityIcons name="alert" size={24} color="white" />
                                             )}
                                         </View>
-                                        <Text style={[styles.cardSubtitle, { marginBottom: 12 }, alerta.urgente && { color: '#FFE4E1' }]}>
+                                        <Text style={[styles.cardSubtitle, alerta.urgente && { color: '#FFE4E1' }]}>
                                             {alerta.apodo}
                                         </Text>
 
-                                        <View style={styles.diasContainer}>
-                                            <Text style={[styles.diasTexto, alerta.urgente && { color: 'white' }]}>
-                                                {alerta.diasRestantes < 0
-                                                    ? `¡Vencido por tiempo! (${Math.abs(alerta.diasRestantes)} días)`
-                                                    : alerta.kmRestantes < 0
-                                                    ? `¡Vencido por uso! (${Math.abs(alerta.kmRestantes)} km extra)`
-                                                    : alerta.diasRestantes <= 30
-                                                    ? `Próximo mantenimiento en ${alerta.diasRestantes} días`
-                                                    : `Próximo mantenimiento en ${alerta.kmRestantes} km`
-                                                }
-                                            </Text>
-                                            {(alerta.diasRestantes >= 0 && alerta.kmRestantes >= 0) && (
-                                                <Text style={{color: 'white', fontSize: 12, textAlign: 'center', marginTop: 4, opacity: 0.8}}>
-                                                    Límite: {alerta.kmVencimiento} km o {alerta.fechaVencimiento}
-                                                </Text>
-                                            )}
-                                        </View>
+                                        <TimelineProgress
+                                            fechaInicio={alerta.fechaRealizado}
+                                            fechaFin={alerta.fechaVencimiento}
+                                            diasRestantes={alerta.fechaVencimiento ? alerta.diasRestantes : undefined}
+                                            kmInicio={alerta.kmRealizado}
+                                            kmFin={alerta.kmVencimiento}
+                                            kmActuales={alerta.kmActuales}
+                                        />
                                     </Card.Content>
                                 </Card>
                             ))
