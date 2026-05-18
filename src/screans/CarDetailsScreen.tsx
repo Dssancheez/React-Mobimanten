@@ -378,7 +378,7 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
     );
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={[globalStyles.container, { flex: 1 }]}>
             {isDesktop ? (
                 <View style={[globalStyles.webMaxWidth, { flex: 1, flexDirection: 'row', alignSelf: 'center', width: '100%', paddingVertical: 40, paddingHorizontal: 20 }]}>
                     {/* Left Column (Hero) */}
