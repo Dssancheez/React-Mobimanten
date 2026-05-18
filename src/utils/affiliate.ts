@@ -16,7 +16,7 @@ export const getAffiliateLink = (url: string): string => {
   if (!isAmazon) return url;
   
   // Si ya tiene un tag, no lo cambiamos (o podríamos reemplazarlo)
-  if (url.includes('tag=')) return url;
+  if (url.includes('?tag=') || url.includes('&tag=')) return url;
   
   // Limpiar la URL y añadir el tag
   const separator = url.includes('?') ? '&' : '?';
