@@ -117,9 +117,18 @@ const CarDetailsScreen = ({ route, navigation }: any) => {
         },
         modalContent: {
             backgroundColor: Colors.tarjeta,
-            padding: 20,
-            margin: 20,
-            borderRadius: 12,
+            padding: isDesktop ? 35 : 20,
+            margin: isDesktop ? 0 : 20,
+            borderRadius: 20,
+            width: isDesktop ? 500 : undefined,
+            alignSelf: isDesktop ? 'center' : undefined,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.15)',
+            ...Platform.select({
+                web: {
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                } as any
+            })
         },
         modalTitle: {
             fontSize: 22,

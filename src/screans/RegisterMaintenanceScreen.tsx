@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
-import { useGlobalStyles, useAppTheme } from '../styles/theme';
+import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
 import * as Haptics from 'expo-haptics';
 import { useMutation } from '@apollo/client/react';
 import { REGISTRAR_MANTENIMIENTO } from '../graphql/mutations';
@@ -14,24 +14,35 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
+    const isDesktop = useIsDesktop();
 
     const styles = StyleSheet.create({
+        container: {
+            flexGrow: 1,
+            backgroundColor: Colors.fondo,
+            justifyContent: isDesktop ? 'center' : 'flex-start',
+            alignItems: 'center',
+            paddingVertical: isDesktop ? 40 : 0,
+        },
         content: {
-            flex: 1,
-            padding: 20,
-            justifyContent: 'center',
+            width: '100%',
+            maxWidth: isDesktop ? 600 : undefined,
+            padding: isDesktop ? 40 : 20,
+            borderRadius: isDesktop ? 20 : 0,
         },
         title: {
-            fontSize: 26,
+            fontSize: isDesktop ? 30 : 26,
             fontWeight: 'bold',
             color: theme.colors.text,
             marginBottom: 5,
+            textAlign: isDesktop ? 'center' : 'left',
         },
         subtitle: {
             fontSize: 18,
             color: Colors.textoPrincipal,
             marginBottom: 30,
             fontWeight: 'bold',
+            textAlign: isDesktop ? 'center' : 'left',
         },
         form: {
             width: '100%',
@@ -107,63 +118,68 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
             style={globalStyles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <View style={styles.content}>
-                <Text style={styles.title}>Registrar Mantenimiento</Text>
-                <Text style={styles.subtitle}>Tarea: {tarea}</Text>
+            <ScrollView 
+                contentContainerStyle={styles.container} 
+                showsVerticalScrollIndicator={false}
+            >
+                <View style={[styles.content, isDesktop && globalStyles.glassCard]}>
+                    <Text style={styles.title}>Registrar Mantenimiento</Text>
+                    <Text style={styles.subtitle}>Tarea: {tarea}</Text>
 
-                <View style={styles.form}>
-                    <TextInput
-                        label="Fecha (YYYY-MM-DD)"
-                        value={fecha}
-                        onChangeText={setFecha}
-                        style={styles.input}
-                        mode="outlined"
-                        outlineColor={Colors.textoGris}
-                        activeOutlineColor={Colors.primario}
-                        textColor={theme.colors.text}
-                    />
+                    <View style={styles.form}>
+                        <TextInput
+                            label="Fecha (YYYY-MM-DD)"
+                            value={fecha}
+                            onChangeText={setFecha}
+                            style={styles.input}
+                            mode="outlined"
+                            outlineColor={Colors.textoGris}
+                            activeOutlineColor={Colors.primario}
+                            textColor={theme.colors.text}
+                        />
 
-                    <TextInput
-                        label="Kilómetros actuales del vehículo"
-                        value={kmActuales}
-                        onChangeText={setKmActuales}
-                        keyboardType="numeric"
-                        style={styles.input}
-                        mode="outlined"
-                        outlineColor={Colors.textoGris}
-                        activeOutlineColor={Colors.primario}
-                        textColor={theme.colors.text}
-                    />
+                        <TextInput
+                            label="Kilómetros actuales del vehículo"
+                            value={kmActuales}
+                            onChangeText={setKmActuales}
+                            keyboardType="numeric"
+                            style={styles.input}
+                            mode="outlined"
+                            outlineColor={Colors.textoGris}
+                            activeOutlineColor={Colors.primario}
+                            textColor={theme.colors.text}
+                        />
 
-                    <TextInput
-                        label="Observaciones (Opcional)"
-                        value={observaciones}
-                        onChangeText={setObservaciones}
-                        multiline
-                        numberOfLines={3}
-                        style={styles.input}
-                        mode="outlined"
-                        outlineColor={Colors.textoGris}
-                        activeOutlineColor={Colors.primario}
-                        textColor={theme.colors.text}
-                    />
+                        <TextInput
+                            label="Observaciones (Opcional)"
+                            value={observaciones}
+                            onChangeText={setObservaciones}
+                            multiline
+                            numberOfLines={3}
+                            style={styles.input}
+                            mode="outlined"
+                            outlineColor={Colors.textoGris}
+                            activeOutlineColor={Colors.primario}
+                            textColor={theme.colors.text}
+                        />
 
-                    <Button
-                        mode="contained"
-                        onPress={() => {
-                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            handleSave();
-                        }}
-                        style={styles.button}
-                        buttonColor={Colors.primario}
-                        labelStyle={styles.buttonLabel}
-                        loading={loading}
-                        disabled={loading}
-                    >
-                        Guardar Registro
-                    </Button>
+                        <Button
+                            mode="contained"
+                            onPress={() => {
+                                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                                handleSave();
+                            }}
+                            style={styles.button}
+                            buttonColor={Colors.primario}
+                            labelStyle={styles.buttonLabel}
+                            loading={loading}
+                            disabled={loading}
+                        >
+                            Guardar Registro
+                        </Button>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 };
