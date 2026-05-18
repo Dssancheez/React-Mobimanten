@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { useGlobalStyles, useAppTheme, useIsDesktop } from '../styles/theme';
 import * as Haptics from 'expo-haptics';
@@ -7,14 +7,25 @@ import { useMutation } from '@apollo/client/react';
 import { REGISTRAR_MANTENIMIENTO } from '../graphql/mutations';
 import { GET_HISTORIAL_USUARIO } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+interface RepuestoOpcion {
+    nombre: string;
+    marca: string;
+    duracionKm?: number;
+    duracionMeses?: number;
+    enlaceCompra?: string;
+}
 
 const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
-    const { cocheGarajeId, tarea, mantenimientoId } = route.params;
+    const { cocheGarajeId, tarea, mantenimientoId, opcionesRepuestos } = route.params || {};
     const { usuario } = useContext<any>(AuthContext);
     const globalStyles = useGlobalStyles();
     const theme = useAppTheme();
     const Colors = theme.customColors;
     const isDesktop = useIsDesktop();
+
+    const repuestos: RepuestoOpcion[] = opcionesRepuestos || [];
 
     const styles = StyleSheet.create({
         container: {
@@ -22,11 +33,11 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
             backgroundColor: Colors.fondo,
             justifyContent: isDesktop ? 'center' : 'flex-start',
             alignItems: 'center',
-            paddingVertical: isDesktop ? 40 : 0,
+            paddingVertical: isDesktop ? 40 : 10,
         },
         content: {
             width: '100%',
-            maxWidth: isDesktop ? 600 : undefined,
+            maxWidth: isDesktop ? 650 : undefined,
             padding: isDesktop ? 40 : 20,
             borderRadius: isDesktop ? 20 : 0,
         },
@@ -40,9 +51,16 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
         subtitle: {
             fontSize: 18,
             color: Colors.textoPrincipal,
-            marginBottom: 30,
+            marginBottom: 25,
             fontWeight: 'bold',
             textAlign: isDesktop ? 'center' : 'left',
+        },
+        sectionLabel: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+            marginTop: 20,
+            marginBottom: 10,
         },
         form: {
             width: '100%',
@@ -51,8 +69,56 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
             marginBottom: 15,
             backgroundColor: Colors.tarjeta,
         },
+        rowInputs: {
+            flexDirection: isDesktop ? 'row' : 'column',
+            justifyContent: 'space-between',
+            gap: isDesktop ? 15 : 0,
+        },
+        halfInput: {
+            flex: 1,
+            marginBottom: 15,
+            backgroundColor: Colors.tarjeta,
+        },
+        optionCard: {
+            backgroundColor: Colors.tarjeta,
+            borderWidth: 1.5,
+            borderColor: 'rgba(255, 126, 0, 0.1)',
+            borderRadius: 12,
+            padding: 14,
+            marginBottom: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        optionCardSelected: {
+            borderColor: Colors.primario,
+            backgroundColor: 'rgba(255, 126, 0, 0.08)',
+        },
+        optionTextContainer: {
+            flex: 1,
+            paddingRight: 10,
+        },
+        optionTitle: {
+            fontSize: 15,
+            fontWeight: 'bold',
+            color: theme.colors.text,
+        },
+        optionSubtitle: {
+            fontSize: 13,
+            color: Colors.textoGris,
+            marginTop: 2,
+        },
+        customFieldsContainer: {
+            backgroundColor: 'rgba(255, 126, 0, 0.03)',
+            borderRadius: 12,
+            padding: 15,
+            borderWidth: 1,
+            borderColor: 'rgba(255, 126, 0, 0.15)',
+            marginBottom: 15,
+            marginTop: 5,
+        },
         button: {
-            marginTop: 20,
+            marginTop: 25,
             paddingVertical: 8,
             borderRadius: 8,
         },
@@ -65,6 +131,16 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
     const [fecha, setFecha] = useState(new Date().toISOString().split('T')[0]);
     const [kmActuales, setKmActuales] = useState('');
     const [observaciones, setObservaciones] = useState('');
+    const [coste, setCoste] = useState('');
+    const [taller, setTaller] = useState('');
+
+    // Selection state
+    const [selectedOption, setSelectedOption] = useState<string>(repuestos.length > 0 ? '0' : 'custom');
+    
+    // Custom repuesto state
+    const [customNombre, setCustomNombre] = useState('');
+    const [customMarca, setCustomMarca] = useState('');
+    const [customEnlace, setCustomEnlace] = useState('');
 
     const [registrarMantenimiento, { loading }] = useMutation(REGISTRAR_MANTENIMIENTO, {
         onCompleted: () => {
@@ -97,6 +173,35 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
             return;
         }
 
+        // Build repuesto input
+        let repuestoInput = null;
+        if (selectedOption === 'custom') {
+            if (!customNombre || !customMarca) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Alert.alert("Error", "Por favor introduce la marca y nombre del repuesto personalizado.");
+                return;
+            }
+            repuestoInput = {
+                nombre: customNombre,
+                marca: customMarca,
+                duracionKm: null,
+                duracionMeses: null,
+                enlaceCompra: customEnlace || null
+            };
+        } else if (selectedOption !== 'none') {
+            const idx = parseInt(selectedOption);
+            if (repuestos[idx]) {
+                const rep = repuestos[idx];
+                repuestoInput = {
+                    nombre: rep.nombre,
+                    marca: rep.marca,
+                    duracionKm: rep.duracionKm || null,
+                    duracionMeses: rep.duracionMeses || null,
+                    enlaceCompra: rep.enlaceCompra || null
+                };
+            }
+        }
+
         registrarMantenimiento({
             variables: {
                 input: {
@@ -106,8 +211,10 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                     tarea: tarea,
                     fechaRealizado: fecha,
                     kilometrosRealizado: parseInt(kmActuales),
+                    coste: coste ? parseFloat(coste) : null,
+                    taller: taller || null,
                     observaciones: observaciones,
-                    repuestoSeleccionado: null
+                    repuestoSeleccionado: repuestoInput
                 }
             }
         });
@@ -127,31 +234,166 @@ const RegisterMaintenanceScreen = ({ route, navigation }: any) => {
                     <Text style={styles.subtitle}>Tarea: {tarea}</Text>
 
                     <View style={styles.form}>
-                        <TextInput
-                            label="Fecha (YYYY-MM-DD)"
-                            value={fecha}
-                            onChangeText={setFecha}
-                            style={styles.input}
-                            mode="outlined"
-                            outlineColor={Colors.textoGris}
-                            activeOutlineColor={Colors.primario}
-                            textColor={theme.colors.text}
-                        />
+                        {/* Fecha y Kilómetros en Fila si es PC */}
+                        <View style={styles.rowInputs}>
+                            <TextInput
+                                label="Fecha (YYYY-MM-DD)"
+                                value={fecha}
+                                onChangeText={setFecha}
+                                style={styles.halfInput}
+                                mode="outlined"
+                                outlineColor={Colors.textoGris}
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
 
-                        <TextInput
-                            label="Kilómetros actuales del vehículo"
-                            value={kmActuales}
-                            onChangeText={setKmActuales}
-                            keyboardType="numeric"
-                            style={styles.input}
-                            mode="outlined"
-                            outlineColor={Colors.textoGris}
-                            activeOutlineColor={Colors.primario}
-                            textColor={theme.colors.text}
-                        />
+                            <TextInput
+                                label="Kilómetros actuales"
+                                value={kmActuales}
+                                onChangeText={setKmActuales}
+                                keyboardType="numeric"
+                                style={styles.halfInput}
+                                mode="outlined"
+                                outlineColor={Colors.textoGris}
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+                        </View>
 
+                        {/* Taller y Coste en Fila si es PC */}
+                        <View style={styles.rowInputs}>
+                            <TextInput
+                                label="Taller / Lugar (Opcional)"
+                                value={taller}
+                                onChangeText={setTaller}
+                                style={styles.halfInput}
+                                mode="outlined"
+                                outlineColor={Colors.textoGris}
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+
+                            <TextInput
+                                label="Coste total en € (Opcional)"
+                                value={coste}
+                                onChangeText={setCoste}
+                                keyboardType="numeric"
+                                style={styles.halfInput}
+                                mode="outlined"
+                                outlineColor={Colors.textoGris}
+                                activeOutlineColor={Colors.primario}
+                                textColor={theme.colors.text}
+                            />
+                        </View>
+
+                        {/* SECCIÓN SELECCIÓN DE REPUESTO */}
+                        <Text style={styles.sectionLabel}>Selección de Repuesto Utilizado</Text>
+                        
+                        {repuestos.map((rep, idx) => {
+                            const isSelected = selectedOption === idx.toString();
+                            return (
+                                <TouchableOpacity 
+                                    key={idx}
+                                    activeOpacity={0.8}
+                                    onPress={() => setSelectedOption(idx.toString())}
+                                    style={[styles.optionCard, isSelected && styles.optionCardSelected]}
+                                >
+                                    <View style={styles.optionTextContainer}>
+                                        <Text style={styles.optionTitle}>{rep.nombre}</Text>
+                                        <Text style={styles.optionSubtitle}>Marca oficial recomendada: {rep.marca}</Text>
+                                    </View>
+                                    <MaterialCommunityIcons 
+                                        name={isSelected ? "checkbox-marked-circle" : "checkbox-blank-circle-outline"} 
+                                        size={24} 
+                                        color={isSelected ? Colors.primario : Colors.textoGris} 
+                                    />
+                                </TouchableOpacity>
+                            );
+                        })}
+
+                        {/* Opción Personalizada */}
+                        <TouchableOpacity 
+                            activeOpacity={0.8}
+                            onPress={() => setSelectedOption('custom')}
+                            style={[
+                                styles.optionCard, 
+                                selectedOption === 'custom' && styles.optionCardSelected
+                            ]}
+                        >
+                            <View style={styles.optionTextContainer}>
+                                <Text style={styles.optionTitle}>Otro repuesto personalizado</Text>
+                                <Text style={styles.optionSubtitle}>Ingresa una marca y modelo diferente</Text>
+                            </View>
+                            <MaterialCommunityIcons 
+                                name={selectedOption === 'custom' ? "checkbox-marked-circle" : "checkbox-blank-circle-outline"} 
+                                size={24} 
+                                color={selectedOption === 'custom' ? Colors.primario : Colors.textoGris} 
+                            />
+                        </TouchableOpacity>
+
+                        {/* Campos para Opción Personalizada */}
+                        {selectedOption === 'custom' && (
+                            <View style={styles.customFieldsContainer}>
+                                <Text style={[styles.sectionLabel, { marginTop: 0, fontSize: 14, color: Colors.primario }]}>
+                                    Detalles del Repuesto Personalizado
+                                </Text>
+                                <TextInput
+                                    label="Marca (ej. Bosch, Brembo, Castrol...)"
+                                    value={customMarca}
+                                    onChangeText={setCustomMarca}
+                                    style={styles.input}
+                                    mode="outlined"
+                                    outlineColor={Colors.textoGris}
+                                    activeOutlineColor={Colors.primario}
+                                    textColor={theme.colors.text}
+                                />
+                                <TextInput
+                                    label="Nombre / Modelo del repuesto"
+                                    value={customNombre}
+                                    onChangeText={setCustomNombre}
+                                    style={styles.input}
+                                    mode="outlined"
+                                    outlineColor={Colors.textoGris}
+                                    activeOutlineColor={Colors.primario}
+                                    textColor={theme.colors.text}
+                                />
+                                <TextInput
+                                    label="Enlace de compra (Opcional)"
+                                    value={customEnlace}
+                                    onChangeText={setCustomEnlace}
+                                    style={[styles.input, { marginBottom: 0 }]}
+                                    mode="outlined"
+                                    outlineColor={Colors.textoGris}
+                                    activeOutlineColor={Colors.primario}
+                                    textColor={theme.colors.text}
+                                />
+                            </View>
+                        )}
+
+                        {/* Opción Ninguno */}
+                        <TouchableOpacity 
+                            activeOpacity={0.8}
+                            onPress={() => setSelectedOption('none')}
+                            style={[
+                                styles.optionCard, 
+                                selectedOption === 'none' && styles.optionCardSelected
+                            ]}
+                        >
+                            <View style={styles.optionTextContainer}>
+                                <Text style={styles.optionTitle}>Ningún repuesto / Solo revisión</Text>
+                                <Text style={styles.optionSubtitle}>No se ha sustituido ningún componente físico</Text>
+                            </View>
+                            <MaterialCommunityIcons 
+                                name={selectedOption === 'none' ? "checkbox-marked-circle" : "checkbox-blank-circle-outline"} 
+                                size={24} 
+                                color={selectedOption === 'none' ? Colors.primario : Colors.textoGris} 
+                            />
+                        </TouchableOpacity>
+
+                        {/* OBSERVACIONES */}
+                        <Text style={styles.sectionLabel}>Observaciones</Text>
                         <TextInput
-                            label="Observaciones (Opcional)"
+                            label="Notas adicionales (ej. estado de las piezas viejas...)"
                             value={observaciones}
                             onChangeText={setObservaciones}
                             multiline

@@ -219,7 +219,8 @@ const MaintenanceDetailsScreen = ({ route, navigation }: any) => {
                 onPress={() => navigation.navigate('RegisterMaintenance', { 
                     cocheGarajeId, 
                     tarea: mant.tarea,
-                    mantenimientoId: mant.id
+                    mantenimientoId: mant.id,
+                    opcionesRepuestos: mant.opcionesRepuestos
                 })}
                 icon="check-circle"
             >
