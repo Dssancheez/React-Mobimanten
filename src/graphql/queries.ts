@@ -33,6 +33,8 @@ export interface Mantenimiento {
   tarea: string;
   intervaloKm?: number;
   intervaloMeses?: number;
+  anioDesde?: number;
+  anioHasta?: number;
   opcionesRepuestos?: RepuestoOpcion[];
 }
 
@@ -91,9 +93,13 @@ export const GET_MANTENIMIENTOS_RECOMENDADOS = gql`
   query ObtenerMantenimientosRecomendados($cocheGarajeId: String!) {
     obtenerMantenimientosRecomendados(cocheGarajeId: $cocheGarajeId) {
       id
+      aplicaA
       tarea
+      seccion
       intervaloKm
       intervaloMeses
+      anioDesde
+      anioHasta
       opcionesRepuestos {
         nombre
         marca
@@ -131,9 +137,13 @@ export const GET_MANTENIMIENTOS = gql`
   query ObtenerMantenimientosPorCoche($cocheId: String!) {
     obtenerMantenimientosPorCoche(cocheId: $cocheId) {
       id
+      aplicaA
       tarea
+      seccion
       intervaloKm
       intervaloMeses
+      anioDesde
+      anioHasta
       opcionesRepuestos {
         nombre
         marca
